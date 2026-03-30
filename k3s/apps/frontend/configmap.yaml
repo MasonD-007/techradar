@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+  namespace: nextjs-template
+data:
+  PORT: "3000"
+  API_URL: "http://backend:8080"
+  NODE_ENV: "production"
