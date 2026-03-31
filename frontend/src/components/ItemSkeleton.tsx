@@ -1,6 +1,6 @@
 'use client';
 
-export default function ItemSkeleton() {
+export default function PostSkeleton() {
   return (
     <div className="p-4 border rounded-lg bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 animate-pulse">
       <div className="flex justify-between items-start">

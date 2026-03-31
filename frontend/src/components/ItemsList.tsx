@@ -2,39 +2,39 @@
 
 import { useOptimistic, useState, useRef } from 'react';
 import { toast } from 'sonner';
-import { createItem, updateItem, deleteItem, type Item } from '@/lib/actions';
+import { createPost, updatePost, deletePost, type Post } from '@/lib/actions';
 
-interface ItemsListProps {
-    initialItems: OptimisticItem[];
+interface PostsListProps {
+    initialPosts: OptimisticPost[];
 }
 
-type OptimisticItem = Item & { isOptimistic?: boolean };
+type OptimisticPost = Post & { isOptimistic?: boolean };
 
 type Action =
-    | { type: 'create'; item: OptimisticItem }
-    | { type: 'update'; item: OptimisticItem }
+    | { type: 'create'; post: OptimisticPost }
+    | { type: 'update'; post: OptimisticPost }
     | { type: 'delete'; id: number };
 
-function optimisticReducer(items: OptimisticItem[], action: Action): OptimisticItem[] {
+function optimisticReducer(posts: OptimisticPost[], action: Action): OptimisticPost[] {
     switch (action.type) {
         case 'create':
-            return [action.item, ...items];
+            return [action.post, ...posts];
         case 'update':
-            return items.map((item) => (item.id === action.item.id ? action.item : item));
+            return posts.map((post) => (post.id === action.post.id ? action.post : post));
         case 'delete':
-            return items.filter((item) => item.id !== action.id);
+            return posts.filter((post) => post.id !== action.id);
         default:
-            return items;
+            return posts;
     }
 }
 
-export default function ItemsList({ initialItems }: ItemsListProps) {
-    const [items, updateItems] = useOptimistic(initialItems, optimisticReducer);
+export default function PostsList({ initialPosts }: PostsListProps) {
+    const [posts, updatePosts] = useOptimistic(initialPosts, optimisticReducer);
     const [editingId, setEditingId] = useState<number | null>(null);
     const formRef = useRef<HTMLFormElement>(null);
 
     async function handleCreate(formData: FormData) {
-        const newItem: OptimisticItem = {
+        const newPost: OptimisticPost = {
             id: Date.now(),
             name: formData.get('name') as string,
             description: formData.get('description') as string,
@@ -43,20 +43,20 @@ export default function ItemsList({ initialItems }: ItemsListProps) {
             isOptimistic: true,
         };
 
-        updateItems({ type: 'create', item: newItem });
+        updatePosts({ type: 'create', post: newPost });
         formRef.current?.reset();
 
-        const result = await createItem(formData);
+        const result = await createPost(formData);
         if (!result.success) {
-            updateItems({ type: 'delete', id: newItem.id });
-            toast.error(result.error || 'Failed to create item');
+            updatePosts({ type: 'delete', id: newPost.id });
+            toast.error(result.error || 'Failed to create post');
         } else {
-            toast.success('Item created successfully');
+            toast.success('Post created successfully');
         }
     }
 
     async function handleUpdate(id: number, formData: FormData) {
-        const updatedItem: OptimisticItem = {
+        const updatedPost: OptimisticPost = {
             id,
             name: formData.get('name') as string,
             description: formData.get('description') as string,
@@ -65,40 +65,40 @@ export default function ItemsList({ initialItems }: ItemsListProps) {
             isOptimistic: true,
         };
 
-        const originalItem = items.find((item) => item.id === id);
-        updateItems({ type: 'update', item: updatedItem });
+        const originalPost = posts.find((post) => post.id === id);
+        updatePosts({ type: 'update', post: updatedPost });
         setEditingId(null);
 
-        const result = await updateItem(id, formData);
+        const result = await updatePost(id, formData);
         if (!result.success) {
-            if (originalItem) {
-                updateItems({ type: 'update', item: originalItem });
+            if (originalPost) {
+                updatePosts({ type: 'update', post: originalPost });
             }
-            toast.error(result.error || 'Failed to update item');
+            toast.error(result.error || 'Failed to update post');
         } else {
-            toast.success('Item updated successfully');
+            toast.success('Post updated successfully');
         }
     }
 
     async function handleDelete(id: number) {
-        const originalItem = items.find((item) => item.id === id);
-        updateItems({ type: 'delete', id });
+        const originalPost = posts.find((post) => post.id === id);
+        updatePosts({ type: 'delete', id });
 
-        const result = await deleteItem(id);
+        const result = await deletePost(id);
         if (!result.success) {
-            if (originalItem) {
-                updateItems({ type: 'create', item: originalItem });
+            if (originalPost) {
+                updatePosts({ type: 'create', post: originalPost });
             }
-            toast.error(result.error || 'Failed to delete item');
+            toast.error(result.error || 'Failed to delete post');
         } else {
-            toast.success('Item deleted successfully');
+            toast.success('Post deleted successfully');
         }
     }
 
     return (
         <div className="space-y-8">
             <form ref={formRef} action={handleCreate} className="flex flex-col gap-4 p-4 border rounded-lg bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
-                <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Create New Item</h2>
+                <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Create New Post</h2>
                 <div className="flex flex-col gap-2">
                     <input
                         type="text"
@@ -124,29 +124,29 @@ export default function ItemsList({ initialItems }: ItemsListProps) {
             </form>
 
             <div className="space-y-4">
-                {items.length === 0 ? (
-                    <p className="text-slate-500">No items yet. Create one above.</p>
+                {posts.length === 0 ? (
+                    <p className="text-slate-500">No posts yet. Create one above.</p>
                 ) : (
-                    items.map((item) => (
+                    posts.map((post) => (
                         <div
-                            key={item.id}
-                            className={`p-4 border rounded-lg bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 ${item.isOptimistic ? 'opacity-70' : ''}`}
+                            key={post.id}
+                            className={`p-4 border rounded-lg bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 ${post.isOptimistic ? 'opacity-70' : ''}`}
                         >
-                            {editingId === item.id ? (
+                            {editingId === post.id ? (
                                 <form
-                                    action={(formData) => handleUpdate(item.id, formData)}
+                                    action={(formData) => handleUpdate(post.id, formData)}
                                     className="flex flex-col gap-2"
                                 >
                                     <input
                                         type="text"
                                         name="name"
-                                        defaultValue={item.name}
+                                        defaultValue={post.name}
                                         required
                                         className="px-3 py-2 border rounded-md dark:bg-slate-800 dark:border-slate-700"
                                     />
                                     <textarea
                                         name="description"
-                                        defaultValue={item.description}
+                                        defaultValue={post.description}
                                         required
                                         rows={2}
                                         className="px-3 py-2 border rounded-md dark:bg-slate-800 dark:border-slate-700"
@@ -171,18 +171,18 @@ export default function ItemsList({ initialItems }: ItemsListProps) {
                                 <>
                                     <div className="flex justify-between items-start">
                                         <div>
-                                            <h3 className="font-semibold text-lg">{item.name}</h3>
-                                            <p className="text-zinc-600 dark:text-zinc-400 mt-1">{item.description}</p>
+                                            <h3 className="font-semibold text-lg">{post.name}</h3>
+                                            <p className="text-zinc-600 dark:text-zinc-400 mt-1">{post.description}</p>
                                         </div>
                                         <div className="flex gap-2">
                                             <button
-                                                onClick={() => setEditingId(item.id)}
+                                                onClick={() => setEditingId(post.id)}
                                                 className="px-3 py-1 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/30"
                                             >
                                                 Edit
                                             </button>
                                             <button
-                                                onClick={() => handleDelete(item.id)}
+                                                onClick={() => handleDelete(post.id)}
                                                 className="px-3 py-1 text-red-600 border border-red-600 rounded-md hover:bg-red-50 dark:hover:bg-red-900/30"
                                             >
                                                 Delete
@@ -190,7 +190,7 @@ export default function ItemsList({ initialItems }: ItemsListProps) {
                                         </div>
                                     </div>
                                     <p className="text-xs text-zinc-400 mt-2">
-                                        Created: {new Date(item.created_at).toLocaleString()}
+                                        Created: {new Date(post.created_at).toLocaleString()}
                                     </p>
                                 </>
                             )}
