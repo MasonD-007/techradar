@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS items (
+CREATE TABLE IF NOT EXISTS posts (
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,
     description TEXT,
@@ -6,4 +6,4 @@ CREATE TABLE IF NOT EXISTS items (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_items_name ON items(name);
+CREATE INDEX IF NOT EXISTS idx_posts_name ON posts(name);

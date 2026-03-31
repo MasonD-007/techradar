@@ -9,29 +9,29 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-// ListItems godoc
-// @Summary List all items
-// @Description Get all items sorted by creation date
-// @Tags items
+// ListPosts godoc
+// @Summary List all posts
+// @Description Get all posts sorted by creation date
+// @Tags posts
 // @Accept json
 // @Produce json
-// @Success 200 {array} Item
+// @Success 200 {array} Post
 // @Failure 500 {object} Error
-// @Router /items [get]
-func ListItems(q *db.Queries) http.HandlerFunc {
+// @Router /posts [get]
+func ListPosts(q *db.Queries) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		items, err := q.ListItems(r.Context())
+		posts, err := q.ListPosts(r.Context())
 		if err != nil {
-			http.Error(w, "Failed to fetch items", http.StatusInternalServerError)
+			http.Error(w, "Failed to fetch posts", http.StatusInternalServerError)
 			return
 		}
 
-		if items == nil {
-			items = []db.Item{}
+		if posts == nil {
+			posts = []db.Post{}
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		err = json.NewEncoder(w).Encode(items)
+		err = json.NewEncoder(w).Encode(posts)
 		if err != nil {
 			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 			return
@@ -40,22 +40,22 @@ func ListItems(q *db.Queries) http.HandlerFunc {
 	}
 }
 
-// GetItem godoc
-// @Summary Get an item
-// @Description Get item by ID
-// @Tags items
+// GetPost godoc
+// @Summary Get a post
+// @Description Get post by ID
+// @Tags posts
 // @Accept json
 // @Produce json
-// @Param id query int true "Item ID"
-// @Success 200 {object} Item
+// @Param id query int true "Post ID"
+// @Success 200 {object} Post
 // @Failure 400 {object} Error
 // @Failure 404 {object} Error
-// @Router /items [get]
-func GetItem(q *db.Queries) http.HandlerFunc {
+// @Router /posts [get]
+func GetPost(q *db.Queries) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		idStr := r.URL.Query().Get("id")
 		if idStr == "" {
-			ListItems(q)(w, r)
+			ListPosts(q)(w, r)
 			return
 		}
 
@@ -65,14 +65,14 @@ func GetItem(q *db.Queries) http.HandlerFunc {
 			return
 		}
 
-		item, err := q.GetItem(r.Context(), int32(id))
+		post, err := q.GetPost(r.Context(), int32(id))
 		if err != nil {
-			http.Error(w, "Item not found", http.StatusNotFound)
+			http.Error(w, "Post not found", http.StatusNotFound)
 			return
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		err = json.NewEncoder(w).Encode(item)
+		err = json.NewEncoder(w).Encode(post)
 		if err != nil {
 			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 			return
@@ -80,37 +80,37 @@ func GetItem(q *db.Queries) http.HandlerFunc {
 	}
 }
 
-// CreateItem godoc
-// @Summary Create an item
-// @Description Create a new item
-// @Tags items
+// CreatePost godoc
+// @Summary Create a post
+// @Description Create a new post
+// @Tags posts
 // @Accept json
 // @Produce json
-// @Param item body CreateItemRequest true "Item data"
-// @Success 201 {object} Item
+// @Param Post body CreatePostRequest true "Post data"
+// @Success 201 {object} Post
 // @Failure 400 {object} Error
 // @Failure 500 {object} Error
-// @Router /items [post]
-func CreateItem(q *db.Queries) http.HandlerFunc {
+// @Router /posts [post]
+func CreatePost(q *db.Queries) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var params CreateItemRequest
+		var params CreatePostRequest
 		if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
 			http.Error(w, "Invalid request body", http.StatusBadRequest)
 			return
 		}
 
-		item, err := q.CreateItem(r.Context(), db.CreateItemParams{
+		post, err := q.CreatePost(r.Context(), db.CreatePostParams{
 			Name:        params.Name,
 			Description: pgtype.Text{String: params.Description, Valid: true},
 		})
 		if err != nil {
-			http.Error(w, "Failed to create item", http.StatusInternalServerError)
+			http.Error(w, "Failed to create post", http.StatusInternalServerError)
 			return
 		}
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		err = json.NewEncoder(w).Encode(item)
+		err = json.NewEncoder(w).Encode(post)
 		if err != nil {
 			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 			return
@@ -118,18 +118,18 @@ func CreateItem(q *db.Queries) http.HandlerFunc {
 	}
 }
 
-// DeleteItem godoc
-// @Summary Delete an item
-// @Description Delete item by ID
-// @Tags items
+// DeletePost godoc
+// @Summary Delete a post
+// @Description Delete post by ID
+// @Tags posts
 // @Accept json
 // @Produce json
-// @Param id query int true "Item ID"
+// @Param id query int true "Post ID"
 // @Success 204
 // @Failure 400 {object} Error
 // @Failure 500 {object} Error
-// @Router /items [delete]
-func DeleteItem(q *db.Queries) http.HandlerFunc {
+// @Router /posts [delete]
+func DeletePost(q *db.Queries) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		idStr := r.URL.Query().Get("id")
 		id, err := strconv.ParseInt(idStr, 10, 32)
@@ -138,8 +138,8 @@ func DeleteItem(q *db.Queries) http.HandlerFunc {
 			return
 		}
 
-		if err := q.DeleteItem(r.Context(), int32(id)); err != nil {
-			http.Error(w, "Failed to delete item", http.StatusInternalServerError)
+		if err := q.DeletePost(r.Context(), int32(id)); err != nil {
+			http.Error(w, "Failed to delete post", http.StatusInternalServerError)
 			return
 		}
 
@@ -147,19 +147,19 @@ func DeleteItem(q *db.Queries) http.HandlerFunc {
 	}
 }
 
-// UpdateItem godoc
-// @Summary Update an item
-// @Description Update item by ID
-// @Tags items
+// UpdatePost godoc
+// @Summary Update a post
+// @Description Update post by ID
+// @Tags posts
 // @Accept json
 // @Produce json
-// @Param id query int true "Item ID"
-// @Param item body UpdateItemRequest true "Item data"
-// @Success 200 {object} Item
+// @Param id query int true "Post ID"
+// @Param Post body UpdatePostRequest true "Post data"
+// @Success 200 {object} Post
 // @Failure 400 {object} Error
 // @Failure 500 {object} Error
-// @Router /items [put]
-func UpdateItem(q *db.Queries) http.HandlerFunc {
+// @Router /posts [put]
+func UpdatePost(q *db.Queries) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		idStr := r.URL.Query().Get("id")
 		id, err := strconv.ParseInt(idStr, 10, 32)
@@ -168,24 +168,24 @@ func UpdateItem(q *db.Queries) http.HandlerFunc {
 			return
 		}
 
-		var params UpdateItemRequest
+		var params UpdatePostRequest
 		if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
 			http.Error(w, "Invalid request body", http.StatusBadRequest)
 			return
 		}
 
-		item, err := q.UpdateItem(r.Context(), db.UpdateItemParams{
+		post, err := q.UpdatePost(r.Context(), db.UpdatePostParams{
 			ID:          int32(id),
 			Name:        params.Name,
 			Description: pgtype.Text{String: params.Description, Valid: true},
 		})
 		if err != nil {
-			http.Error(w, "Failed to update item", http.StatusInternalServerError)
+			http.Error(w, "Failed to update post", http.StatusInternalServerError)
 			return
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		err = json.NewEncoder(w).Encode(item)
+		err = json.NewEncoder(w).Encode(post)
 		if err != nil {
 			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 			return
@@ -193,12 +193,12 @@ func UpdateItem(q *db.Queries) http.HandlerFunc {
 	}
 }
 
-type CreateItemRequest struct {
+type CreatePostRequest struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }
 
-type UpdateItemRequest struct {
+type UpdatePostRequest struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }
@@ -207,8 +207,8 @@ type Error struct {
 	Message string `json:"message"`
 }
 
-// Item represents an item in the database
-type Item struct {
+// Post represents a post in the database
+type Post struct {
 	ID          int32  `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`

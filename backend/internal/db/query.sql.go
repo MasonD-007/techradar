@@ -11,8 +11,8 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const createItem = `-- name: CreateItem :one
-INSERT INTO items(
+const createPost = `-- name: CreatePost :one
+INSERT INTO posts(
     name,
     description
 )
@@ -23,36 +23,36 @@ created_at,
 updated_at
 `
 
-type CreateItemParams struct {
+type CreatePostParams struct {
 	Name        string      `json:"name"`
 	Description pgtype.Text `json:"description"`
 }
 
-func (q *Queries) CreateItem(ctx context.Context, arg CreateItemParams) (Item, error) {
-	row := q.db.QueryRow(ctx, createItem, arg.Name, arg.Description)
-	var i Item
+func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, error) {
+	row := q.db.QueryRow(ctx, createPost, arg.Name, arg.Description)
+	var p Post
 	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.Description,
-		&i.CreatedAt,
-		&i.UpdatedAt,
+		&p.ID,
+		&p.Name,
+		&p.Description,
+		&p.CreatedAt,
+		&p.UpdatedAt,
 	)
-	return i, err
+	return p, err
 }
 
-const deleteItem = `-- name: DeleteItem :exec
-DELETE FROM items
+const deletePost = `-- name: DeletePost :exec
+DELETE FROM posts
 WHERE
     id = $1
 `
 
-func (q *Queries) DeleteItem(ctx context.Context, id int32) error {
-	_, err := q.db.Exec(ctx, deleteItem, id)
+func (q *Queries) DeletePost(ctx context.Context, id int32) error {
+	_, err := q.db.Exec(ctx, deletePost, id)
 	return err
 }
 
-const getItem = `-- name: GetItem :one
+const getPost = `-- name: GetPost :one
 SELECT
     id,
     name,
@@ -60,25 +60,25 @@ SELECT
     created_at,
     updated_at
 FROM
-    items
+    posts
 WHERE
     id = $1
 `
 
-func (q *Queries) GetItem(ctx context.Context, id int32) (Item, error) {
-	row := q.db.QueryRow(ctx, getItem, id)
-	var i Item
+func (q *Queries) GetPost(ctx context.Context, id int32) (Post, error) {
+	row := q.db.QueryRow(ctx, getPost, id)
+	var p Post
 	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.Description,
-		&i.CreatedAt,
-		&i.UpdatedAt,
+		&p.ID,
+		&p.Name,
+		&p.Description,
+		&p.CreatedAt,
+		&p.UpdatedAt,
 	)
-	return i, err
+	return p, err
 }
 
-const listItems = `-- name: ListItems :many
+const listPosts = `-- name: ListPosts :many
 SELECT
     id,
     name,
@@ -86,39 +86,39 @@ SELECT
     created_at,
     updated_at
 FROM
-    items
+    posts
 ORDER BY
     created_at DESC
 `
 
-func (q *Queries) ListItems(ctx context.Context) ([]Item, error) {
-	rows, err := q.db.Query(ctx, listItems)
+func (q *Queries) ListPosts(ctx context.Context) ([]Post, error) {
+	rows, err := q.db.Query(ctx, listPosts)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Item
+	var posts []Post
 	for rows.Next() {
-		var i Item
+		var p Post
 		if err := rows.Scan(
-			&i.ID,
-			&i.Name,
-			&i.Description,
-			&i.CreatedAt,
-			&i.UpdatedAt,
+			&p.ID,
+			&p.Name,
+			&p.Description,
+			&p.CreatedAt,
+			&p.UpdatedAt,
 		); err != nil {
 			return nil, err
 		}
-		items = append(items, i)
+		posts = append(posts, p)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
-	return items, nil
+	return posts, nil
 }
 
-const updateItem = `-- name: UpdateItem :one
-UPDATE items
+const updatePost = `-- name: UpdatePost :one
+UPDATE posts
 SET name = $2,
 description = $3,
 updated_at = NOW()
@@ -130,21 +130,21 @@ WHERE
     updated_at
 `
 
-type UpdateItemParams struct {
+type UpdatePostParams struct {
 	ID          int32       `json:"id"`
 	Name        string      `json:"name"`
 	Description pgtype.Text `json:"description"`
 }
 
-func (q *Queries) UpdateItem(ctx context.Context, arg UpdateItemParams) (Item, error) {
-	row := q.db.QueryRow(ctx, updateItem, arg.ID, arg.Name, arg.Description)
-	var i Item
+func (q *Queries) UpdatePost(ctx context.Context, arg UpdatePostParams) (Post, error) {
+	row := q.db.QueryRow(ctx, updatePost, arg.ID, arg.Name, arg.Description)
+	var p Post
 	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.Description,
-		&i.CreatedAt,
-		&i.UpdatedAt,
+		&p.ID,
+		&p.Name,
+		&p.Description,
+		&p.CreatedAt,
+		&p.UpdatedAt,
 	)
-	return i, err
+	return p, err
 }

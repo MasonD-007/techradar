@@ -1,2 +1,2 @@
-DROP INDEX IF EXISTS idx_items_name;
-DROP TABLE IF EXISTS items;
+DROP INDEX IF EXISTS idx_posts_name;
+DROP TABLE IF EXISTS posts;

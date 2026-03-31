@@ -1,4 +1,4 @@
-export interface Item {
+export interface Post {
     id: number;
     name: string;
     description: string;
@@ -6,12 +6,12 @@ export interface Item {
     updated_at: string;
 }
 
-export interface CreateItemRequest {
+export interface CreatePostRequest {
     name: string;
     description: string;
 }
 
-export interface UpdateItemRequest {
+export interface UpdatePostRequest {
     name: string;
     description: string;
 }
@@ -21,7 +21,7 @@ export interface Error {
 }
 
 export type paths = {
-    '/items': {
+    '/posts': {
         get: {
             parameters?: {
                 query?: {
@@ -30,7 +30,7 @@ export type paths = {
             };
             responses: {
                 200: {
-                    schema: Item[];
+                    schema: Post[];
                 };
                 400: {
                     schema: Error;
@@ -43,12 +43,12 @@ export type paths = {
         post: {
             requestBody: {
                 content: {
-                    'application/json': CreateItemRequest;
+                    'application/json': CreatePostRequest;
                 };
             };
             responses: {
                 201: {
-                    schema: Item;
+                    schema: Post;
                 };
                 400: {
                     schema: Error;
@@ -76,12 +76,12 @@ export type paths = {
             };
             requestBody: {
                 content: {
-                    'application/json': UpdateItemRequest;
+                    'application/json': UpdatePostRequest;
                 };
             };
             responses: {
                 200: {
-                    schema: Item;
+                    schema: Post;
                 };
                 400: {
                     schema: Error;
