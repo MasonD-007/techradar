@@ -1,14 +1,14 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: app-ingress
-  namespace: nextjs-template
+  name: techradar-ingress
+  namespace: techradar
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   ingressClassName: traefik
   rules:
-    - host: nextjs-template.lan
+    - host: techradar.lan
       http:
         paths: &app_paths
           - path: /api
@@ -25,6 +25,6 @@ spec:
                 name: frontend
                 port:
                   number: 3000
-    - host: nextjs-template.masondrake.dev
+    - host: techradar.masondrake.dev
       http:
         paths: *app_paths

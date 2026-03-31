@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: postgres-schema
-  namespace: nextjs-template
+  namespace: techradar
 data:
   schema.sql: |
     CREATE TABLE IF NOT EXISTS items (

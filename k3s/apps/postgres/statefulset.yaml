@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: postgres
-  namespace: nextjs-template
+  namespace: techradar
   labels:
     app: postgres
 spec:
@@ -55,9 +55,9 @@ spec:
               command:
                 - pg_isready
                 - -U
-                - app
+                - techradar
                 - -d
-                - appdb
+                - techradar
             initialDelaySeconds: 30
             periodSeconds: 10
           readinessProbe:
@@ -65,9 +65,9 @@ spec:
               command:
                 - pg_isready
                 - -U
-                - app
+                - techradar
                 - -d
-                - appdb
+                - techradar
             initialDelaySeconds: 5
             periodSeconds: 5
       volumes:

@@ -24,3 +24,5 @@ npm-debug.log*
 # Temporary files from make
 /tmp/ 
 opencode.json
+
+package-lock.json

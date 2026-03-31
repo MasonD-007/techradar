@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend
-  namespace: nextjs-template
+  namespace: techradar
   labels:
     app: backend
 spec:
@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: ghcr.io/masond-007/nextjs_golang_template/backend:latest
+          image: ghcr.io/masond-007/techradar/backend:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

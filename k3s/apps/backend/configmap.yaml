@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: backend-config
-  namespace: nextjs-template
+  namespace: techradar
 data:
   PORT: "8080"
-  DATABASE_URL: "postgres://app:password@postgres:5432/appdb?sslmode=disable"
+  DATABASE_URL: "postgres://techradar:password@postgres:5432/techradar?sslmode=disable"
