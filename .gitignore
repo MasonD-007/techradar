@@ -25,4 +25,4 @@ npm-debug.log*
 /tmp/ 
 opencode.json
 
-*package-lock.json
+package-lock.json
