@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import PostsList from './ItemsList';
+import PostsList from './PostsList';
 
 vi.mock('@/lib/actions');
 vi.mock('sonner', () => ({

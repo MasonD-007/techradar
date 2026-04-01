@@ -1,5 +1,5 @@
 import { getPosts } from '@/lib/actions';
-import PostsList from '@/components/ItemsList';
+import PostsList from '@/components/PostsList';
 
 export default async function PostsPage() {
   const posts = await getPosts();
