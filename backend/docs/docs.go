@@ -15,9 +15,9 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/items": {
+        "/posts": {
             "get": {
-                "description": "Get item by ID",
+                "description": "Get post by ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -25,13 +25,13 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "items"
+                    "posts"
                 ],
-                "summary": "Get an item",
+                "summary": "Get a post",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Item ID",
+                        "description": "Post ID",
                         "name": "id",
                         "in": "query",
                         "required": true
@@ -41,7 +41,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.Item"
+                            "$ref": "#/definitions/handlers.Post"
                         }
                     },
                     "400": {
@@ -59,7 +59,7 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "Update item by ID",
+                "description": "Update post by ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -67,24 +67,24 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "items"
+                    "posts"
                 ],
-                "summary": "Update an item",
+                "summary": "Update a post",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Item ID",
+                        "description": "Post ID",
                         "name": "id",
                         "in": "query",
                         "required": true
                     },
                     {
-                        "description": "Item data",
-                        "name": "item",
+                        "description": "Post data",
+                        "name": "post",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.UpdateItemRequest"
+                            "$ref": "#/definitions/handlers.UpdatePostRequest"
                         }
                     }
                 ],
@@ -92,7 +92,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.Item"
+                            "$ref": "#/definitions/handlers.Post"
                         }
                     },
                     "400": {
@@ -110,7 +110,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Create a new item",
+                "description": "Create a new post",
                 "consumes": [
                     "application/json"
                 ],
@@ -118,17 +118,17 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "items"
+                    "posts"
                 ],
-                "summary": "Create an item",
+                "summary": "Create a post",
                 "parameters": [
                     {
-                        "description": "Item data",
-                        "name": "item",
+                        "description": "Post data",
+                        "name": "post",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.CreateItemRequest"
+                            "$ref": "#/definitions/handlers.CreatePostRequest"
                         }
                     }
                 ],
@@ -136,7 +136,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/handlers.Item"
+                            "$ref": "#/definitions/handlers.Post"
                         }
                     },
                     "400": {
@@ -154,7 +154,7 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "description": "Delete item by ID",
+                "description": "Delete post by ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -162,13 +162,13 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "items"
+                    "posts"
                 ],
-                "summary": "Delete an item",
+                "summary": "Delete a post",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Item ID",
+                        "description": "Post ID",
                         "name": "id",
                         "in": "query",
                         "required": true
@@ -195,7 +195,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "handlers.CreateItemRequest": {
+        "handlers.CreatePostRequest": {
             "type": "object",
             "properties": {
                 "description": {
@@ -214,7 +214,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handlers.Item": {
+        "handlers.Post": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -234,7 +234,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handlers.UpdateItemRequest": {
+        "handlers.UpdatePostRequest": {
             "type": "object",
             "properties": {
                 "description": {
@@ -254,8 +254,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "localhost:8080",
 	BasePath:         "/",
 	Schemes:          []string{},
-	Title:            "Items API",
-	Description:      "API for managing items",
+	Title:            "Posts API",
+	Description:      "API for managing posts",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

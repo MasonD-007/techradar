@@ -1,17 +1,17 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "API for managing items",
-        "title": "Items API",
+        "description": "API for managing posts",
+        "title": "Posts API",
         "contact": {},
         "version": "1.0"
     },
     "host": "localhost:8080",
     "basePath": "/",
     "paths": {
-        "/items": {
+        "/posts": {
             "get": {
-                "description": "Get item by ID",
+                "description": "Get post by ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -19,13 +19,13 @@
                     "application/json"
                 ],
                 "tags": [
-                    "items"
+                    "posts"
                 ],
-                "summary": "Get an item",
+                "summary": "Get a post",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Item ID",
+                        "description": "Post ID",
                         "name": "id",
                         "in": "query",
                         "required": true
@@ -35,7 +35,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.Item"
+                            "$ref": "#/definitions/handlers.Post"
                         }
                     },
                     "400": {
@@ -53,7 +53,7 @@
                 }
             },
             "put": {
-                "description": "Update item by ID",
+                "description": "Update post by ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -61,24 +61,24 @@
                     "application/json"
                 ],
                 "tags": [
-                    "items"
+                    "posts"
                 ],
-                "summary": "Update an item",
+                "summary": "Update a post",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Item ID",
+                        "description": "Post ID",
                         "name": "id",
                         "in": "query",
                         "required": true
                     },
                     {
-                        "description": "Item data",
-                        "name": "item",
+                        "description": "Post data",
+                        "name": "post",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.UpdateItemRequest"
+                            "$ref": "#/definitions/handlers.UpdatePostRequest"
                         }
                     }
                 ],
@@ -86,7 +86,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.Item"
+                            "$ref": "#/definitions/handlers.Post"
                         }
                     },
                     "400": {
@@ -104,7 +104,7 @@
                 }
             },
             "post": {
-                "description": "Create a new item",
+                "description": "Create a new post",
                 "consumes": [
                     "application/json"
                 ],
@@ -112,17 +112,17 @@
                     "application/json"
                 ],
                 "tags": [
-                    "items"
+                    "posts"
                 ],
-                "summary": "Create an item",
+                "summary": "Create a post",
                 "parameters": [
                     {
-                        "description": "Item data",
-                        "name": "item",
+                        "description": "Post data",
+                        "name": "post",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.CreateItemRequest"
+                            "$ref": "#/definitions/handlers.CreatePostRequest"
                         }
                     }
                 ],
@@ -130,7 +130,7 @@
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/handlers.Item"
+                            "$ref": "#/definitions/handlers.Post"
                         }
                     },
                     "400": {
@@ -148,7 +148,7 @@
                 }
             },
             "delete": {
-                "description": "Delete item by ID",
+                "description": "Delete post by ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -156,13 +156,13 @@
                     "application/json"
                 ],
                 "tags": [
-                    "items"
+                    "posts"
                 ],
-                "summary": "Delete an item",
+                "summary": "Delete a post",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Item ID",
+                        "description": "Post ID",
                         "name": "id",
                         "in": "query",
                         "required": true
@@ -189,7 +189,7 @@
         }
     },
     "definitions": {
-        "handlers.CreateItemRequest": {
+        "handlers.CreatePostRequest": {
             "type": "object",
             "properties": {
                 "description": {
@@ -208,7 +208,7 @@
                 }
             }
         },
-        "handlers.Item": {
+        "handlers.Post": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -228,7 +228,7 @@
                 }
             }
         },
-        "handlers.UpdateItemRequest": {
+        "handlers.UpdatePostRequest": {
             "type": "object",
             "properties": {
                 "description": {

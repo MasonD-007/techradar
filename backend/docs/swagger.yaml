@@ -1,6 +1,6 @@
 basePath: /
 definitions:
-  handlers.CreateItemRequest:
+  handlers.CreatePostRequest:
     properties:
       description:
         type: string
@@ -12,7 +12,7 @@ definitions:
       message:
         type: string
     type: object
-  handlers.Item:
+  handlers.Post:
     properties:
       created_at:
         type: string
@@ -25,7 +25,7 @@ definitions:
       updated_at:
         type: string
     type: object
-  handlers.UpdateItemRequest:
+  handlers.UpdatePostRequest:
     properties:
       description:
         type: string
@@ -35,17 +35,17 @@ definitions:
 host: localhost:8080
 info:
   contact: {}
-  description: API for managing items
-  title: Items API
+  description: API for managing posts
+  title: Posts API
   version: "1.0"
 paths:
-  /items:
+  /posts:
     delete:
       consumes:
       - application/json
-      description: Delete item by ID
+      description: Delete post by ID
       parameters:
-      - description: Item ID
+      - description: Post ID
         in: query
         name: id
         required: true
@@ -63,15 +63,15 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/handlers.Error'
-      summary: Delete an item
+      summary: Delete a post
       tags:
-      - items
+      - posts
     get:
       consumes:
       - application/json
-      description: Get item by ID
+      description: Get post by ID
       parameters:
-      - description: Item ID
+      - description: Post ID
         in: query
         name: id
         required: true
@@ -82,7 +82,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.Item'
+            $ref: '#/definitions/handlers.Post'
         "400":
           description: Bad Request
           schema:
@@ -91,27 +91,27 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/handlers.Error'
-      summary: Get an item
+      summary: Get a post
       tags:
-      - items
+      - posts
     post:
       consumes:
       - application/json
-      description: Create a new item
+      description: Create a new post
       parameters:
-      - description: Item data
+      - description: Post data
         in: body
-        name: item
+        name: post
         required: true
         schema:
-          $ref: '#/definitions/handlers.CreateItemRequest'
+          $ref: '#/definitions/handlers.CreatePostRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/handlers.Item'
+            $ref: '#/definitions/handlers.Post'
         "400":
           description: Bad Request
           schema:
@@ -120,32 +120,32 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/handlers.Error'
-      summary: Create an item
+      summary: Create a post
       tags:
-      - items
+      - posts
     put:
       consumes:
       - application/json
-      description: Update item by ID
+      description: Update post by ID
       parameters:
-      - description: Item ID
+      - description: Post ID
         in: query
         name: id
         required: true
         type: integer
-      - description: Item data
+      - description: Post data
         in: body
-        name: item
+        name: post
         required: true
         schema:
-          $ref: '#/definitions/handlers.UpdateItemRequest'
+          $ref: '#/definitions/handlers.UpdatePostRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.Item'
+            $ref: '#/definitions/handlers.Post'
         "400":
           description: Bad Request
           schema:
@@ -154,7 +154,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/handlers.Error'
-      summary: Update an item
+      summary: Update a post
       tags:
-      - items
+      - posts
 swagger: "2.0"

@@ -1,5 +1,5 @@
--- name: CreateItem :one 
-INSERT INTO items(
+-- name: CreatePost :one 
+INSERT INTO posts(
     name,
     description
 )
@@ -9,7 +9,7 @@ description,
 created_at,
 updated_at;
 
--- name: GetItem :one
+-- name: GetPost :one
 SELECT
     id,
     name,
@@ -17,12 +17,12 @@ SELECT
     created_at,
     updated_at
 FROM
-    items
+    posts
 WHERE
     id = $1;
 
--- name: UpdateItem :one
-UPDATE items
+-- name: UpdatePost :one
+UPDATE posts
 SET name = $2,
 description = $3,
 updated_at = NOW()
@@ -33,12 +33,12 @@ WHERE
     created_at,
     updated_at;
 
--- name: DeleteItem :exec
-DELETE FROM items
+-- name: DeletePost :exec
+DELETE FROM posts
 WHERE
     id = $1;
 
--- name: ListItems :many
+-- name: ListPosts :many
 SELECT
     id,
     name,
@@ -46,6 +46,6 @@ SELECT
     created_at,
     updated_at
 FROM
-    items
+    posts
 ORDER BY
     created_at DESC;

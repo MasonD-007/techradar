@@ -1,4 +1,4 @@
-CREATE TABLE items (
+CREATE TABLE posts (
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,
     description TEXT,
@@ -6,4 +6,4 @@ CREATE TABLE items (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX idx_items_name ON items(name);
+CREATE INDEX idx_posts_name ON posts(name);

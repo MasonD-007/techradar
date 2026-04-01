@@ -8,7 +8,7 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-type Item struct {
+type Post struct {
 	ID          int32              `json:"id"`
 	Name        string             `json:"name"`
 	Description pgtype.Text        `json:"description"`

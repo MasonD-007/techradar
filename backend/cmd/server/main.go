@@ -61,9 +61,9 @@ func loggingMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-// @title Items API
+// @title Posts API
 // @version 1.0
-// @description API for managing items
+// @description API for managing posts
 // @host localhost:8080
 // @BasePath /
 func main() {
@@ -92,16 +92,16 @@ func main() {
 
 	q := db.New(conn)
 
-	http.HandleFunc("/items", loggingMiddleware(func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/posts", loggingMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
-			handlers.GetItem(q)(w, r)
+			handlers.GetPost(q)(w, r)
 		case http.MethodPost:
-			handlers.CreateItem(q)(w, r)
+			handlers.CreatePost(q)(w, r)
 		case http.MethodDelete:
-			handlers.DeleteItem(q)(w, r)
+			handlers.DeletePost(q)(w, r)
 		case http.MethodPut:
-			handlers.UpdateItem(q)(w, r)
+			handlers.UpdatePost(q)(w, r)
 		default:
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}

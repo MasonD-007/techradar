@@ -29,7 +29,7 @@ The frontend runs at http://localhost:3000 and communicates with the backend API
 frontend/src/
 ├── app/                  # Next.js App Router pages
 ├── components/           # React components
-│   └── ItemsList.tsx    # Example component
+│   └── PostsList.tsx    # Example component
 └── lib/                  # API and utilities
     ├── api.ts           # OpenAPI client wrapper
     ├── actions.ts       # Server Actions
@@ -45,12 +45,12 @@ The frontend uses an OpenAPI-generated client. Run `make sync-openapi` from the 
 ```typescript
 import { api } from '@/lib/api';
 
-// List items
-const { data } = await api.get('/items');
+// List posts
+const { data } = await api.get('/posts');
 
-// Create item
-const { data } = await api.post('/items', {
-  body: { name: 'New Item', description: '...' }
+// Create post
+const { data } = await api.post('/posts', {
+  body: { name: 'New Post', description: '...' }
 });
 ```
 

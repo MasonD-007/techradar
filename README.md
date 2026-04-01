@@ -201,25 +201,25 @@ make k3d-delete        # Delete k3d cluster
 ```typescript
 import { api } from '@/lib/api';
 
-// List all items
-const { data } = await api.get('/items');
+// List all posts
+const { data } = await api.get('/posts');
 
-// Get single item
-const { data } = await api.get('/items', { params: { query: { id: 1 } } });
+// Get single post
+const { data } = await api.get('/posts', { params: { query: { id: 1 } } });
 
-// Create item
-const { data } = await api.post('/items', { 
-  body: { name: 'New Item', description: 'Description' } 
+// Create post
+const { data } = await api.post('/posts', { 
+  body: { name: 'New Post', description: 'Description' } 
 });
 
-// Update item
-await api.put('/items', { 
+// Update post
+await api.put('/posts', { 
   params: { query: { id: 1 } }, 
   body: { name: 'Updated', description: '...' } 
 });
 
-// Delete item
-await api.delete('/items', { params: { query: { id: 1 } } });
+// Delete post
+await api.delete('/posts', { params: { query: { id: 1 } } });
 ```
 
 ## Updating the API
