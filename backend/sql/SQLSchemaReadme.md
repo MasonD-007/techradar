@@ -25,7 +25,6 @@ Tables:
         - definition:
             id
             name
-            userTechnologies array of technology 
             email
             username
             HASHED password
