@@ -8,10 +8,47 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-type Post struct {
-	ID          int32              `json:"id"`
-	Name        string             `json:"name"`
-	Description pgtype.Text        `json:"description"`
-	CreatedAt   pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
+type Blip struct {
+	ID        int32              `json:"id"`
+	Context   []byte             `json:"context"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
+}
+
+type Quadrant struct {
+	ID   int32  `json:"id"`
+	Name string `json:"name"`
+}
+
+type Ring struct {
+	ID   int32  `json:"id"`
+	Name string `json:"name"`
+}
+
+type Technology struct {
+	ID         pgtype.UUID        `json:"id"`
+	Name       string             `json:"name"`
+	BlipID     int32              `json:"blip_id"`
+	QuadrantID int32              `json:"quadrant_id"`
+	CreatedAt  pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt  pgtype.Timestamptz `json:"updated_at"`
+}
+
+type User struct {
+	ID             pgtype.UUID        `json:"id"`
+	Name           string             `json:"name"`
+	Email          string             `json:"email"`
+	Username       string             `json:"username"`
+	HashedPassword string             `json:"hashed_password"`
+	CreatedAt      pgtype.Timestamptz `json:"created_at"`
+	LastLoggedIn   pgtype.Timestamptz `json:"last_logged_in"`
+}
+
+type UserTechnology struct {
+	ID           pgtype.UUID        `json:"id"`
+	UserID       pgtype.UUID        `json:"user_id"`
+	TechnologyID pgtype.UUID        `json:"technology_id"`
+	RingID       int32              `json:"ring_id"`
+	CreatedAt    pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt    pgtype.Timestamptz `json:"updated_at"`
 }

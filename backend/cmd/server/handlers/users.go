@@ -1,0 +1,226 @@
+package handlers
+
+import (
+	"encoding/json"
+	"net/http"
+
+	"github.com/MasonD-007/template/backend/cmd/server/handlers/dto"
+	"github.com/MasonD-007/template/backend/internal/db"
+	"github.com/MasonD-007/template/backend/internal/uuidutil"
+	"github.com/jackc/pgx/v5/pgtype"
+)
+
+// GetUser godoc
+// @Summary Get a user
+// @Description Get user by ID
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param id path string true "User ID"
+// @Success 200 {object} User
+// @Failure 400 {object} Error
+// @Failure 404 {object} Error
+// @Router /users/{id} [get]
+func GetUser(q *db.Queries) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		idStr := r.PathValue("id")
+		if idStr == "" {
+			http.Error(w, "Missing id parameter", http.StatusBadRequest)
+			return
+		}
+
+		id, err := uuidutil.Parse(idStr)
+		if err != nil {
+			http.Error(w, "Invalid id", http.StatusBadRequest)
+			return
+		}
+
+		user, err := q.GetUserID(r.Context(), id)
+		if err != nil {
+			http.Error(w, "User not found", http.StatusNotFound)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		err = json.NewEncoder(w).Encode(user)
+		if err != nil {
+			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+			return
+		}
+	}
+}
+
+// GetUserByEmail godoc
+// @Summary Get a user by email
+// @Description Get user by email
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param email path string true "User email"
+// @Success 200 {object} User
+// @Failure 400 {object} Error
+// @Failure 404 {object} Error
+// @Router /users/by-email/{email} [get]
+func GetUserByEmail(q *db.Queries) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		email := r.PathValue("email")
+		if email == "" {
+			http.Error(w, "Missing email parameter", http.StatusBadRequest)
+			return
+		}
+
+		user, err := q.GetUserEmail(r.Context(), email)
+		if err != nil {
+			http.Error(w, "User not found", http.StatusNotFound)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		err = json.NewEncoder(w).Encode(user)
+		if err != nil {
+			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+			return
+		}
+	}
+}
+
+// CreateUser godoc
+// @Summary Create a user
+// @Description Create a new user
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param User body CreateUserRequest true "User data"
+// @Success 201 {object} User
+// @Failure 400 {object} Error
+// @Failure 500 {object} Error
+// @Router /users [post]
+func CreateUser(q *db.Queries) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var params dto.CreateUserRequest
+		if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
+			http.Error(w, "Invalid request body", http.StatusBadRequest)
+			return
+		}
+
+		user, err := q.CreateUser(r.Context(), db.CreateUserParams{
+			ID:             params.ID,
+			Name:           params.Name,
+			Email:          params.Email,
+			Username:       params.Username,
+			HashedPassword: params.HashedPassword,
+			LastLoggedIn:   params.LastLoggedIn,
+		})
+		if err != nil {
+			http.Error(w, "Failed to create user", http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		err = json.NewEncoder(w).Encode(user)
+		if err != nil {
+			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+			return
+		}
+	}
+}
+
+// DeleteUser godoc
+// @Summary Delete a user
+// @Description Delete user by ID
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param id path string true "User ID"
+// @Success 204
+// @Failure 400 {object} Error
+// @Failure 500 {object} Error
+// @Router /users/{id} [delete]
+func DeleteUser(q *db.Queries) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		idStr := r.PathValue("id")
+		if idStr == "" {
+			http.Error(w, "Missing id parameter", http.StatusBadRequest)
+			return
+		}
+
+		id, err := uuidutil.Parse(idStr)
+		if err != nil {
+			http.Error(w, "Invalid id", http.StatusBadRequest)
+			return
+		}
+
+		if err := q.DeleteUser(r.Context(), id); err != nil {
+			http.Error(w, "Failed to delete user", http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusNoContent)
+	}
+}
+
+// UpdateUser godoc
+// @Summary Update a user
+// @Description Update user by ID
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param id path string true "User ID"
+// @Param User body UpdateUserRequest true "User data"
+// @Success 200 {object} User
+// @Failure 400 {object} Error
+// @Failure 500 {object} Error
+// @Router /users/{id} [put]
+func UpdateUser(q *db.Queries) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		idStr := r.PathValue("id")
+		if idStr == "" {
+			http.Error(w, "Missing id parameter", http.StatusBadRequest)
+			return
+		}
+
+		id, err := uuidutil.Parse(idStr)
+		if err != nil {
+			http.Error(w, "Invalid id", http.StatusBadRequest)
+			return
+		}
+
+		var params dto.UpdateUserRequest
+		if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
+			http.Error(w, "Invalid request body", http.StatusBadRequest)
+			return
+		}
+
+		user, err := q.UpdateUser(r.Context(), db.UpdateUserParams{
+			ID:             id,
+			Name:           params.Name,
+			Email:          params.Email,
+			Username:       params.Username,
+			HashedPassword: params.HashedPassword,
+			LastLoggedIn:   params.LastLoggedIn,
+		})
+		if err != nil {
+			http.Error(w, "Failed to update user", http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		err = json.NewEncoder(w).Encode(user)
+		if err != nil {
+			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+			return
+		}
+	}
+}
+
+// User represents a user in the database
+type User struct {
+	ID             pgtype.UUID        `json:"id"`
+	Name           string             `json:"name"`
+	Email          string             `json:"email"`
+	Username       string             `json:"username"`
+	HashedPassword string             `json:"hashed_password"`
+	CreatedAt      string             `json:"created_at"`
+	LastLoggedIn   pgtype.Timestamptz `json:"last_logged_in"`
+}

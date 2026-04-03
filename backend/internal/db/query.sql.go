@@ -11,140 +11,615 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const createPost = `-- name: CreatePost :one
-INSERT INTO posts(
-    name,
-    description
+const createBlip = `-- name: CreateBlip :one
+INSERT INTO blips (
+    context
 )
-VALUES ($1, $2) RETURNING id,
-name,
-description,
-created_at,
-updated_at
+VALUES ($1)
+RETURNING id,
+    context,
+    created_at,
+    updated_at
 `
 
-type CreatePostParams struct {
-	Name        string      `json:"name"`
-	Description pgtype.Text `json:"description"`
-}
-
-func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, error) {
-	row := q.db.QueryRow(ctx, createPost, arg.Name, arg.Description)
-	var p Post
+func (q *Queries) CreateBlip(ctx context.Context, argContext []byte) (Blip, error) {
+	row := q.db.QueryRow(ctx, createBlip, argContext)
+	var i Blip
 	err := row.Scan(
-		&p.ID,
-		&p.Name,
-		&p.Description,
-		&p.CreatedAt,
-		&p.UpdatedAt,
+		&i.ID,
+		&i.Context,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
-	return p, err
+	return i, err
 }
 
-const deletePost = `-- name: DeletePost :exec
-DELETE FROM posts
+const createTechnology = `-- name: CreateTechnology :one
+INSERT INTO technology (
+    id,
+    name,
+    blip_id,
+    quadrant_id
+)
+VALUES ($1, $2, $3, $4)
+RETURNING id,
+    name,
+    blip_id,
+    quadrant_id,
+    created_at,
+    updated_at
+`
+
+type CreateTechnologyParams struct {
+	ID         pgtype.UUID `json:"id"`
+	Name       string      `json:"name"`
+	BlipID     int32       `json:"blip_id"`
+	QuadrantID int32       `json:"quadrant_id"`
+}
+
+func (q *Queries) CreateTechnology(ctx context.Context, arg CreateTechnologyParams) (Technology, error) {
+	row := q.db.QueryRow(ctx, createTechnology,
+		arg.ID,
+		arg.Name,
+		arg.BlipID,
+		arg.QuadrantID,
+	)
+	var i Technology
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.BlipID,
+		&i.QuadrantID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const createUser = `-- name: CreateUser :one
+INSERT INTO users (
+    id,
+    name,
+    email,
+    username,
+    hashed_password,
+    last_logged_in
+)
+VALUES ($1, $2, $3, $4, $5, $6)
+RETURNING id,
+    name,
+    email,
+    username,
+    hashed_password,
+    created_at,
+    last_logged_in
+`
+
+type CreateUserParams struct {
+	ID             pgtype.UUID        `json:"id"`
+	Name           string             `json:"name"`
+	Email          string             `json:"email"`
+	Username       string             `json:"username"`
+	HashedPassword string             `json:"hashed_password"`
+	LastLoggedIn   pgtype.Timestamptz `json:"last_logged_in"`
+}
+
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
+	row := q.db.QueryRow(ctx, createUser,
+		arg.ID,
+		arg.Name,
+		arg.Email,
+		arg.Username,
+		arg.HashedPassword,
+		arg.LastLoggedIn,
+	)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Email,
+		&i.Username,
+		&i.HashedPassword,
+		&i.CreatedAt,
+		&i.LastLoggedIn,
+	)
+	return i, err
+}
+
+const createUserTechnology = `-- name: CreateUserTechnology :one
+INSERT INTO user_technologies (
+    id,
+    user_id,
+    technology_id,
+    ring_id
+)
+VALUES ($1, $2, $3, $4)
+RETURNING id,
+    user_id,
+    technology_id,
+    ring_id,
+    created_at,
+    updated_at
+`
+
+type CreateUserTechnologyParams struct {
+	ID           pgtype.UUID `json:"id"`
+	UserID       pgtype.UUID `json:"user_id"`
+	TechnologyID pgtype.UUID `json:"technology_id"`
+	RingID       int32       `json:"ring_id"`
+}
+
+func (q *Queries) CreateUserTechnology(ctx context.Context, arg CreateUserTechnologyParams) (UserTechnology, error) {
+	row := q.db.QueryRow(ctx, createUserTechnology,
+		arg.ID,
+		arg.UserID,
+		arg.TechnologyID,
+		arg.RingID,
+	)
+	var i UserTechnology
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.TechnologyID,
+		&i.RingID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const deleteBlip = `-- name: DeleteBlip :exec
+DELETE FROM blips
 WHERE
     id = $1
 `
 
-func (q *Queries) DeletePost(ctx context.Context, id int32) error {
-	_, err := q.db.Exec(ctx, deletePost, id)
+func (q *Queries) DeleteBlip(ctx context.Context, id int32) error {
+	_, err := q.db.Exec(ctx, deleteBlip, id)
 	return err
 }
 
-const getPost = `-- name: GetPost :one
-SELECT
-    id,
-    name,
-    description,
-    created_at,
-    updated_at
-FROM
-    posts
+const deleteTechnology = `-- name: DeleteTechnology :exec
+DELETE FROM technology
 WHERE
     id = $1
 `
 
-func (q *Queries) GetPost(ctx context.Context, id int32) (Post, error) {
-	row := q.db.QueryRow(ctx, getPost, id)
-	var p Post
-	err := row.Scan(
-		&p.ID,
-		&p.Name,
-		&p.Description,
-		&p.CreatedAt,
-		&p.UpdatedAt,
-	)
-	return p, err
+func (q *Queries) DeleteTechnology(ctx context.Context, id pgtype.UUID) error {
+	_, err := q.db.Exec(ctx, deleteTechnology, id)
+	return err
 }
 
-const listPosts = `-- name: ListPosts :many
+const deleteUser = `-- name: DeleteUser :exec
+DELETE FROM users
+WHERE
+    id = $1
+`
+
+func (q *Queries) DeleteUser(ctx context.Context, id pgtype.UUID) error {
+	_, err := q.db.Exec(ctx, deleteUser, id)
+	return err
+}
+
+const deleteUserTechnology = `-- name: DeleteUserTechnology :exec
+DELETE FROM user_technologies
+WHERE
+    id = $1
+`
+
+func (q *Queries) DeleteUserTechnology(ctx context.Context, id pgtype.UUID) error {
+	_, err := q.db.Exec(ctx, deleteUserTechnology, id)
+	return err
+}
+
+const getBlip = `-- name: GetBlip :one
 SELECT
     id,
-    name,
-    description,
+    context,
     created_at,
     updated_at
 FROM
-    posts
-ORDER BY
-    created_at DESC
+    blips
+WHERE
+    id = $1
 `
 
-func (q *Queries) ListPosts(ctx context.Context) ([]Post, error) {
-	rows, err := q.db.Query(ctx, listPosts)
+func (q *Queries) GetBlip(ctx context.Context, id int32) (Blip, error) {
+	row := q.db.QueryRow(ctx, getBlip, id)
+	var i Blip
+	err := row.Scan(
+		&i.ID,
+		&i.Context,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getTechnologyID = `-- name: GetTechnologyID :one
+SELECT
+    id,
+    name,
+    blip_id,
+    quadrant_id,
+    created_at,
+    updated_at
+FROM
+    technology
+WHERE
+    id = $1
+`
+
+func (q *Queries) GetTechnologyID(ctx context.Context, id pgtype.UUID) (Technology, error) {
+	row := q.db.QueryRow(ctx, getTechnologyID, id)
+	var i Technology
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.BlipID,
+		&i.QuadrantID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getTechnologyName = `-- name: GetTechnologyName :one
+SELECT
+    id,
+    name,
+    blip_id,
+    quadrant_id,
+    created_at,
+    updated_at
+FROM
+    technology
+WHERE
+    name = $1
+`
+
+func (q *Queries) GetTechnologyName(ctx context.Context, name string) (Technology, error) {
+	row := q.db.QueryRow(ctx, getTechnologyName, name)
+	var i Technology
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.BlipID,
+		&i.QuadrantID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getTechnologyQuad = `-- name: GetTechnologyQuad :many
+SELECT
+    id,
+    name,
+    blip_id,
+    quadrant_id,
+    created_at,
+    updated_at
+FROM
+    technology
+WHERE
+    quadrant_id = $1
+`
+
+func (q *Queries) GetTechnologyQuad(ctx context.Context, quadrantID int32) ([]Technology, error) {
+	rows, err := q.db.Query(ctx, getTechnologyQuad, quadrantID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var posts []Post
+	var items []Technology
 	for rows.Next() {
-		var p Post
+		var i Technology
 		if err := rows.Scan(
-			&p.ID,
-			&p.Name,
-			&p.Description,
-			&p.CreatedAt,
-			&p.UpdatedAt,
+			&i.ID,
+			&i.Name,
+			&i.BlipID,
+			&i.QuadrantID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
 		); err != nil {
 			return nil, err
 		}
-		posts = append(posts, p)
+		items = append(items, i)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
-	return posts, nil
+	return items, nil
 }
 
-const updatePost = `-- name: UpdatePost :one
-UPDATE posts
-SET name = $2,
-description = $3,
-updated_at = NOW()
-WHERE
-    id = $1 RETURNING id,
+const getUserEmail = `-- name: GetUserEmail :one
+SELECT
+    id,
     name,
-    description,
+    email,
+    username,
+    hashed_password,
+    created_at,
+    last_logged_in
+FROM
+    users
+WHERE
+    email = $1
+`
+
+func (q *Queries) GetUserEmail(ctx context.Context, email string) (User, error) {
+	row := q.db.QueryRow(ctx, getUserEmail, email)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Email,
+		&i.Username,
+		&i.HashedPassword,
+		&i.CreatedAt,
+		&i.LastLoggedIn,
+	)
+	return i, err
+}
+
+const getUserID = `-- name: GetUserID :one
+SELECT
+    id,
+    name,
+    email,
+    username,
+    hashed_password,
+    created_at,
+    last_logged_in
+FROM
+    users
+WHERE
+    id = $1
+`
+
+func (q *Queries) GetUserID(ctx context.Context, id pgtype.UUID) (User, error) {
+	row := q.db.QueryRow(ctx, getUserID, id)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Email,
+		&i.Username,
+		&i.HashedPassword,
+		&i.CreatedAt,
+		&i.LastLoggedIn,
+	)
+	return i, err
+}
+
+const getUserTechnologyID = `-- name: GetUserTechnologyID :one
+SELECT
+    id,
+    user_id,
+    technology_id,
+    ring_id,
+    created_at,
+    updated_at
+FROM
+    user_technologies
+WHERE
+    id = $1
+`
+
+func (q *Queries) GetUserTechnologyID(ctx context.Context, id pgtype.UUID) (UserTechnology, error) {
+	row := q.db.QueryRow(ctx, getUserTechnologyID, id)
+	var i UserTechnology
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.TechnologyID,
+		&i.RingID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getUserTechnologyUserId = `-- name: GetUserTechnologyUserId :many
+SELECT
+    id,
+    user_id,
+    technology_id,
+    ring_id,
+    created_at,
+    updated_at
+FROM
+    user_technologies
+WHERE
+    user_id = $1
+`
+
+func (q *Queries) GetUserTechnologyUserId(ctx context.Context, userID pgtype.UUID) ([]UserTechnology, error) {
+	rows, err := q.db.Query(ctx, getUserTechnologyUserId, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []UserTechnology
+	for rows.Next() {
+		var i UserTechnology
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.TechnologyID,
+			&i.RingID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const updateBlip = `-- name: UpdateBlip :one
+UPDATE blips
+SET context = $2,
+    updated_at = NOW()
+WHERE
+    id = $1
+RETURNING id,
+    context,
     created_at,
     updated_at
 `
 
-type UpdatePostParams struct {
-	ID          int32       `json:"id"`
-	Name        string      `json:"name"`
-	Description pgtype.Text `json:"description"`
+type UpdateBlipParams struct {
+	ID      int32  `json:"id"`
+	Context []byte `json:"context"`
 }
 
-func (q *Queries) UpdatePost(ctx context.Context, arg UpdatePostParams) (Post, error) {
-	row := q.db.QueryRow(ctx, updatePost, arg.ID, arg.Name, arg.Description)
-	var p Post
+func (q *Queries) UpdateBlip(ctx context.Context, arg UpdateBlipParams) (Blip, error) {
+	row := q.db.QueryRow(ctx, updateBlip, arg.ID, arg.Context)
+	var i Blip
 	err := row.Scan(
-		&p.ID,
-		&p.Name,
-		&p.Description,
-		&p.CreatedAt,
-		&p.UpdatedAt,
+		&i.ID,
+		&i.Context,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
-	return p, err
+	return i, err
+}
+
+const updateTechnology = `-- name: UpdateTechnology :one
+UPDATE technology
+SET name = $2,
+    blip_id = $3,
+    quadrant_id = $4,
+    updated_at = NOW()
+WHERE
+    id = $1
+RETURNING id,
+    name,
+    blip_id,
+    quadrant_id,
+    created_at,
+    updated_at
+`
+
+type UpdateTechnologyParams struct {
+	ID         pgtype.UUID `json:"id"`
+	Name       string      `json:"name"`
+	BlipID     int32       `json:"blip_id"`
+	QuadrantID int32       `json:"quadrant_id"`
+}
+
+func (q *Queries) UpdateTechnology(ctx context.Context, arg UpdateTechnologyParams) (Technology, error) {
+	row := q.db.QueryRow(ctx, updateTechnology,
+		arg.ID,
+		arg.Name,
+		arg.BlipID,
+		arg.QuadrantID,
+	)
+	var i Technology
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.BlipID,
+		&i.QuadrantID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateUser = `-- name: UpdateUser :one
+UPDATE users
+SET name = $2,
+    email = $3,
+    username = $4,
+    hashed_password = $5,
+    last_logged_in = $6
+WHERE
+    id = $1
+RETURNING id,
+    name,
+    email,
+    username,
+    hashed_password,
+    created_at,
+    last_logged_in
+`
+
+type UpdateUserParams struct {
+	ID             pgtype.UUID        `json:"id"`
+	Name           string             `json:"name"`
+	Email          string             `json:"email"`
+	Username       string             `json:"username"`
+	HashedPassword string             `json:"hashed_password"`
+	LastLoggedIn   pgtype.Timestamptz `json:"last_logged_in"`
+}
+
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
+	row := q.db.QueryRow(ctx, updateUser,
+		arg.ID,
+		arg.Name,
+		arg.Email,
+		arg.Username,
+		arg.HashedPassword,
+		arg.LastLoggedIn,
+	)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Email,
+		&i.Username,
+		&i.HashedPassword,
+		&i.CreatedAt,
+		&i.LastLoggedIn,
+	)
+	return i, err
+}
+
+const updateUserTechnology = `-- name: UpdateUserTechnology :one
+UPDATE user_technologies
+SET user_id = $2,
+    technology_id = $3,
+    ring_id = $4,
+    updated_at = NOW()
+WHERE
+    id = $1
+RETURNING id,
+    user_id,
+    technology_id,
+    ring_id,
+    created_at,
+    updated_at
+`
+
+type UpdateUserTechnologyParams struct {
+	ID           pgtype.UUID `json:"id"`
+	UserID       pgtype.UUID `json:"user_id"`
+	TechnologyID pgtype.UUID `json:"technology_id"`
+	RingID       int32       `json:"ring_id"`
+}
+
+func (q *Queries) UpdateUserTechnology(ctx context.Context, arg UpdateUserTechnologyParams) (UserTechnology, error) {
+	row := q.db.QueryRow(ctx, updateUserTechnology,
+		arg.ID,
+		arg.UserID,
+		arg.TechnologyID,
+		arg.RingID,
+	)
+	var i UserTechnology
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.TechnologyID,
+		&i.RingID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }

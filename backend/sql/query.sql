@@ -14,7 +14,7 @@ RETURNING id,
     created_at,
     updated_at;
 
--- name: GetTechnology :one
+-- name: GetTechnologyID :one
 SELECT
     id,
     name,
@@ -26,6 +26,33 @@ FROM
     technology
 WHERE
     id = $1;
+
+
+-- name: GetTechnologyName :one
+SELECT
+    id,
+    name,
+    blip_id,
+    quadrant_id,
+    created_at,
+    updated_at
+FROM
+    technology
+WHERE
+    name = $1;
+
+-- name: GetTechnologyQuad :many
+SELECT
+    id,
+    name,
+    blip_id,
+    quadrant_id,
+    created_at,
+    updated_at
+FROM
+    technology
+WHERE
+    quadrant_id = $1;
 
 -- name: UpdateTechnology :one
 UPDATE technology
@@ -102,7 +129,7 @@ RETURNING id,
     created_at,
     last_logged_in;
 
--- name: GetUser :one
+-- name: GetUserID :one
 SELECT
     id,
     name,
@@ -115,6 +142,20 @@ FROM
     users
 WHERE
     id = $1;
+
+-- name: GetUserEmail :one
+SELECT
+    id,
+    name,
+    email,
+    username,
+    hashed_password,
+    created_at,
+    last_logged_in
+FROM
+    users
+WHERE
+    email = $1;
 
 -- name: UpdateUser :one
 UPDATE users
@@ -153,7 +194,7 @@ RETURNING id,
     created_at,
     updated_at;
 
--- name: GetUserTechnology :one
+-- name: GetUserTechnologyID :one
 SELECT
     id,
     user_id,
@@ -165,6 +206,19 @@ FROM
     user_technologies
 WHERE
     id = $1;
+
+-- name: GetUserTechnologyUserId :many
+SELECT
+    id,
+    user_id,
+    technology_id,
+    ring_id,
+    created_at,
+    updated_at
+FROM
+    user_technologies
+WHERE
+    user_id = $1;
 
 -- name: UpdateUserTechnology :one
 UPDATE user_technologies

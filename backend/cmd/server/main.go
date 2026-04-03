@@ -1,10 +1,8 @@
 package main
 
 import (
-	"bytes"
 	"context"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"os"
@@ -19,55 +17,12 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
-// responseWriter wraps http.ResponseWriter to capture status code
-type responseWriter struct {
-	http.ResponseWriter
-	statusCode int
-}
-
-func (rw *responseWriter) WriteHeader(code int) {
-	rw.statusCode = code
-	rw.ResponseWriter.WriteHeader(code)
-}
-
-// loggingMiddleware logs all requests and responses
-func loggingMiddleware(next http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		start := time.Now()
-
-		// Read request body
-		bodyBytes, _ := io.ReadAll(r.Body)
-		r.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
-
-		// Log request
-		log.Printf("[%s] [INFO] [http] [%s %s] remote=%s body=%s",
-			start.Format(time.RFC3339),
-			r.Method,
-			r.URL.Path,
-			r.RemoteAddr,
-			string(bodyBytes))
-
-		// Capture response
-		wrapped := &responseWriter{ResponseWriter: w, statusCode: 200}
-		next(wrapped, r)
-
-		// Log response
-		log.Printf("[%s] [INFO] [http] [%s %s] status=%d duration=%dms",
-			time.Now().Format(time.RFC3339),
-			r.Method,
-			r.URL.Path,
-			wrapped.statusCode,
-			time.Since(start).Milliseconds())
-	}
-}
-
-// @title Posts API
+// @title Tech Radar API
 // @version 1.0
-// @description API for managing posts
+// @description API for managing blips, technologies, users, and user technologies
 // @host localhost:8080
 // @BasePath /
 func main() {
-	// Load .env file if it exists (optional for local dev, not needed in Docker)
 	_ = godotenv.Load()
 
 	dbURL := os.Getenv("DATABASE_URL")
@@ -85,33 +40,22 @@ func main() {
 
 	log.Printf("[%s] [INFO] [main] [DB_CONNECTED]", time.Now().Format(time.RFC3339))
 
-	// Run database migrations
 	if err := migrate.RunMigrations(context.Background(), conn); err != nil {
 		log.Fatalf("Failed to run migrations: %v", err)
 	}
 
 	q := db.New(conn)
 
-	http.HandleFunc("/posts", loggingMiddleware(func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			handlers.GetPost(q)(w, r)
-		case http.MethodPost:
-			handlers.CreatePost(q)(w, r)
-		case http.MethodDelete:
-			handlers.DeletePost(q)(w, r)
-		case http.MethodPut:
-			handlers.UpdatePost(q)(w, r)
-		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		}
-	}))
+	registerBlipsRoutes(q)
+	registerTechnologiesRoutes(q)
+	registerUsersRoutes(q)
+	registerUserTechnologiesRoutes(q)
 
 	http.HandleFunc("/swagger/*", httpSwagger.Handler())
 
 	http.HandleFunc("/health", loggingMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		_, err = w.Write([]byte("OK"))
+		_, err := w.Write([]byte("OK"))
 		if err != nil {
 			log.Printf("[%s] [INFO] [health] [ERROR] error=%v", time.Now().Format(time.RFC3339), err)
 		}
@@ -121,4 +65,36 @@ func main() {
 	fmt.Println("Server starting on :8080")
 	fmt.Println("Swagger docs at http://localhost:8080/swagger/index.html")
 	log.Fatal(http.ListenAndServe(":8080", nil))
+}
+
+func registerBlipsRoutes(q *db.Queries) {
+	http.HandleFunc("POST /blips", loggingMiddleware(handlers.CreateBlip(q)))
+	http.HandleFunc("GET /blips/{id}", loggingMiddleware(handlers.GetBlip(q)))
+	http.HandleFunc("PUT /blips/{id}", loggingMiddleware(handlers.UpdateBlip(q)))
+	http.HandleFunc("DELETE /blips/{id}", loggingMiddleware(handlers.DeleteBlip(q)))
+}
+
+func registerTechnologiesRoutes(q *db.Queries) {
+	http.HandleFunc("POST /technologies", loggingMiddleware(handlers.CreateTechnology(q)))
+	http.HandleFunc("GET /technologies/{id}", loggingMiddleware(handlers.GetTechnology(q)))
+	http.HandleFunc("GET /technologies/by-name/{name}", loggingMiddleware(handlers.GetTechnologyByName(q)))
+	http.HandleFunc("GET /technologies/by-quadrant/{quadrant_id}", loggingMiddleware(handlers.GetTechnologiesByQuadrant(q)))
+	http.HandleFunc("PUT /technologies/{id}", loggingMiddleware(handlers.UpdateTechnology(q)))
+	http.HandleFunc("DELETE /technologies/{id}", loggingMiddleware(handlers.DeleteTechnology(q)))
+}
+
+func registerUsersRoutes(q *db.Queries) {
+	http.HandleFunc("POST /users", loggingMiddleware(handlers.CreateUser(q)))
+	http.HandleFunc("GET /users/{id}", loggingMiddleware(handlers.GetUser(q)))
+	http.HandleFunc("GET /users/by-email/{email}", loggingMiddleware(handlers.GetUserByEmail(q)))
+	http.HandleFunc("PUT /users/{id}", loggingMiddleware(handlers.UpdateUser(q)))
+	http.HandleFunc("DELETE /users/{id}", loggingMiddleware(handlers.DeleteUser(q)))
+}
+
+func registerUserTechnologiesRoutes(q *db.Queries) {
+	http.HandleFunc("POST /user-technologies", loggingMiddleware(handlers.CreateUserTechnology(q)))
+	http.HandleFunc("GET /user-technologies/{id}", loggingMiddleware(handlers.GetUserTechnology(q)))
+	http.HandleFunc("GET /users/{user_id}/technologies", loggingMiddleware(handlers.GetUserTechnologiesByUser(q)))
+	http.HandleFunc("PUT /user-technologies/{id}", loggingMiddleware(handlers.UpdateUserTechnology(q)))
+	http.HandleFunc("DELETE /user-technologies/{id}", loggingMiddleware(handlers.DeleteUserTechnology(q)))
 }
