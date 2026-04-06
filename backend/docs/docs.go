@@ -858,12 +858,6 @@ const docTemplate = `{
                             "$ref": "#/definitions/handlers.Error"
                         }
                     },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.Error"
-                        }
-                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -899,12 +893,6 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/handlers.Error"
                         }
@@ -989,25 +977,23 @@ const docTemplate = `{
         },
         "handlers.CreateBlipRequest": {
             "type": "object",
-            "required": [
-                "context"
-            ],
             "properties": {
                 "context": {
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 }
             }
         },
         "handlers.CreateTechnologyRequest": {
             "type": "object",
-            "required": [
-                "blip_id",
-                "name",
-                "quadrant_id"
-            ],
             "properties": {
                 "blip_id": {
                     "type": "integer"
+                },
+                "id": {
+                    "type": "string"
                 },
                 "name": {
                     "type": "string"
@@ -1019,24 +1005,20 @@ const docTemplate = `{
         },
         "handlers.CreateUserRequest": {
             "type": "object",
-            "required": [
-                "email",
-                "last_logged_in",
-                "name",
-                "password",
-                "username"
-            ],
             "properties": {
                 "email": {
+                    "type": "string"
+                },
+                "hashed_password": {
+                    "type": "string"
+                },
+                "id": {
                     "type": "string"
                 },
                 "last_logged_in": {
                     "type": "string"
                 },
                 "name": {
-                    "type": "string"
-                },
-                "password": {
                     "type": "string"
                 },
                 "username": {
@@ -1046,12 +1028,10 @@ const docTemplate = `{
         },
         "handlers.CreateUserTechnologyRequest": {
             "type": "object",
-            "required": [
-                "ring_id",
-                "technology_id",
-                "user_id"
-            ],
             "properties": {
+                "id": {
+                    "type": "string"
+                },
                 "ring_id": {
                     "type": "integer"
                 },
@@ -1075,43 +1055,44 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "blip_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "created_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2026-04-05T12:00:00Z"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "550e8400-e29b-41d4-a716-446655440000"
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "AI Platform Insights"
                 },
                 "quadrant_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 2
                 },
                 "updated_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2026-04-05T12:00:00Z"
                 }
             }
         },
         "handlers.UpdateBlipRequest": {
             "type": "object",
-            "required": [
-                "context"
-            ],
             "properties": {
                 "context": {
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 }
             }
         },
         "handlers.UpdateTechnologyRequest": {
             "type": "object",
-            "required": [
-                "blip_id",
-                "name",
-                "quadrant_id"
-            ],
             "properties": {
                 "blip_id": {
                     "type": "integer"
@@ -1126,24 +1107,17 @@ const docTemplate = `{
         },
         "handlers.UpdateUserRequest": {
             "type": "object",
-            "required": [
-                "email",
-                "last_logged_in",
-                "name",
-                "password",
-                "username"
-            ],
             "properties": {
                 "email": {
+                    "type": "string"
+                },
+                "hashed_password": {
                     "type": "string"
                 },
                 "last_logged_in": {
                     "type": "string"
                 },
                 "name": {
-                    "type": "string"
-                },
-                "password": {
                     "type": "string"
                 },
                 "username": {
@@ -1153,11 +1127,6 @@ const docTemplate = `{
         },
         "handlers.UpdateUserTechnologyRequest": {
             "type": "object",
-            "required": [
-                "ring_id",
-                "technology_id",
-                "user_id"
-            ],
             "properties": {
                 "ring_id": {
                     "type": "integer"
@@ -1181,6 +1150,10 @@ const docTemplate = `{
                     "type": "string",
                     "example": "john@example.com"
                 },
+                "hashed_password": {
+                    "type": "string",
+                    "example": "hashed_password_value"
+                },
                 "id": {
                     "type": "string",
                     "example": "550e8400-e29b-41d4-a716-446655440000"
@@ -1203,22 +1176,28 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "created_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2026-04-05T12:00:00Z"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "550e8400-e29b-41d4-a716-446655440000"
                 },
                 "ring_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 2
                 },
                 "technology_id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "550e8400-e29b-41d4-a716-446655440000"
                 },
                 "updated_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2026-04-05T12:00:00Z"
                 },
                 "user_id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "550e8400-e29b-41d4-a716-446655440000"
                 }
             }
         }

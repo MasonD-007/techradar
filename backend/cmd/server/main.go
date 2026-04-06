@@ -13,6 +13,7 @@ import (
 	"github.com/MasonD-007/template/backend/internal/db"
 	"github.com/MasonD-007/template/backend/internal/db/migrate"
 	"github.com/MasonD-007/template/backend/internal/db/postgres"
+	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
@@ -23,7 +24,7 @@ import (
 // @host localhost:8080
 // @BasePath /
 func main() {
-	_ = godotenv.Load()
+	_ = godotenv.Load("../.env")
 
 	dbURL := os.Getenv("DATABASE_URL")
 	if dbURL == "" {
@@ -46,14 +47,22 @@ func main() {
 
 	q := db.New(conn)
 
-	registerBlipsRoutes(q)
-	registerTechnologiesRoutes(q)
-	registerUsersRoutes(q)
-	registerUserTechnologiesRoutes(q)
+	r := chi.NewRouter()
 
-	http.HandleFunc("/swagger/*", httpSwagger.Handler())
+	registerBlipsRoutes(r, q)
+	registerTechnologiesRoutes(r, q)
+	registerUsersRoutes(r, q)
+	registerUserTechnologiesRoutes(r, q)
 
-	http.HandleFunc("/health", loggingMiddleware(func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/swagger/doc.json", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "docs/swagger.json")
+	})
+
+	r.Get("/swagger/*", httpSwagger.Handler(
+		httpSwagger.URL("http://localhost:8080/swagger/doc.json"),
+	))
+
+	r.Get("/health", loggingMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, err := w.Write([]byte("OK"))
 		if err != nil {
@@ -64,37 +73,37 @@ func main() {
 	log.Printf("[%s] [INFO] [main] [SERVER_START] port=8080", time.Now().Format(time.RFC3339))
 	fmt.Println("Server starting on :8080")
 	fmt.Println("Swagger docs at http://localhost:8080/swagger/index.html")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(":8080", r))
 }
 
-func registerBlipsRoutes(q *db.Queries) {
-	http.HandleFunc("POST /blips", loggingMiddleware(handlers.CreateBlip(q)))
-	http.HandleFunc("GET /blips/{id}", loggingMiddleware(handlers.GetBlip(q)))
-	http.HandleFunc("PUT /blips/{id}", loggingMiddleware(handlers.UpdateBlip(q)))
-	http.HandleFunc("DELETE /blips/{id}", loggingMiddleware(handlers.DeleteBlip(q)))
+func registerBlipsRoutes(r chi.Router, q *db.Queries) {
+	r.Post("/blips", loggingMiddleware(handlers.CreateBlip(q)))
+	r.Get("/blips/{id}", loggingMiddleware(handlers.GetBlip(q)))
+	r.Put("/blips/{id}", loggingMiddleware(handlers.UpdateBlip(q)))
+	r.Delete("/blips/{id}", loggingMiddleware(handlers.DeleteBlip(q)))
 }
 
-func registerTechnologiesRoutes(q *db.Queries) {
-	http.HandleFunc("POST /technologies", loggingMiddleware(handlers.CreateTechnology(q)))
-	http.HandleFunc("GET /technologies/{id}", loggingMiddleware(handlers.GetTechnology(q)))
-	http.HandleFunc("GET /technologies/by-name/{name}", loggingMiddleware(handlers.GetTechnologyByName(q)))
-	http.HandleFunc("GET /technologies/by-quadrant/{quadrant_id}", loggingMiddleware(handlers.GetTechnologiesByQuadrant(q)))
-	http.HandleFunc("PUT /technologies/{id}", loggingMiddleware(handlers.UpdateTechnology(q)))
-	http.HandleFunc("DELETE /technologies/{id}", loggingMiddleware(handlers.DeleteTechnology(q)))
+func registerTechnologiesRoutes(r chi.Router, q *db.Queries) {
+	r.Post("/technologies", loggingMiddleware(handlers.CreateTechnology(q)))
+	r.Get("/technologies/{id}", loggingMiddleware(handlers.GetTechnology(q)))
+	r.Get("/technologies/by-name/{name}", loggingMiddleware(handlers.GetTechnologyByName(q)))
+	r.Get("/technologies/by-quadrant/{quadrant_id}", loggingMiddleware(handlers.GetTechnologiesByQuadrant(q)))
+	r.Put("/technologies/{id}", loggingMiddleware(handlers.UpdateTechnology(q)))
+	r.Delete("/technologies/{id}", loggingMiddleware(handlers.DeleteTechnology(q)))
 }
 
-func registerUsersRoutes(q *db.Queries) {
-	http.HandleFunc("POST /users", loggingMiddleware(handlers.CreateUser(q)))
-	http.HandleFunc("GET /users/{id}", loggingMiddleware(handlers.GetUser(q)))
-	http.HandleFunc("GET /users/by-email/{email}", loggingMiddleware(handlers.GetUserByEmail(q)))
-	http.HandleFunc("PUT /users/{id}", loggingMiddleware(handlers.UpdateUser(q)))
-	http.HandleFunc("DELETE /users/{id}", loggingMiddleware(handlers.DeleteUser(q)))
+func registerUsersRoutes(r chi.Router, q *db.Queries) {
+	r.Post("/users", loggingMiddleware(handlers.CreateUser(q)))
+	r.Get("/users/{id}", loggingMiddleware(handlers.GetUser(q)))
+	r.Get("/users/by-email/{email}", loggingMiddleware(handlers.GetUserByEmail(q)))
+	r.Put("/users/{id}", loggingMiddleware(handlers.UpdateUser(q)))
+	r.Delete("/users/{id}", loggingMiddleware(handlers.DeleteUser(q)))
 }
 
-func registerUserTechnologiesRoutes(q *db.Queries) {
-	http.HandleFunc("POST /user-technologies", loggingMiddleware(handlers.CreateUserTechnology(q)))
-	http.HandleFunc("GET /user-technologies/{id}", loggingMiddleware(handlers.GetUserTechnology(q)))
-	http.HandleFunc("GET /users/{user_id}/technologies", loggingMiddleware(handlers.GetUserTechnologiesByUser(q)))
-	http.HandleFunc("PUT /user-technologies/{id}", loggingMiddleware(handlers.UpdateUserTechnology(q)))
-	http.HandleFunc("DELETE /user-technologies/{id}", loggingMiddleware(handlers.DeleteUserTechnology(q)))
+func registerUserTechnologiesRoutes(r chi.Router, q *db.Queries) {
+	r.Post("/user-technologies", loggingMiddleware(handlers.CreateUserTechnology(q)))
+	r.Get("/user-technologies/{id}", loggingMiddleware(handlers.GetUserTechnology(q)))
+	r.Get("/user-technologies/user/{user_id}", loggingMiddleware(handlers.GetUserTechnologiesByUser(q)))
+	r.Put("/user-technologies/{id}", loggingMiddleware(handlers.UpdateUserTechnology(q)))
+	r.Delete("/user-technologies/{id}", loggingMiddleware(handlers.DeleteUserTechnology(q)))
 }
