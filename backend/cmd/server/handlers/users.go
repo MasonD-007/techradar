@@ -20,6 +20,7 @@ import (
 // @Success 200 {object} User
 // @Failure 400 {object} Error
 // @Failure 404 {object} Error
+// @Failure 500 {object} Error
 // @Router /users/{id} [get]
 func GetUser(q *db.Queries) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -60,6 +61,7 @@ func GetUser(q *db.Queries) http.HandlerFunc {
 // @Success 200 {object} User
 // @Failure 400 {object} Error
 // @Failure 404 {object} Error
+// @Failure 500 {object} Error
 // @Router /users/by-email/{email} [get]
 func GetUserByEmail(q *db.Queries) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -216,11 +218,11 @@ func UpdateUser(q *db.Queries) http.HandlerFunc {
 
 // User represents a user in the database
 type User struct {
-	ID             pgtype.UUID        `json:"id"`
-	Name           string             `json:"name"`
-	Email          string             `json:"email"`
-	Username       string             `json:"username"`
-	HashedPassword string             `json:"hashed_password"`
-	CreatedAt      string             `json:"created_at"`
-	LastLoggedIn   pgtype.Timestamptz `json:"last_logged_in"`
+	ID             pgtype.UUID        `json:"id" swaggertype:"string" example:"550e8400-e29b-41d4-a716-446655440000"`
+	Name           string             `json:"name" example:"John Doe"`
+	Email          string             `json:"email" example:"john@example.com"`
+	Username       string             `json:"username" example:"johndoe"`
+	HashedPassword string             `json:"hashed_password" example:"hashed_password_value"`
+	CreatedAt      string             `json:"created_at" example:"2026-04-05T12:00:00Z"`
+	LastLoggedIn   pgtype.Timestamptz `json:"last_logged_in" swaggertype:"string" example:"2026-04-05T12:00:00Z"`
 }

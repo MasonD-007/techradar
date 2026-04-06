@@ -21,6 +21,7 @@ import (
 // @Success 200 {object} Technology
 // @Failure 400 {object} Error
 // @Failure 404 {object} Error
+// @Failure 500 {object} Error
 // @Router /technologies/{id} [get]
 func GetTechnology(q *db.Queries) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -61,6 +62,7 @@ func GetTechnology(q *db.Queries) http.HandlerFunc {
 // @Success 200 {object} Technology
 // @Failure 400 {object} Error
 // @Failure 404 {object} Error
+// @Failure 500 {object} Error
 // @Router /technologies/by-name/{name} [get]
 func GetTechnologyByName(q *db.Queries) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -94,6 +96,7 @@ func GetTechnologyByName(q *db.Queries) http.HandlerFunc {
 // @Param quadrant_id path int true "Quadrant ID"
 // @Success 200 {array} Technology
 // @Failure 400 {object} Error
+// @Failure 500 {object} Error
 // @Router /technologies/by-quadrant/{quadrant_id} [get]
 func GetTechnologiesByQuadrant(q *db.Queries) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

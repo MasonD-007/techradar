@@ -20,6 +20,7 @@ import (
 // @Success 200 {object} UserTechnology
 // @Failure 400 {object} Error
 // @Failure 404 {object} Error
+// @Failure 500 {object} Error
 // @Router /user-technologies/{id} [get]
 func GetUserTechnology(q *db.Queries) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -59,6 +60,7 @@ func GetUserTechnology(q *db.Queries) http.HandlerFunc {
 // @Param user_id path string true "User ID"
 // @Success 200 {array} UserTechnology
 // @Failure 400 {object} Error
+// @Failure 500 {object} Error
 // @Router /users/{user_id}/technologies [get]
 func GetUserTechnologiesByUser(q *db.Queries) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

@@ -29,7 +29,7 @@ type CreateUserRequest struct {
 	Email          string             `json:"email"`
 	Username       string             `json:"username"`
 	HashedPassword string             `json:"hashed_password"`
-	LastLoggedIn   pgtype.Timestamptz `json:"last_logged_in"`
+	LastLoggedIn   pgtype.Timestamptz `json:"last_logged_in" swaggertype:"string"`
 }
 
 type UpdateUserRequest struct {
@@ -37,7 +37,7 @@ type UpdateUserRequest struct {
 	Email          string             `json:"email"`
 	Username       string             `json:"username"`
 	HashedPassword string             `json:"hashed_password"`
-	LastLoggedIn   pgtype.Timestamptz `json:"last_logged_in"`
+	LastLoggedIn   pgtype.Timestamptz `json:"last_logged_in" swaggertype:"string"`
 }
 
 type CreateUserTechnologyRequest struct {

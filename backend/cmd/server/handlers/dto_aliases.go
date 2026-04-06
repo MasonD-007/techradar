@@ -13,3 +13,8 @@ type UpdateUserRequest = dto.UpdateUserRequest
 
 type CreateUserTechnologyRequest = dto.CreateUserTechnologyRequest
 type UpdateUserTechnologyRequest = dto.UpdateUserTechnologyRequest
+
+// Error documents the standard error payload returned by handlers.
+type Error struct {
+	Message string `json:"message"`
+}

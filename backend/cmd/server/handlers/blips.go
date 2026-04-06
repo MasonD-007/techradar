@@ -19,6 +19,7 @@ import (
 // @Success 200 {object} Blip
 // @Failure 400 {object} Error
 // @Failure 404 {object} Error
+// @Failure 500 {object} Error
 // @Router /blips/{id} [get]
 func GetBlip(q *db.Queries) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
