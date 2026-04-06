@@ -1,10 +1,8 @@
 package main
 
 import (
-	"bytes"
 	"context"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"os"
@@ -15,60 +13,18 @@ import (
 	"github.com/MasonD-007/template/backend/internal/db"
 	"github.com/MasonD-007/template/backend/internal/db/migrate"
 	"github.com/MasonD-007/template/backend/internal/db/postgres"
+	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
-// responseWriter wraps http.ResponseWriter to capture status code
-type responseWriter struct {
-	http.ResponseWriter
-	statusCode int
-}
-
-func (rw *responseWriter) WriteHeader(code int) {
-	rw.statusCode = code
-	rw.ResponseWriter.WriteHeader(code)
-}
-
-// loggingMiddleware logs all requests and responses
-func loggingMiddleware(next http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		start := time.Now()
-
-		// Read request body
-		bodyBytes, _ := io.ReadAll(r.Body)
-		r.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
-
-		// Log request
-		log.Printf("[%s] [INFO] [http] [%s %s] remote=%s body=%s",
-			start.Format(time.RFC3339),
-			r.Method,
-			r.URL.Path,
-			r.RemoteAddr,
-			string(bodyBytes))
-
-		// Capture response
-		wrapped := &responseWriter{ResponseWriter: w, statusCode: 200}
-		next(wrapped, r)
-
-		// Log response
-		log.Printf("[%s] [INFO] [http] [%s %s] status=%d duration=%dms",
-			time.Now().Format(time.RFC3339),
-			r.Method,
-			r.URL.Path,
-			wrapped.statusCode,
-			time.Since(start).Milliseconds())
-	}
-}
-
-// @title Posts API
+// @title Tech Radar API
 // @version 1.0
-// @description API for managing posts
+// @description API for managing blips, technologies, users, and user technologies
 // @host localhost:8080
 // @BasePath /
 func main() {
-	// Load .env file if it exists (optional for local dev, not needed in Docker)
-	_ = godotenv.Load()
+	_ = godotenv.Load("../.env")
 
 	dbURL := os.Getenv("DATABASE_URL")
 	if dbURL == "" {
@@ -85,33 +41,30 @@ func main() {
 
 	log.Printf("[%s] [INFO] [main] [DB_CONNECTED]", time.Now().Format(time.RFC3339))
 
-	// Run database migrations
 	if err := migrate.RunMigrations(context.Background(), conn); err != nil {
 		log.Fatalf("Failed to run migrations: %v", err)
 	}
 
 	q := db.New(conn)
 
-	http.HandleFunc("/posts", loggingMiddleware(func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			handlers.GetPost(q)(w, r)
-		case http.MethodPost:
-			handlers.CreatePost(q)(w, r)
-		case http.MethodDelete:
-			handlers.DeletePost(q)(w, r)
-		case http.MethodPut:
-			handlers.UpdatePost(q)(w, r)
-		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		}
-	}))
+	r := chi.NewRouter()
 
-	http.HandleFunc("/swagger/*", httpSwagger.Handler())
+	registerBlipsRoutes(r, q)
+	registerTechnologiesRoutes(r, q)
+	registerUsersRoutes(r, q)
+	registerUserTechnologiesRoutes(r, q)
 
-	http.HandleFunc("/health", loggingMiddleware(func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/swagger/doc.json", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "docs/swagger.json")
+	})
+
+	r.Get("/swagger/*", httpSwagger.Handler(
+		httpSwagger.URL("http://localhost:8080/swagger/doc.json"),
+	))
+
+	r.Get("/health", loggingMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		_, err = w.Write([]byte("OK"))
+		_, err := w.Write([]byte("OK"))
 		if err != nil {
 			log.Printf("[%s] [INFO] [health] [ERROR] error=%v", time.Now().Format(time.RFC3339), err)
 		}
@@ -120,5 +73,37 @@ func main() {
 	log.Printf("[%s] [INFO] [main] [SERVER_START] port=8080", time.Now().Format(time.RFC3339))
 	fmt.Println("Server starting on :8080")
 	fmt.Println("Swagger docs at http://localhost:8080/swagger/index.html")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(":8080", r))
+}
+
+func registerBlipsRoutes(r chi.Router, q *db.Queries) {
+	r.Post("/blips", loggingMiddleware(handlers.CreateBlip(q)))
+	r.Get("/blips/{id}", loggingMiddleware(handlers.GetBlip(q)))
+	r.Put("/blips/{id}", loggingMiddleware(handlers.UpdateBlip(q)))
+	r.Delete("/blips/{id}", loggingMiddleware(handlers.DeleteBlip(q)))
+}
+
+func registerTechnologiesRoutes(r chi.Router, q *db.Queries) {
+	r.Post("/technologies", loggingMiddleware(handlers.CreateTechnology(q)))
+	r.Get("/technologies/{id}", loggingMiddleware(handlers.GetTechnology(q)))
+	r.Get("/technologies/by-name/{name}", loggingMiddleware(handlers.GetTechnologyByName(q)))
+	r.Get("/technologies/by-quadrant/{quadrant_id}", loggingMiddleware(handlers.GetTechnologiesByQuadrant(q)))
+	r.Put("/technologies/{id}", loggingMiddleware(handlers.UpdateTechnology(q)))
+	r.Delete("/technologies/{id}", loggingMiddleware(handlers.DeleteTechnology(q)))
+}
+
+func registerUsersRoutes(r chi.Router, q *db.Queries) {
+	r.Post("/users", loggingMiddleware(handlers.CreateUser(q)))
+	r.Get("/users/{id}", loggingMiddleware(handlers.GetUser(q)))
+	r.Get("/users/by-email/{email}", loggingMiddleware(handlers.GetUserByEmail(q)))
+	r.Put("/users/{id}", loggingMiddleware(handlers.UpdateUser(q)))
+	r.Delete("/users/{id}", loggingMiddleware(handlers.DeleteUser(q)))
+}
+
+func registerUserTechnologiesRoutes(r chi.Router, q *db.Queries) {
+	r.Post("/user-technologies", loggingMiddleware(handlers.CreateUserTechnology(q)))
+	r.Get("/user-technologies/{id}", loggingMiddleware(handlers.GetUserTechnology(q)))
+	r.Get("/user-technologies/user/{user_id}", loggingMiddleware(handlers.GetUserTechnologiesByUser(q)))
+	r.Put("/user-technologies/{id}", loggingMiddleware(handlers.UpdateUserTechnology(q)))
+	r.Delete("/user-technologies/{id}", loggingMiddleware(handlers.DeleteUserTechnology(q)))
 }
