@@ -259,10 +259,10 @@ func UpdateTechnology(q *db.Queries) http.HandlerFunc {
 
 // Technology represents a technology in the database
 type Technology struct {
-	ID         pgtype.UUID `json:"id"`
-	Name       string      `json:"name"`
-	BlipID     int32       `json:"blip_id"`
-	QuadrantID int32       `json:"quadrant_id"`
-	CreatedAt  string      `json:"created_at"`
-	UpdatedAt  string      `json:"updated_at"`
+	ID         pgtype.UUID `json:"id" swaggertype:"string" example:"550e8400-e29b-41d4-a716-446655440000"`
+	Name       string      `json:"name" example:"AI Platform Insights"`
+	BlipID     int32       `json:"blip_id" example:"1"`
+	QuadrantID int32       `json:"quadrant_id" example:"2"`
+	CreatedAt  string      `json:"created_at" example:"2026-04-05T12:00:00Z"`
+	UpdatedAt  string      `json:"updated_at" example:"2026-04-05T12:00:00Z"`
 }

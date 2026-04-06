@@ -223,10 +223,10 @@ func UpdateUserTechnology(q *db.Queries) http.HandlerFunc {
 
 // UserTechnology represents a user technology assignment in the database
 type UserTechnology struct {
-	ID           pgtype.UUID `json:"id"`
-	UserID       pgtype.UUID `json:"user_id"`
-	TechnologyID pgtype.UUID `json:"technology_id"`
-	RingID       int32       `json:"ring_id"`
-	CreatedAt    string      `json:"created_at"`
-	UpdatedAt    string      `json:"updated_at"`
+	ID           pgtype.UUID `json:"id" swaggertype:"string" example:"550e8400-e29b-41d4-a716-446655440000"`
+	UserID       pgtype.UUID `json:"user_id" swaggertype:"string" example:"550e8400-e29b-41d4-a716-446655440000"`
+	TechnologyID pgtype.UUID `json:"technology_id" swaggertype:"string" example:"550e8400-e29b-41d4-a716-446655440000"`
+	RingID       int32       `json:"ring_id" example:"2"`
+	CreatedAt    string      `json:"created_at" example:"2026-04-05T12:00:00Z"`
+	UpdatedAt    string      `json:"updated_at" example:"2026-04-05T12:00:00Z"`
 }
