@@ -22,7 +22,7 @@ import (
 // @Failure 404 {object} Error
 // @Failure 500 {object} Error
 // @Router /user-technologies/{id} [get]
-func GetUserTechnology(q *db.Queries) http.HandlerFunc {
+func GetUserTechnology(q Querier) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		idStr := r.PathValue("id")
 		if idStr == "" {
@@ -62,7 +62,7 @@ func GetUserTechnology(q *db.Queries) http.HandlerFunc {
 // @Failure 400 {object} Error
 // @Failure 500 {object} Error
 // @Router /users/{user_id}/technologies [get]
-func GetUserTechnologiesByUser(q *db.Queries) http.HandlerFunc {
+func GetUserTechnologiesByUser(q Querier) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		userIDStr := r.PathValue("user_id")
 		if userIDStr == "" {
@@ -106,7 +106,7 @@ func GetUserTechnologiesByUser(q *db.Queries) http.HandlerFunc {
 // @Failure 400 {object} Error
 // @Failure 500 {object} Error
 // @Router /user-technologies [post]
-func CreateUserTechnology(q *db.Queries) http.HandlerFunc {
+func CreateUserTechnology(q Querier) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var params dto.CreateUserTechnologyRequest
 		if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
@@ -146,7 +146,7 @@ func CreateUserTechnology(q *db.Queries) http.HandlerFunc {
 // @Failure 400 {object} Error
 // @Failure 500 {object} Error
 // @Router /user-technologies/{id} [delete]
-func DeleteUserTechnology(q *db.Queries) http.HandlerFunc {
+func DeleteUserTechnology(q Querier) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		idStr := r.PathValue("id")
 		if idStr == "" {
@@ -181,7 +181,7 @@ func DeleteUserTechnology(q *db.Queries) http.HandlerFunc {
 // @Failure 400 {object} Error
 // @Failure 500 {object} Error
 // @Router /user-technologies/{id} [put]
-func UpdateUserTechnology(q *db.Queries) http.HandlerFunc {
+func UpdateUserTechnology(q Querier) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		idStr := r.PathValue("id")
 		if idStr == "" {

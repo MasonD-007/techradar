@@ -22,7 +22,7 @@ import (
 // @Failure 404 {object} Error
 // @Failure 500 {object} Error
 // @Router /users/{id} [get]
-func GetUser(q *db.Queries) http.HandlerFunc {
+func GetUser(q Querier) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		idStr := r.PathValue("id")
 		if idStr == "" {
@@ -63,7 +63,7 @@ func GetUser(q *db.Queries) http.HandlerFunc {
 // @Failure 404 {object} Error
 // @Failure 500 {object} Error
 // @Router /users/by-email/{email} [get]
-func GetUserByEmail(q *db.Queries) http.HandlerFunc {
+func GetUserByEmail(q Querier) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		email := r.PathValue("email")
 		if email == "" {
@@ -97,7 +97,7 @@ func GetUserByEmail(q *db.Queries) http.HandlerFunc {
 // @Failure 400 {object} Error
 // @Failure 500 {object} Error
 // @Router /users [post]
-func CreateUser(q *db.Queries) http.HandlerFunc {
+func CreateUser(q Querier) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var params dto.CreateUserRequest
 		if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
@@ -139,7 +139,7 @@ func CreateUser(q *db.Queries) http.HandlerFunc {
 // @Failure 400 {object} Error
 // @Failure 500 {object} Error
 // @Router /users/{id} [delete]
-func DeleteUser(q *db.Queries) http.HandlerFunc {
+func DeleteUser(q Querier) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		idStr := r.PathValue("id")
 		if idStr == "" {
@@ -174,7 +174,7 @@ func DeleteUser(q *db.Queries) http.HandlerFunc {
 // @Failure 400 {object} Error
 // @Failure 500 {object} Error
 // @Router /users/{id} [put]
-func UpdateUser(q *db.Queries) http.HandlerFunc {
+func UpdateUser(q Querier) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		idStr := r.PathValue("id")
 		if idStr == "" {

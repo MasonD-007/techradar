@@ -23,7 +23,7 @@ import (
 // @Failure 404 {object} Error
 // @Failure 500 {object} Error
 // @Router /technologies/{id} [get]
-func GetTechnology(q *db.Queries) http.HandlerFunc {
+func GetTechnology(q Querier) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		idStr := r.PathValue("id")
 		if idStr == "" {
@@ -64,7 +64,7 @@ func GetTechnology(q *db.Queries) http.HandlerFunc {
 // @Failure 404 {object} Error
 // @Failure 500 {object} Error
 // @Router /technologies/by-name/{name} [get]
-func GetTechnologyByName(q *db.Queries) http.HandlerFunc {
+func GetTechnologyByName(q Querier) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		name := r.PathValue("name")
 		if name == "" {
@@ -98,7 +98,7 @@ func GetTechnologyByName(q *db.Queries) http.HandlerFunc {
 // @Failure 400 {object} Error
 // @Failure 500 {object} Error
 // @Router /technologies/by-quadrant/{quadrant_id} [get]
-func GetTechnologiesByQuadrant(q *db.Queries) http.HandlerFunc {
+func GetTechnologiesByQuadrant(q Querier) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		quadrantIDStr := r.PathValue("quadrant_id")
 		if quadrantIDStr == "" {
@@ -142,7 +142,7 @@ func GetTechnologiesByQuadrant(q *db.Queries) http.HandlerFunc {
 // @Failure 400 {object} Error
 // @Failure 500 {object} Error
 // @Router /technologies [post]
-func CreateTechnology(q *db.Queries) http.HandlerFunc {
+func CreateTechnology(q Querier) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var params dto.CreateTechnologyRequest
 		if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
@@ -182,7 +182,7 @@ func CreateTechnology(q *db.Queries) http.HandlerFunc {
 // @Failure 400 {object} Error
 // @Failure 500 {object} Error
 // @Router /technologies/{id} [delete]
-func DeleteTechnology(q *db.Queries) http.HandlerFunc {
+func DeleteTechnology(q Querier) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		idStr := r.PathValue("id")
 		if idStr == "" {
@@ -217,7 +217,7 @@ func DeleteTechnology(q *db.Queries) http.HandlerFunc {
 // @Failure 400 {object} Error
 // @Failure 500 {object} Error
 // @Router /technologies/{id} [put]
-func UpdateTechnology(q *db.Queries) http.HandlerFunc {
+func UpdateTechnology(q Querier) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		idStr := r.PathValue("id")
 		if idStr == "" {
