@@ -10,33 +10,13 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/pgx/v5"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 // RunMigrations runs all pending database migrations
-func RunMigrations(ctx context.Context, pool *pgxpool.Pool) error {
-	// Get a database/sql connection from pgx
-	connConfig := pool.Config().ConnConfig
+func RunMigrations(ctx context.Context, dbURL string) error {
+	_ = ctx
 
-	// Build DSN with appropriate sslmode
-	var dsn string
-	if connConfig.TLSConfig == nil {
-		dsn = fmt.Sprintf("postgresql://%s:%s@%s/%s?sslmode=disable",
-			connConfig.User,
-			connConfig.Password,
-			connConfig.Host,
-			connConfig.Database,
-		)
-	} else {
-		dsn = fmt.Sprintf("postgresql://%s:%s@%s/%s?sslmode=require",
-			connConfig.User,
-			connConfig.Password,
-			connConfig.Host,
-			connConfig.Database,
-		)
-	}
-
-	db, err := sql.Open("pgx", dsn)
+	db, err := sql.Open("pgx", dbURL)
 	if err != nil {
 		return fmt.Errorf("failed to open database for migrations: %w", err)
 	}

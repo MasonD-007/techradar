@@ -21,7 +21,7 @@ import (
 // @Failure 404 {object} Error
 // @Failure 500 {object} Error
 // @Router /blips/{id} [get]
-func GetBlip(q *db.Queries) http.HandlerFunc {
+func GetBlip(q Querier) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		idStr := r.PathValue("id")
 		if idStr == "" {
@@ -61,7 +61,7 @@ func GetBlip(q *db.Queries) http.HandlerFunc {
 // @Failure 400 {object} Error
 // @Failure 500 {object} Error
 // @Router /blips [post]
-func CreateBlip(q *db.Queries) http.HandlerFunc {
+func CreateBlip(q Querier) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var params dto.CreateBlipRequest
 		if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
@@ -96,7 +96,7 @@ func CreateBlip(q *db.Queries) http.HandlerFunc {
 // @Failure 400 {object} Error
 // @Failure 500 {object} Error
 // @Router /blips/{id} [delete]
-func DeleteBlip(q *db.Queries) http.HandlerFunc {
+func DeleteBlip(q Querier) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		idStr := r.PathValue("id")
 		if idStr == "" {
@@ -131,7 +131,7 @@ func DeleteBlip(q *db.Queries) http.HandlerFunc {
 // @Failure 400 {object} Error
 // @Failure 500 {object} Error
 // @Router /blips/{id} [put]
-func UpdateBlip(q *db.Queries) http.HandlerFunc {
+func UpdateBlip(q Querier) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		idStr := r.PathValue("id")
 		if idStr == "" {

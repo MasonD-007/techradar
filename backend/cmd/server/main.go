@@ -41,7 +41,7 @@ func main() {
 
 	log.Printf("[%s] [INFO] [main] [DB_CONNECTED]", time.Now().Format(time.RFC3339))
 
-	if err := migrate.RunMigrations(context.Background(), conn); err != nil {
+	if err := migrate.RunMigrations(context.Background(), dbURL); err != nil {
 		log.Fatalf("Failed to run migrations: %v", err)
 	}
 
