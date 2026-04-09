@@ -1,6 +1,6 @@
 import { ThemeToggle } from "@/components/light-dark-button";
-import SideBar from "@/components/navigation/side-bar";
-import { Button } from "@/components/ui/button";
+import SideBarApp from "@/components/navigation/side-bar-app";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
 export default function RootLayout({
 	children,
@@ -9,9 +9,14 @@ export default function RootLayout({
 }>) {
 	return (
 		<div>
-			<SideBar />
-			<ThemeToggle />
-			{children}
+			<SidebarProvider>
+				<SideBarApp />
+				<main className="w-full">
+					<SidebarTrigger className="size-10 cursor-pointer" />
+					<ThemeToggle />
+					{children}
+				</main>
+			</SidebarProvider>
 		</div>
 	);
 }
