@@ -7,6 +7,7 @@ import {
 	SidebarHeader,
 	SidebarMenuItem,
 } from "../ui/sidebar";
+import CollapsedIcons from "./collapsed-icons";
 import RadarMenuItem from "./radar-menu-item";
 
 export default function SideBarApp() {
@@ -40,10 +41,22 @@ export default function SideBarApp() {
 				</SidebarGroup>
 			</SidebarContent>
 			<SidebarContent className="hidden group-data-[collapsible=icon]:block">
-				<SidebarGroup>
-					<SidebarMenuItem>
+				<SidebarGroup className="gap-5">
+					<CollapsedIcons title="Your Profile">
 						<CircleUser />
-					</SidebarMenuItem>
+					</CollapsedIcons>
+					<CollapsedIcons title="Your Radar">
+						<Radar />
+					</CollapsedIcons>
+					<CollapsedIcons title="Technologies">
+						<Cpu />
+					</CollapsedIcons>
+					<CollapsedIcons title="Compare">
+						<Scale />
+					</CollapsedIcons>
+					<CollapsedIcons title="Explore Radars">
+						<Radar />
+					</CollapsedIcons>
 				</SidebarGroup>
 			</SidebarContent>
 		</Sidebar>
