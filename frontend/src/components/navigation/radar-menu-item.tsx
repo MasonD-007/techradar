@@ -18,7 +18,7 @@ export default function RadarMenuItem({
 				onClick={() => router.push(`/${path}`)}
 				className="cursor-pointer"
 			>
-				<div className="flex ml-3 items-center gap-2">
+				<div className="ml-3 gap-2 flex items-center">
 					{children}
 					<span>{title}</span>
 				</div>
