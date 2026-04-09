@@ -1,4 +1,4 @@
-## Landing Page
+## Landing Page (Base url)
 - Hero section with a clear explanation of what a tech radar is
 - Call-to-action (e.g., Explore Radar or Create Radar)
 - Small interactive radar preview
@@ -8,20 +8,20 @@
   - Rings
 - Featured or trending technologies section
 
-## Login Page
+## Login Page (Found through sidebar)
 - Email and password login form
 - Optional OAuth (Google, GitHub, etc.)
 - Basic error handling (invalid credentials, etc.)
 - Short explanation of why signing in is useful
 
-## Sign Up Page
+## Sign Up Page (From Login Page)
 - Username, email, and password fields
 - Optional onboarding questions:
   - Role
   - Experience level
 - Automatic creation of a first radar after signup
 
-## User Page
+## User Page (From Sidebar)
 - Profile information:
   - Name
   - Avatar
@@ -36,7 +36,7 @@
   - Edit radar
   - Delete radar
 
-## Radar Page
+## Radar Page (From Sidebar)
 - Main radar visualization:
   - Four quadrants
   - Rings
@@ -50,7 +50,7 @@
 - Toggle for showing logos or numbers
 - Side panel with detailed info when a blip is clicked
 
-## Quadrant Page
+## Quadrant Page (From Radar page)
 - List of technologies within a quadrant
 - Grouped by ring:
   - Adopt
@@ -70,7 +70,7 @@
   - Ring
   - Skill level
 
-## Admin Page
+## Admin Page (From Sidebar if authenticated)
 - Manage:
   - Technologies
   - Quadrants
@@ -81,28 +81,28 @@
 - Analytics:
   - Trending technologies
 
-## Technology Detail Page
+## Technology Detail Page (From Sidebar)
 - Full-page view of a technology
 - Description
 - History of movement between rings
 - Related technologies
 - Comments or discussion section
 
-## Compare Page
+## Compare Page (From Sidebar)
 - Side-by-side comparison of technologies
 - Differences shown in:
   - Skill level
   - Adoption ring
   - Pros and cons
 
-## Create/Edit Radar Page
+## Create/Edit Radar Page (From Radar Page)
 - Interface to add or edit technologies
 - Drag-and-drop blips into:
   - Rings
   - Quadrants
 - Save new radar versions
 
-## Explore Page
+## Explore Page (From SideBar)
 - Browse all technologies
 - Filters:
   - Category

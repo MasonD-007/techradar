@@ -1,20 +1,14 @@
-"use client";
-
-import { useRouter } from "next/dist/client/components/navigation";
-import { Button } from "../ui/button";
 import {
 	Sidebar,
 	SidebarContent,
 	SidebarGroup,
 	SidebarGroupLabel,
 	SidebarHeader,
-	SidebarProvider,
-	SidebarTrigger,
 } from "../ui/sidebar";
+import { Radar } from "lucide-react";
+import RadarMenuItem from "./radar-menu-item";
 
 export default function SideBarApp() {
-	const router = useRouter();
-
 	return (
 		<Sidebar>
 			{/* TODO: Use user's name? maybe switch between different radars */}
@@ -22,44 +16,24 @@ export default function SideBarApp() {
 			<SidebarContent>
 				<SidebarGroup>
 					<SidebarGroupLabel>Personal</SidebarGroupLabel>
-					<Button
-						onClick={() => router.push("/radar")}
-						variant={"link"}
-						className="cursor-pointer"
-					>
-						My Radar
-					</Button>
-					<Button
-						onClick={() => router.push("/user")}
-						variant={"link"}
-						className="cursor-pointer"
-					>
-						Profile
-					</Button>
-					<Button
-						onClick={() => router.push("/technology")}
-						variant={"link"}
-						className="cursor-pointer"
-					>
-						Technologies
-					</Button>
-					<Button
-						onClick={() => router.push("/compare")}
-						variant={"link"}
-						className="cursor-pointer"
-					>
-						Compare
-					</Button>
+					<RadarMenuItem title="Your Radar" path="radar">
+						<Radar />
+					</RadarMenuItem>
+					<RadarMenuItem title="Your Profile" path="user">
+						<Radar />
+					</RadarMenuItem>
+					<RadarMenuItem title="Technologies" path="technology">
+						<Radar />
+					</RadarMenuItem>
+					<RadarMenuItem title="Compare" path="compare">
+						<Radar />
+					</RadarMenuItem>
 				</SidebarGroup>
 				<SidebarGroup>
 					<SidebarGroupLabel>Explore</SidebarGroupLabel>
-					<Button
-						onClick={() => router.push("/explore")}
-						variant={"link"}
-						className="cursor-pointer"
-					>
-						Radars
-					</Button>
+					<RadarMenuItem title="Explore Radars" path="explore">
+						<Radar />
+					</RadarMenuItem>
 				</SidebarGroup>
 			</SidebarContent>
 		</Sidebar>
