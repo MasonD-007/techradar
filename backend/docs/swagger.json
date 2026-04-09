@@ -973,10 +973,8 @@
             "type": "object",
             "properties": {
                 "context": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
+                    "type": "object",
+                    "additionalProperties": true
                 }
             }
         },
@@ -1078,10 +1076,8 @@
             "type": "object",
             "properties": {
                 "context": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
+                    "type": "object",
+                    "additionalProperties": true
                 }
             }
         },

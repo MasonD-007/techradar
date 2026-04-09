@@ -14,6 +14,7 @@ import (
 	"github.com/MasonD-007/template/backend/internal/db/migrate"
 	"github.com/MasonD-007/template/backend/internal/db/postgres"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/cors"
 	"github.com/joho/godotenv"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
@@ -48,6 +49,15 @@ func main() {
 	q := db.New(conn)
 
 	r := chi.NewRouter()
+
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:3000", "http://127.0.0.1:3000"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: true,
+		MaxAge:           300,
+	}))
 
 	registerBlipsRoutes(r, q)
 	registerTechnologiesRoutes(r, q)

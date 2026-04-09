@@ -82,7 +82,7 @@ sync-openapi:
 	cd backend && swag init -g cmd/server/main.go -o docs
 	cp backend/docs/swagger.json frontend/src/lib/openapi.json
 	cd frontend && npx swagger2openapi src/lib/openapi.json -o src/lib/openapi.yaml --resolveInternal
-	npx openapi-typescript src/lib/openapi.yaml --output src/lib/openapi.ts
+	cd frontend && npx openapi-typescript src/lib/openapi.yaml --output src/lib/openapi.ts
 
 # =============================================================================
 # DATABASE COMMANDS

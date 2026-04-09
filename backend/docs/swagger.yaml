@@ -16,9 +16,8 @@ definitions:
   handlers.CreateBlipRequest:
     properties:
       context:
-        items:
-          type: integer
-        type: array
+        additionalProperties: true
+        type: object
     type: object
   handlers.CreateTechnologyRequest:
     properties:
@@ -86,9 +85,8 @@ definitions:
   handlers.UpdateBlipRequest:
     properties:
       context:
-        items:
-          type: integer
-        type: array
+        additionalProperties: true
+        type: object
     type: object
   handlers.UpdateTechnologyRequest:
     properties:

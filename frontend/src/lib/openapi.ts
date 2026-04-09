@@ -1161,7 +1161,9 @@ export interface components {
             updated_at?: string;
         };
         "handlers.CreateBlipRequest": {
-            context?: number[];
+            context?: {
+                [key: string]: unknown;
+            };
         };
         "handlers.CreateTechnologyRequest": {
             blip_id?: number;
@@ -1201,7 +1203,9 @@ export interface components {
             updated_at?: string;
         };
         "handlers.UpdateBlipRequest": {
-            context?: number[];
+            context?: {
+                [key: string]: unknown;
+            };
         };
         "handlers.UpdateTechnologyRequest": {
             blip_id?: number;

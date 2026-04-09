@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -37,7 +39,8 @@ func GetBlip(q Querier) http.HandlerFunc {
 
 		blip, err := q.GetBlip(r.Context(), int32(id))
 		if err != nil {
-			http.Error(w, "Blip not found", http.StatusNotFound)
+			log.Printf("[ERROR] GetBlip failed: %v, id: %d", err, id)
+			http.Error(w, fmt.Sprintf("Failed to get blip: %v", err), http.StatusInternalServerError)
 			return
 		}
 
@@ -69,9 +72,16 @@ func CreateBlip(q Querier) http.HandlerFunc {
 			return
 		}
 
-		blip, err := q.CreateBlip(r.Context(), params.Context)
+		contextBytes, err := json.Marshal(params.Context)
 		if err != nil {
-			http.Error(w, "Failed to create blip", http.StatusInternalServerError)
+			http.Error(w, "Failed to marshal context", http.StatusInternalServerError)
+			return
+		}
+
+		blip, err := q.CreateBlip(r.Context(), contextBytes)
+		if err != nil {
+			log.Printf("[ERROR] CreateBlip failed: %v, params: %v", err, params)
+			http.Error(w, fmt.Sprintf("Failed to create blip: %v", err), http.StatusInternalServerError)
 			return
 		}
 
@@ -151,9 +161,15 @@ func UpdateBlip(q Querier) http.HandlerFunc {
 			return
 		}
 
+		contextBytes, err := json.Marshal(params.Context)
+		if err != nil {
+			http.Error(w, "Failed to marshal context", http.StatusInternalServerError)
+			return
+		}
+
 		blip, err := q.UpdateBlip(r.Context(), db.UpdateBlipParams{
 			ID:      int32(id),
-			Context: params.Context,
+			Context: contextBytes,
 		})
 		if err != nil {
 			http.Error(w, "Failed to update blip", http.StatusInternalServerError)

@@ -1,13 +1,15 @@
 package dto
 
-import "github.com/jackc/pgx/v5/pgtype"
+import (
+	"github.com/jackc/pgx/v5/pgtype"
+)
 
 type CreateBlipRequest struct {
-	Context []byte `json:"context"`
+	Context map[string]interface{} `json:"context"`
 }
 
 type UpdateBlipRequest struct {
-	Context []byte `json:"context"`
+	Context map[string]interface{} `json:"context"`
 }
 
 type CreateTechnologyRequest struct {
