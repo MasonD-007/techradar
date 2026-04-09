@@ -3,7 +3,6 @@ import { ThemeToggle } from "@/components/light-dark-button";
 export default function RadarPage() {
 	return (
 		<main className="min-h-screen flex flex-col items-center bg-background gap-10">
-			<ThemeToggle />
 			<h1 className="text-4xl font-bold mt-5">Your Tech Radar</h1>
 			<div className="p-5 bg-accent w-1/2" />
 			<div className="flex items-center gap-10">

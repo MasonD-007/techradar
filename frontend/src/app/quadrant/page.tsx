@@ -4,7 +4,6 @@ export default function QuadrantPage() {
 	// TODO: use quadrant/[quadrantId] and fetch data for the quadrant
 	return (
 		<main className="min-h-screen flex flex-col items-center bg-background gap-10">
-			<ThemeToggle />
 			<h1 className="text-4xl font-bold">Technologies Quadrant</h1>
 			<div className="p-5 bg-accent w-1/2" />
 			<div className="flex items-center gap-10">
