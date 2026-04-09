@@ -6,6 +6,7 @@ import {
 	Sidebar,
 	SidebarContent,
 	SidebarGroup,
+	SidebarGroupLabel,
 	SidebarHeader,
 	SidebarProvider,
 	SidebarTrigger,
@@ -20,6 +21,7 @@ export default function SideBarApp() {
 			<SidebarHeader>Tech Radar</SidebarHeader>
 			<SidebarContent>
 				<SidebarGroup>
+					<SidebarGroupLabel>Personal</SidebarGroupLabel>
 					<Button
 						onClick={() => router.push("/radar")}
 						variant={"link"}
@@ -27,8 +29,6 @@ export default function SideBarApp() {
 					>
 						My Radar
 					</Button>
-				</SidebarGroup>
-				<SidebarGroup>
 					<Button
 						onClick={() => router.push("/user")}
 						variant={"link"}
@@ -36,17 +36,6 @@ export default function SideBarApp() {
 					>
 						Profile
 					</Button>
-				</SidebarGroup>
-				<SidebarGroup>
-					<Button
-						onClick={() => router.push("/explore")}
-						variant={"link"}
-						className="cursor-pointer"
-					>
-						Explore
-					</Button>
-				</SidebarGroup>
-				<SidebarGroup>
 					<Button
 						onClick={() => router.push("/technology")}
 						variant={"link"}
@@ -54,14 +43,22 @@ export default function SideBarApp() {
 					>
 						Technologies
 					</Button>
-				</SidebarGroup>
-				<SidebarGroup>
 					<Button
 						onClick={() => router.push("/compare")}
 						variant={"link"}
 						className="cursor-pointer"
 					>
 						Compare
+					</Button>
+				</SidebarGroup>
+				<SidebarGroup>
+					<SidebarGroupLabel>Explore</SidebarGroupLabel>
+					<Button
+						onClick={() => router.push("/explore")}
+						variant={"link"}
+						className="cursor-pointer"
+					>
+						Radars
 					</Button>
 				</SidebarGroup>
 			</SidebarContent>
