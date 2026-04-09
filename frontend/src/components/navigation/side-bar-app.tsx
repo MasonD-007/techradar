@@ -5,6 +5,7 @@ import {
 	SidebarGroup,
 	SidebarGroupLabel,
 	SidebarHeader,
+	SidebarMenuItem,
 } from "../ui/sidebar";
 import RadarMenuItem from "./radar-menu-item";
 
@@ -36,6 +37,13 @@ export default function SideBarApp() {
 					<RadarMenuItem title="Explore Radars" path="explore">
 						<Radar />
 					</RadarMenuItem>
+				</SidebarGroup>
+			</SidebarContent>
+			<SidebarContent className="hidden group-data-[collapsible=icon]:block">
+				<SidebarGroup>
+					<SidebarMenuItem>
+						<CircleUser />
+					</SidebarMenuItem>
 				</SidebarGroup>
 			</SidebarContent>
 		</Sidebar>
