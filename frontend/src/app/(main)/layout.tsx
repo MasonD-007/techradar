@@ -1,4 +1,5 @@
 import { ThemeToggle } from "@/components/light-dark-button";
+import SideBar from "@/components/navigation/side-bar";
 import { Button } from "@/components/ui/button";
 
 export default function RootLayout({
@@ -8,6 +9,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<div>
+			<SideBar />
 			<ThemeToggle />
 			{children}
 		</div>
