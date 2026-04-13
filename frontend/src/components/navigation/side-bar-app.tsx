@@ -5,6 +5,7 @@ import Image from "next/image";
 import {
 	Sidebar,
 	SidebarContent,
+	SidebarFooter,
 	SidebarGroup,
 	SidebarGroupLabel,
 	SidebarHeader,
@@ -13,6 +14,7 @@ import {
 } from "../ui/sidebar";
 import CollapsedIcons from "./collapsed-icons";
 import RadarMenuItem from "./radar-menu-item";
+import Settings from "./settings";
 
 export default function SideBarApp() {
 	const router = useRouter();
@@ -76,6 +78,9 @@ export default function SideBarApp() {
 					</CollapsedIcons>
 				</SidebarGroup>
 			</SidebarContent>
+			<SidebarFooter>
+				<Settings />
+			</SidebarFooter>
 		</Sidebar>
 	);
 }

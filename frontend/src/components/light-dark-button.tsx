@@ -3,7 +3,7 @@ import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 
-export function ThemeToggle() {
+export function ThemeToggle({ className }: { className?: string }) {
 	const [mounted, setMounted] = useState(false);
 	const [isDark, setIsDark] = useState(false);
 
@@ -26,7 +26,7 @@ export function ThemeToggle() {
 				localStorage.setItem("theme", nextDark ? "dark" : "light");
 				setIsDark(nextDark);
 			}}
-			className="fixed right-15 bottom-15 z-50 size-13 cursor-pointer rounded-full p-0"
+			className={className || "size-13 cursor-pointer rounded-full p-0"}
 		>
 			{isDark ? <Sun /> : <Moon />}
 		</Button>
