@@ -12,6 +12,7 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "../ui/sidebar";
+import CollapsedSettings from "./collapsed";
 import CollapsedIcons from "./collapsed-icons";
 import RadarMenuItem from "./radar-menu-item";
 import Settings from "./settings";
@@ -80,6 +81,7 @@ export default function SideBarApp() {
 			</SidebarContent>
 			<SidebarFooter>
 				<Settings />
+				<CollapsedSettings />
 			</SidebarFooter>
 		</Sidebar>
 	);

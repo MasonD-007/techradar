@@ -18,7 +18,7 @@ import {
 
 export default function Settings() {
 	return (
-		<SidebarGroup>
+		<SidebarGroup className="group-data-[collapsible=icon]:hidden">
 			<SidebarMenuItem className="list-none">
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
