@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: backend-config
-  namespace: techradar
-data:
-  PORT: "8080"
-  DATABASE_URL: "postgres://techradar:password@postgres:5432/techradar?sslmode=disable"
