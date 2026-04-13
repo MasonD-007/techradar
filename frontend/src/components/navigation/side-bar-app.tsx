@@ -53,7 +53,10 @@ export default function SideBarApp() {
 			</SidebarContent>
 			<SidebarContent className="hidden group-data-[collapsible=icon]:block">
 				<SidebarGroup className="flex flex-col items-center gap-5">
-					<SidebarMenuItem className="list-none">
+					<SidebarMenuItem
+						className="cursor-pointer list-none"
+						onClick={() => router.push("/radar")}
+					>
 						<Image src="/logo.png" alt="Logo" width={40} height={40} />
 					</SidebarMenuItem>
 					<CollapsedIcons title="Your Profile" path="user">
