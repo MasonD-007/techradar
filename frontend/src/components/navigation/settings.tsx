@@ -15,6 +15,7 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "../ui/sidebar";
+import DropdownSettings from "./dropdown-settings";
 
 export default function Settings() {
 	return (
@@ -40,7 +41,7 @@ export default function Settings() {
 							</div>
 						</SidebarMenuButton>
 					</DropdownMenuTrigger>
-					<DropdownMenuContent side="right" align="end">
+					{/* <DropdownMenuContent side="right" align="end">
 						<DropdownMenuGroup>
 							<DropdownMenuLabel>My Account</DropdownMenuLabel>
 							<DropdownMenuItem>Profile</DropdownMenuItem>
@@ -53,7 +54,8 @@ export default function Settings() {
 								<ThemeToggle className="cursor-pointer bg-accent" />
 							</div>
 						</DropdownMenuGroup>
-					</DropdownMenuContent>
+					</DropdownMenuContent> */}
+					<DropdownSettings />
 				</DropdownMenu>
 			</SidebarMenuItem>
 		</SidebarGroup>
