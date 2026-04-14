@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, JetBrains_Mono } from "next/font/google";
 import { Toaster } from "sonner";
-import "./globals.css";
-// import LandingPageHeader from "@/components/landing-page/landing-page-header";
 import { cn } from "@/lib/utils";
+import "./globals.css";
 
 const jetbrainsMono = JetBrains_Mono({
 	subsets: ["latin"],

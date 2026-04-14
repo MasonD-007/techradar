@@ -3,16 +3,14 @@ import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 
-function getInitialTheme(): boolean {
-	if (typeof document === "undefined") return false;
-	const saved = localStorage.getItem("theme");
-	if (saved === "dark") return true;
-	if (saved === "light") return false;
-	return document.documentElement.classList.contains("dark");
-}
-
 export function ThemeToggle({ className }: { className?: string }) {
-	const [isDark, setIsDark] = useState(getInitialTheme);
+	const [isDark, setIsDark] = useState(() => {
+		if (typeof document === "undefined") return false;
+		const saved = localStorage.getItem("theme");
+		if (saved === "dark") return true;
+		if (saved === "light") return false;
+		return document.documentElement.classList.contains("dark");
+	});
 
 	useEffect(() => {
 		const saved = localStorage.getItem("theme");
@@ -27,14 +25,17 @@ export function ThemeToggle({ className }: { className?: string }) {
 		}
 	}, []);
 
+	const toggleTheme = () => {
+		if (typeof document === "undefined") return;
+		const nextDark = !document.documentElement.classList.contains("dark");
+		document.documentElement.classList.toggle("dark", nextDark);
+		localStorage.setItem("theme", nextDark ? "dark" : "light");
+		setIsDark(nextDark);
+	};
+
 	return (
 		<Button
-			onClick={() => {
-				const nextDark = !document.documentElement.classList.contains("dark");
-				document.documentElement.classList.toggle("dark", nextDark);
-				localStorage.setItem("theme", nextDark ? "dark" : "light");
-				setIsDark(nextDark);
-			}}
+			onClick={toggleTheme}
 			className={className || "size-13 cursor-pointer rounded-full p-0"}
 		>
 			{isDark ? <Sun /> : <Moon />}
