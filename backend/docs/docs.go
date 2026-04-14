@@ -979,10 +979,8 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "context": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
+                    "type": "object",
+                    "additionalProperties": true
                 }
             }
         },
@@ -1084,10 +1082,8 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "context": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
+                    "type": "object",
+                    "additionalProperties": true
                 }
             }
         },

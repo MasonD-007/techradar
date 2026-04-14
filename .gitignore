@@ -26,3 +26,4 @@ npm-debug.log*
 opencode.json
 
 package-lock.json
+node_modules/
