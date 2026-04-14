@@ -1,10 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { DropdownMenu, DropdownMenuTrigger } from "../ui/dropdown-menu";
-import {
-	SidebarGroup,
-	SidebarMenuButton,
-	SidebarMenuItem,
-} from "../ui/sidebar";
+// import { SidebarMenuButton } from "../ui/sidebar";
+import { SidebarGroup, SidebarMenuItem } from "../ui/sidebar";
 import DropdownSettings from "./dropdown-settings";
 
 export default function CollapsedSettings() {

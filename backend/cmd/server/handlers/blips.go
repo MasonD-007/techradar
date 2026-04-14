@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/MasonD-007/template/backend/cmd/server/handlers/dto"
 	"github.com/MasonD-007/template/backend/internal/db"
+	"github.com/jackc/pgx/v5"
 )
 
 // GetBlip godoc
@@ -39,6 +41,10 @@ func GetBlip(q Querier) http.HandlerFunc {
 
 		blip, err := q.GetBlip(r.Context(), int32(id))
 		if err != nil {
+			if errors.Is(err, pgx.ErrNoRows) {
+				http.Error(w, "Blip not found", http.StatusNotFound)
+				return
+			}
 			log.Printf("[ERROR] GetBlip failed: %v, id: %d", err, id)
 			http.Error(w, fmt.Sprintf("Failed to get blip: %v", err), http.StatusInternalServerError)
 			return

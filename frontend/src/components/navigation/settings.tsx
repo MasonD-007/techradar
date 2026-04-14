@@ -1,15 +1,15 @@
-import { ChevronsUpDown } from "lucide-react";
-import { ThemeToggle } from "../light-dark-button";
+import { ChevronUpDown } from "lucide-react";
+// import { ThemeToggle } from "../light-dark-button";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import {
 	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuGroup,
-	DropdownMenuItem,
-	DropdownMenuLabel,
+	// DropdownMenuContent,
+	// DropdownMenuGroup,
+	// DropdownMenuItem,
+	// DropdownMenuLabel,
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { Separator } from "../ui/separator";
+// import { Separator } from "../ui/separator";
 import {
 	SidebarGroup,
 	SidebarMenuButton,
@@ -37,7 +37,7 @@ export default function Settings() {
 									<p>John Doe</p>
 									<p>{"example@example.com".slice(0, 12) + "..."}</p>
 								</div>
-								<ChevronsUpDown className="ml-auto" />
+								<ChevronUpDown className="ml-auto" />
 							</div>
 						</SidebarMenuButton>
 					</DropdownMenuTrigger>

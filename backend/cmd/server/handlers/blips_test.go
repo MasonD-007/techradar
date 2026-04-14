@@ -11,6 +11,7 @@ import (
 	"github.com/MasonD-007/template/backend/cmd/server/handlers"
 	"github.com/MasonD-007/template/backend/cmd/server/handlers/mocks"
 	"github.com/MasonD-007/template/backend/internal/db"
+	"github.com/jackc/pgx/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -35,7 +36,7 @@ func TestGetBlip(t *testing.T) {
 			name:   "not found error returns 404",
 			pathID: "5",
 			mockExpect: func(m *mocks.MockQuerier) {
-				m.On("GetBlip", mock.Anything, int32(5)).Return(db.Blip{}, errors.New("not found"))
+				m.On("GetBlip", mock.Anything, int32(5)).Return(db.Blip{}, pgx.ErrNoRows)
 			},
 			wantCode: http.StatusNotFound,
 		},
@@ -91,17 +92,17 @@ func TestCreateBlip(t *testing.T) {
 		},
 		{
 			name: "database error returns 500",
-			body: `{"context":"aGVsbG8="}`,
+			body: `{"context":{"message":"hello"}}`,
 			mockExpect: func(m *mocks.MockQuerier) {
-				m.On("CreateBlip", mock.Anything, []byte("hello")).Return(db.Blip{}, errors.New("oops"))
+				m.On("CreateBlip", mock.Anything, []byte(`{"message":"hello"}`)).Return(db.Blip{}, errors.New("oops"))
 			},
 			wantCode: http.StatusInternalServerError,
 		},
 		{
 			name: "successful create returns 201",
-			body: `{"context":"aGVsbG8="}`,
+			body: `{"context":{"message":"hello"}}`,
 			mockExpect: func(m *mocks.MockQuerier) {
-				m.On("CreateBlip", mock.Anything, []byte("hello")).Return(db.Blip{ID: 1, Context: []byte("hello")}, nil)
+				m.On("CreateBlip", mock.Anything, []byte(`{"message":"hello"}`)).Return(db.Blip{ID: 1, Context: []byte(`{"message":"hello"}`)}, nil)
 			},
 			wantCode: http.StatusCreated,
 		},
@@ -135,13 +136,13 @@ func TestUpdateBlip(t *testing.T) {
 	}{
 		{
 			name:     "missing id returns bad request",
-			body:     `{"context":"aGVsbG8="}`,
+			body:     `{"context":{"message":"hello"}}`,
 			wantCode: http.StatusBadRequest,
 		},
 		{
 			name:     "invalid id returns bad request",
 			pathID:   "abc",
-			body:     `{"context":"aGVsbG8="}`,
+			body:     `{"context":{"message":"hello"}}`,
 			wantCode: http.StatusBadRequest,
 		},
 		{
@@ -153,18 +154,18 @@ func TestUpdateBlip(t *testing.T) {
 		{
 			name:   "update error returns 500",
 			pathID: "2",
-			body:   `{"context":"aGVsbG8="}`,
+			body:   `{"context":{"message":"hello"}}`,
 			mockExpect: func(m *mocks.MockQuerier) {
-				m.On("UpdateBlip", mock.Anything, db.UpdateBlipParams{ID: 2, Context: []byte("hello")}).Return(db.Blip{}, errors.New("fail"))
+				m.On("UpdateBlip", mock.Anything, db.UpdateBlipParams{ID: 2, Context: []byte(`{"message":"hello"}`)}).Return(db.Blip{}, errors.New("fail"))
 			},
 			wantCode: http.StatusInternalServerError,
 		},
 		{
 			name:   "successful update returns payload",
 			pathID: "3",
-			body:   `{"context":"aGVsbG8="}`,
+			body:   `{"context":{"message":"hello"}}`,
 			mockExpect: func(m *mocks.MockQuerier) {
-				m.On("UpdateBlip", mock.Anything, db.UpdateBlipParams{ID: 3, Context: []byte("hello")}).Return(db.Blip{ID: 3, Context: []byte("hello")}, nil)
+				m.On("UpdateBlip", mock.Anything, db.UpdateBlipParams{ID: 3, Context: []byte(`{"message":"hello"}`)}).Return(db.Blip{ID: 3, Context: []byte(`{"message":"hello"}`)}, nil)
 			},
 			wantCode: http.StatusOK,
 		},
