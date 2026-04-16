@@ -1,8 +1,9 @@
 "use client";
 
 import { createFormHook, createFormHookContexts } from "@tanstack/react-form";
-
+import { env } from "process";
 import { Button } from "@/components/ui/button";
+import { api } from "@/lib/api";
 import DescriptionField from "./form-fields/description-field";
 import TechnologyField from "./form-fields/technology-field";
 
@@ -18,6 +19,19 @@ const { useAppForm } = createFormHook({
 	},
 	formComponents: {},
 });
+const createBlip = async (value: any) => {
+	const { data, error } = await api.POST("/blips", {
+		body: {
+			context: value,
+		},
+	});
+	if (data) {
+		console.log("Blip created:", data);
+	}
+	if (error) {
+		console.error("Error creating blip:", error);
+	}
+};
 
 export default function CreateBlipForm() {
 	// TODO: introduct type safety for form values
@@ -26,8 +40,8 @@ export default function CreateBlipForm() {
 			technology: "",
 			description: "",
 		},
-		onSubmit: async ({ value }) => {
-			console.log("Create blip form submitted", value);
+		onSubmit: async ({ value: blipObject }) => {
+			await createBlip(blipObject);
 		},
 	});
 
