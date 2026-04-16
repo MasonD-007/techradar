@@ -1,13 +1,9 @@
 "use client";
 
-import {
-	createFormHook,
-	createFormHookContexts,
-	useForm,
-} from "@tanstack/react-form";
+import { createFormHook, createFormHookContexts } from "@tanstack/react-form";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import DescriptionField from "./form-fields/description-field";
 import TechnologyField from "./form-fields/technology-field";
 
 export const { fieldContext, formContext, useFieldContext } =
@@ -18,11 +14,13 @@ const { useAppForm } = createFormHook({
 	formContext,
 	fieldComponents: {
 		TechnologyField,
+		DescriptionField,
 	},
 	formComponents: {},
 });
 
 export default function CreateBlipForm() {
+	// TODO: introduct type safety for form values
 	const form = useAppForm({
 		defaultValues: {
 			technology: "",
@@ -42,45 +40,33 @@ export default function CreateBlipForm() {
 			}}
 			className="space-y-4"
 		>
-			{/* <form.Field name="technology">
-				{(field) => (
-					<div className="space-y-1">
-						<label htmlFor={field.name} className="font-medium text-sm">
-							Technology
-						</label>
-						<Input
-							id={field.name}
-							name={field.name}
-							value={field.state.value}
-							onBlur={field.handleBlur}
-							onChange={(e) => field.handleChange(e.target.value)}
-							placeholder="Example: PostgreSQL"
-						/>
-					</div>
-				)}
-			</form.Field> */}
 			<form.AppField
 				name="technology"
-				children={(field) => <field.TechnologyField label="Technology" />}
-			/>
+				validators={{
+					onChange: ({ value }) => {
+						if (!value) {
+							return "You need to select a technology";
+						}
+						return undefined;
+					},
+				}}
+			>
+				{(field) => <field.TechnologyField label="Technology" />}
+			</form.AppField>
 
-			<form.Field name="description">
-				{(field) => (
-					<div className="space-y-1">
-						<label htmlFor={field.name} className="font-medium text-sm">
-							Description
-						</label>
-						<Input
-							id={field.name}
-							name={field.name}
-							value={field.state.value}
-							onBlur={field.handleBlur}
-							onChange={(e) => field.handleChange(e.target.value)}
-							placeholder="Short description"
-						/>
-					</div>
-				)}
-			</form.Field>
+			<form.AppField
+				name="description"
+				validators={{
+					onChange: ({ value }) => {
+						if (!value) {
+							return "Description is required";
+						}
+						return undefined; // valid
+					},
+				}}
+			>
+				{(field) => <field.DescriptionField label="Description" />}
+			</form.AppField>
 
 			<Button type="submit" className="w-full">
 				Create Blip
