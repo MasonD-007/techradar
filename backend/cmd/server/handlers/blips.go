@@ -50,8 +50,21 @@ func GetBlip(q Querier) http.HandlerFunc {
 			return
 		}
 
+		var ctxMap interface{}
+		if err := json.Unmarshal([]byte(blip.Context), &ctxMap); err != nil {
+			log.Printf("[ERROR] Failed to parse context: %v", err)
+			ctxMap = blip.Context
+		}
+
+		resp := Blip{
+			ID:        blip.ID,
+			Context:   ctxMap,
+			CreatedAt: blip.CreatedAt.Time.String(),
+			UpdatedAt: blip.UpdatedAt.Time.String(),
+		}
+
 		w.Header().Set("Content-Type", "application/json")
-		err = json.NewEncoder(w).Encode(blip)
+		err = json.NewEncoder(w).Encode(resp)
 		if err != nil {
 			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 			return
@@ -91,9 +104,22 @@ func CreateBlip(q Querier) http.HandlerFunc {
 			return
 		}
 
+		var ctxMap interface{}
+		if err := json.Unmarshal([]byte(blip.Context), &ctxMap); err != nil {
+			log.Printf("[ERROR] Failed to parse context: %v", err)
+			ctxMap = blip.Context
+		}
+
+		resp := Blip{
+			ID:        blip.ID,
+			Context:   ctxMap,
+			CreatedAt: blip.CreatedAt.Time.String(),
+			UpdatedAt: blip.UpdatedAt.Time.String(),
+		}
+
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		err = json.NewEncoder(w).Encode(blip)
+		err = json.NewEncoder(w).Encode(resp)
 		if err != nil {
 			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 			return
@@ -182,8 +208,21 @@ func UpdateBlip(q Querier) http.HandlerFunc {
 			return
 		}
 
+		var ctxMap interface{}
+		if err := json.Unmarshal([]byte(blip.Context), &ctxMap); err != nil {
+			log.Printf("[ERROR] Failed to parse context: %v", err)
+			ctxMap = blip.Context
+		}
+
+		resp := Blip{
+			ID:        blip.ID,
+			Context:   ctxMap,
+			CreatedAt: blip.CreatedAt.Time.String(),
+			UpdatedAt: blip.UpdatedAt.Time.String(),
+		}
+
 		w.Header().Set("Content-Type", "application/json")
-		err = json.NewEncoder(w).Encode(blip)
+		err = json.NewEncoder(w).Encode(resp)
 		if err != nil {
 			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 			return
@@ -193,8 +232,8 @@ func UpdateBlip(q Querier) http.HandlerFunc {
 
 // Blip represents a blip in the database
 type Blip struct {
-	ID        int32  `json:"id"`
-	Context   []byte `json:"context"`
-	CreatedAt string `json:"created_at"`
-	UpdatedAt string `json:"updated_at"`
+	ID        int32       `json:"id"`
+	Context   interface{} `json:"context"`
+	CreatedAt string      `json:"created_at"`
+	UpdatedAt string      `json:"updated_at"`
 }

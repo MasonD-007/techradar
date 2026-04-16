@@ -10,9 +10,9 @@ import (
 // Querier captures the database operations required by the HTTP handlers.
 type Querier interface {
 	// Blips
-	GetBlip(ctx context.Context, id int32) (db.Blip, error)
-	CreateBlip(ctx context.Context, context []byte) (db.Blip, error)
-	UpdateBlip(ctx context.Context, params db.UpdateBlipParams) (db.Blip, error)
+	GetBlip(ctx context.Context, id int32) (db.GetBlipRow, error)
+	CreateBlip(ctx context.Context, context []byte) (db.CreateBlipRow, error)
+	UpdateBlip(ctx context.Context, params db.UpdateBlipParams) (db.UpdateBlipRow, error)
 	DeleteBlip(ctx context.Context, id int32) error
 
 	// Technologies

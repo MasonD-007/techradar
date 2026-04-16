@@ -36,7 +36,7 @@ func TestGetBlip(t *testing.T) {
 			name:   "not found error returns 404",
 			pathID: "5",
 			mockExpect: func(m *mocks.MockQuerier) {
-				m.On("GetBlip", mock.Anything, int32(5)).Return(db.Blip{}, pgx.ErrNoRows)
+				m.On("GetBlip", mock.Anything, int32(5)).Return(db.GetBlipRow{}, pgx.ErrNoRows)
 			},
 			wantCode: http.StatusNotFound,
 		},
@@ -44,7 +44,7 @@ func TestGetBlip(t *testing.T) {
 			name:   "successful fetch returns blip",
 			pathID: "7",
 			mockExpect: func(m *mocks.MockQuerier) {
-				m.On("GetBlip", mock.Anything, int32(7)).Return(db.Blip{ID: 7, Context: []byte("hello")}, nil)
+				m.On("GetBlip", mock.Anything, int32(7)).Return(db.GetBlipRow{ID: 7, Context: `{"message":"hello"}`}, nil)
 			},
 			wantCode: http.StatusOK,
 		},
@@ -94,7 +94,7 @@ func TestCreateBlip(t *testing.T) {
 			name: "database error returns 500",
 			body: `{"context":{"message":"hello"}}`,
 			mockExpect: func(m *mocks.MockQuerier) {
-				m.On("CreateBlip", mock.Anything, []byte(`{"message":"hello"}`)).Return(db.Blip{}, errors.New("oops"))
+				m.On("CreateBlip", mock.Anything, []byte(`{"message":"hello"}`)).Return(db.CreateBlipRow{}, errors.New("oops"))
 			},
 			wantCode: http.StatusInternalServerError,
 		},
@@ -102,7 +102,7 @@ func TestCreateBlip(t *testing.T) {
 			name: "successful create returns 201",
 			body: `{"context":{"message":"hello"}}`,
 			mockExpect: func(m *mocks.MockQuerier) {
-				m.On("CreateBlip", mock.Anything, []byte(`{"message":"hello"}`)).Return(db.Blip{ID: 1, Context: []byte(`{"message":"hello"}`)}, nil)
+				m.On("CreateBlip", mock.Anything, []byte(`{"message":"hello"}`)).Return(db.CreateBlipRow{ID: 1, Context: `{"message":"hello"}`}, nil)
 			},
 			wantCode: http.StatusCreated,
 		},
@@ -156,7 +156,7 @@ func TestUpdateBlip(t *testing.T) {
 			pathID: "2",
 			body:   `{"context":{"message":"hello"}}`,
 			mockExpect: func(m *mocks.MockQuerier) {
-				m.On("UpdateBlip", mock.Anything, db.UpdateBlipParams{ID: 2, Context: []byte(`{"message":"hello"}`)}).Return(db.Blip{}, errors.New("fail"))
+				m.On("UpdateBlip", mock.Anything, db.UpdateBlipParams{ID: 2, Context: []byte(`{"message":"hello"}`)}).Return(db.UpdateBlipRow{}, errors.New("fail"))
 			},
 			wantCode: http.StatusInternalServerError,
 		},
@@ -165,7 +165,7 @@ func TestUpdateBlip(t *testing.T) {
 			pathID: "3",
 			body:   `{"context":{"message":"hello"}}`,
 			mockExpect: func(m *mocks.MockQuerier) {
-				m.On("UpdateBlip", mock.Anything, db.UpdateBlipParams{ID: 3, Context: []byte(`{"message":"hello"}`)}).Return(db.Blip{ID: 3, Context: []byte(`{"message":"hello"}`)}, nil)
+				m.On("UpdateBlip", mock.Anything, db.UpdateBlipParams{ID: 3, Context: []byte(`{"message":"hello"}`)}).Return(db.UpdateBlipRow{ID: 3, Context: `{"message":"hello"}`}, nil)
 			},
 			wantCode: http.StatusOK,
 		},

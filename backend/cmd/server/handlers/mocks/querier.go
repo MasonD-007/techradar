@@ -17,21 +17,21 @@ func NewMockQuerier() *MockQuerier {
 	return &MockQuerier{}
 }
 
-func (m *MockQuerier) GetBlip(ctx context.Context, id int32) (db.Blip, error) {
+func (m *MockQuerier) GetBlip(ctx context.Context, id int32) (db.GetBlipRow, error) {
 	args := m.Called(ctx, id)
-	blip, _ := args.Get(0).(db.Blip)
+	blip, _ := args.Get(0).(db.GetBlipRow)
 	return blip, args.Error(1)
 }
 
-func (m *MockQuerier) CreateBlip(ctx context.Context, context []byte) (db.Blip, error) {
+func (m *MockQuerier) CreateBlip(ctx context.Context, context []byte) (db.CreateBlipRow, error) {
 	args := m.Called(ctx, context)
-	blip, _ := args.Get(0).(db.Blip)
+	blip, _ := args.Get(0).(db.CreateBlipRow)
 	return blip, args.Error(1)
 }
 
-func (m *MockQuerier) UpdateBlip(ctx context.Context, params db.UpdateBlipParams) (db.Blip, error) {
+func (m *MockQuerier) UpdateBlip(ctx context.Context, params db.UpdateBlipParams) (db.UpdateBlipRow, error) {
 	args := m.Called(ctx, params)
-	blip, _ := args.Get(0).(db.Blip)
+	blip, _ := args.Get(0).(db.UpdateBlipRow)
 	return blip, args.Error(1)
 }
 

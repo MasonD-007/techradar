@@ -80,14 +80,14 @@ INSERT INTO blips (
 )
 VALUES ($1)
 RETURNING id,
-    context,
+    context::text,
     created_at,
     updated_at;
 
 -- name: GetBlip :one
 SELECT
     id,
-    context,
+    context::text,
     created_at,
     updated_at
 FROM
@@ -102,7 +102,7 @@ SET context = $2,
 WHERE
     id = $1
 RETURNING id,
-    context,
+    context::text,
     created_at,
     updated_at;
 

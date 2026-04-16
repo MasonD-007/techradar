@@ -17,14 +17,21 @@ INSERT INTO blips (
 )
 VALUES ($1)
 RETURNING id,
-    context,
+    context::text,
     created_at,
     updated_at
 `
 
-func (q *Queries) CreateBlip(ctx context.Context, argContext []byte) (Blip, error) {
+type CreateBlipRow struct {
+	ID        int32              `json:"id"`
+	Context   string             `json:"context"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
+}
+
+func (q *Queries) CreateBlip(ctx context.Context, argContext []byte) (CreateBlipRow, error) {
 	row := q.db.QueryRow(ctx, createBlip, argContext)
-	var i Blip
+	var i CreateBlipRow
 	err := row.Scan(
 		&i.ID,
 		&i.Context,
@@ -215,7 +222,7 @@ func (q *Queries) DeleteUserTechnology(ctx context.Context, id pgtype.UUID) erro
 const getBlip = `-- name: GetBlip :one
 SELECT
     id,
-    context,
+    context::text,
     created_at,
     updated_at
 FROM
@@ -224,9 +231,16 @@ WHERE
     id = $1
 `
 
-func (q *Queries) GetBlip(ctx context.Context, id int32) (Blip, error) {
+type GetBlipRow struct {
+	ID        int32              `json:"id"`
+	Context   string             `json:"context"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
+}
+
+func (q *Queries) GetBlip(ctx context.Context, id int32) (GetBlipRow, error) {
 	row := q.db.QueryRow(ctx, getBlip, id)
-	var i Blip
+	var i GetBlipRow
 	err := row.Scan(
 		&i.ID,
 		&i.Context,
@@ -469,7 +483,7 @@ SET context = $2,
 WHERE
     id = $1
 RETURNING id,
-    context,
+    context::text,
     created_at,
     updated_at
 `
@@ -479,9 +493,16 @@ type UpdateBlipParams struct {
 	Context []byte `json:"context"`
 }
 
-func (q *Queries) UpdateBlip(ctx context.Context, arg UpdateBlipParams) (Blip, error) {
+type UpdateBlipRow struct {
+	ID        int32              `json:"id"`
+	Context   string             `json:"context"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
+}
+
+func (q *Queries) UpdateBlip(ctx context.Context, arg UpdateBlipParams) (UpdateBlipRow, error) {
 	row := q.db.QueryRow(ctx, updateBlip, arg.ID, arg.Context)
-	var i Blip
+	var i UpdateBlipRow
 	err := row.Scan(
 		&i.ID,
 		&i.Context,
