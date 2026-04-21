@@ -1,8 +1,9 @@
 "use client";
 
 import { createFormHook, createFormHookContexts } from "@tanstack/react-form";
-import { EmailField } from "@/components/login-page/email-field";
-import { PasswordField } from "@/components/login-page/password-field";
+import { useRouter } from "next/navigation";
+import { EmailField } from "@/components/login-signin-page/email-field";
+import { PasswordField } from "@/components/login-signin-page/password-field";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -28,6 +29,7 @@ const { useAppForm } = createFormHook({
 });
 
 export default function LoginForm() {
+	const router = useRouter();
 	const form = useAppForm({
 		defaultValues: {
 			email: "",
@@ -46,7 +48,9 @@ export default function LoginForm() {
 					Enter your email below to login to your account
 				</CardDescription>
 				<CardAction>
-					<Button variant="link">Sign Up</Button>
+					<Button variant="link" onClick={() => router.push("/sign-up")}>
+						Sign Up
+					</Button>
 				</CardAction>
 			</CardHeader>
 			<CardContent>
