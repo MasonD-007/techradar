@@ -11,6 +11,7 @@ import (
 type Querier interface {
 	// Blips
 	GetBlip(ctx context.Context, id int32) (db.GetBlipRow, error)
+	GetAllBlips(ctx context.Context) ([]db.GetAllBlipsRow, error)
 	CreateBlip(ctx context.Context, context []byte) (db.CreateBlipRow, error)
 	UpdateBlip(ctx context.Context, params db.UpdateBlipParams) (db.UpdateBlipRow, error)
 	DeleteBlip(ctx context.Context, id int32) error
@@ -19,6 +20,7 @@ type Querier interface {
 	GetTechnologyID(ctx context.Context, id pgtype.UUID) (db.Technology, error)
 	GetTechnologyName(ctx context.Context, name string) (db.Technology, error)
 	GetTechnologyQuad(ctx context.Context, quadrantID int32) ([]db.Technology, error)
+	GetAllTechnologies(ctx context.Context) ([]db.Technology, error)
 	CreateTechnology(ctx context.Context, params db.CreateTechnologyParams) (db.Technology, error)
 	UpdateTechnology(ctx context.Context, params db.UpdateTechnologyParams) (db.Technology, error)
 	DeleteTechnology(ctx context.Context, id pgtype.UUID) error
@@ -26,6 +28,7 @@ type Querier interface {
 	// Users
 	GetUserID(ctx context.Context, id pgtype.UUID) (db.User, error)
 	GetUserEmail(ctx context.Context, email string) (db.User, error)
+	GetAllUsers(ctx context.Context) ([]db.User, error)
 	CreateUser(ctx context.Context, params db.CreateUserParams) (db.User, error)
 	UpdateUser(ctx context.Context, params db.UpdateUserParams) (db.User, error)
 	DeleteUser(ctx context.Context, id pgtype.UUID) error

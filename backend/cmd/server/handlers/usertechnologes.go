@@ -114,6 +114,8 @@ func CreateUserTechnology(q Querier) http.HandlerFunc {
 			return
 		}
 
+		params.ID = uuidutil.New()
+
 		ut, err := q.CreateUserTechnology(r.Context(), db.CreateUserTechnologyParams{
 			ID:           params.ID,
 			UserID:       params.UserID,

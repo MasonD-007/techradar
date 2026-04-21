@@ -958,12 +958,7 @@ const docTemplate = `{
         "handlers.Blip": {
             "type": "object",
             "properties": {
-                "context": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
+                "context": {},
                 "created_at": {
                     "type": "string"
                 },

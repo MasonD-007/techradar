@@ -250,6 +250,46 @@ func (q *Queries) GetBlip(ctx context.Context, id int32) (GetBlipRow, error) {
 	return i, err
 }
 
+const getAllBlips = `-- name: GetAllBlips :many
+SELECT
+    id,
+    context::text,
+    created_at,
+    updated_at
+FROM
+    blips
+ORDER BY id
+`
+
+type GetAllBlipsRow struct {
+	ID        int32              `json:"id"`
+	Context   string             `json:"context"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
+}
+
+func (q *Queries) GetAllBlips(ctx context.Context) ([]GetAllBlipsRow, error) {
+	rows, err := q.db.Query(ctx, getAllBlips)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetAllBlipsRow
+	for rows.Next() {
+		var i GetAllBlipsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Context,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	return items, rows.Err()
+}
+
 const getTechnologyID = `-- name: GetTechnologyID :one
 SELECT
     id,
@@ -347,6 +387,46 @@ func (q *Queries) GetTechnologyQuad(ctx context.Context, quadrantID int32) ([]Te
 	return items, nil
 }
 
+const getAllTechnologies = `-- name: GetAllTechnologies :many
+SELECT
+    id,
+    name,
+    blip_id,
+    quadrant_id,
+    created_at,
+    updated_at
+FROM
+    technology
+ORDER BY name
+`
+
+func (q *Queries) GetAllTechnologies(ctx context.Context) ([]Technology, error) {
+	rows, err := q.db.Query(ctx, getAllTechnologies)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Technology
+	for rows.Next() {
+		var i Technology
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.BlipID,
+			&i.QuadrantID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getUserEmail = `-- name: GetUserEmail :one
 SELECT
     id,
@@ -375,6 +455,48 @@ func (q *Queries) GetUserEmail(ctx context.Context, email string) (User, error) 
 		&i.LastLoggedIn,
 	)
 	return i, err
+}
+
+const getAllUsers = `-- name: GetAllUsers :many
+SELECT
+    id,
+    name,
+    email,
+    username,
+    hashed_password,
+    created_at,
+    last_logged_in
+FROM
+    users
+ORDER BY name
+`
+
+func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
+	rows, err := q.db.Query(ctx, getAllUsers)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []User
+	for rows.Next() {
+		var i User
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Email,
+			&i.Username,
+			&i.HashedPassword,
+			&i.CreatedAt,
+			&i.LastLoggedIn,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getUserID = `-- name: GetUserID :one

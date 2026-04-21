@@ -54,6 +54,18 @@ FROM
 WHERE
     quadrant_id = $1;
 
+-- name: GetAllTechnologies :many
+SELECT
+    id,
+    name,
+    blip_id,
+    quadrant_id,
+    created_at,
+    updated_at
+FROM
+    technology
+ORDER BY name;
+
 -- name: UpdateTechnology :one
 UPDATE technology
 SET name = $2,
@@ -111,6 +123,16 @@ DELETE FROM blips
 WHERE
     id = $1;
 
+-- name: GetAllBlips :many
+SELECT
+    id,
+    context::text,
+    created_at,
+    updated_at
+FROM
+    blips
+ORDER BY id;
+
 -- name: CreateUser :one
 INSERT INTO users (
     id,
@@ -156,6 +178,19 @@ FROM
     users
 WHERE
     email = $1;
+
+-- name: GetAllUsers :many
+SELECT
+    id,
+    name,
+    email,
+    username,
+    hashed_password,
+    created_at,
+    last_logged_in
+FROM
+    users
+ORDER BY name;
 
 -- name: UpdateUser :one
 UPDATE users

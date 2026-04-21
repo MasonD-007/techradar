@@ -37,6 +37,26 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/handlers.Error"
+    get:
+      description: Get all blips
+      tags:
+        - blips
+      summary: Get all blips
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/handlers.Blip"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
   "/blips/{id}":
     get:
       description: Get blip by ID
@@ -166,6 +186,26 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/handlers.Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+    get:
+      description: Get all technologies
+      tags:
+        - technologies
+      summary: Get all technologies
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/handlers.Technology"
         "500":
           description: Internal Server Error
           content:
@@ -514,6 +554,26 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/handlers.Error"
+    get:
+      description: Get all users
+      tags:
+        - users
+      summary: Get all users
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/handlers.User"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
   "/users/by-email/{email}":
     get:
       description: Get user by email
@@ -696,10 +756,7 @@ components:
     handlers.Blip:
       type: object
       properties:
-        context:
-          type: array
-          items:
-            type: integer
+        context: {}
         created_at:
           type: string
         id:

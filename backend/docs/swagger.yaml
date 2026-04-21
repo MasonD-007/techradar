@@ -2,10 +2,7 @@ basePath: /
 definitions:
   handlers.Blip:
     properties:
-      context:
-        items:
-          type: integer
-        type: array
+      context: {}
       created_at:
         type: string
       id:

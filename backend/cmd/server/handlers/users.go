@@ -86,6 +86,36 @@ func GetUserByEmail(q Querier) http.HandlerFunc {
 	}
 }
 
+// GetAllUsers godoc
+// @Summary Get all users
+// @Description Get all users
+// @Tags users
+// @Accept json
+// @Produce json
+// @Success 200 {array} User
+// @Failure 500 {object} Error
+// @Router /users [get]
+func GetAllUsers(q Querier) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		users, err := q.GetAllUsers(r.Context())
+		if err != nil {
+			http.Error(w, "Failed to fetch users", http.StatusInternalServerError)
+			return
+		}
+
+		if users == nil {
+			users = []db.User{}
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		err = json.NewEncoder(w).Encode(users)
+		if err != nil {
+			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+			return
+		}
+	}
+}
+
 // CreateUser godoc
 // @Summary Create a user
 // @Description Create a new user
@@ -104,6 +134,8 @@ func CreateUser(q Querier) http.HandlerFunc {
 			http.Error(w, "Invalid request body", http.StatusBadRequest)
 			return
 		}
+
+		params.ID = uuidutil.New()
 
 		user, err := q.CreateUser(r.Context(), db.CreateUserParams{
 			ID:             params.ID,

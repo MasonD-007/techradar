@@ -1155,7 +1155,7 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         "handlers.Blip": {
-            context?: number[];
+            context?: unknown;
             created_at?: string;
             id?: number;
             updated_at?: string;

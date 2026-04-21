@@ -87,6 +87,7 @@ func main() {
 }
 
 func registerBlipsRoutes(r chi.Router, q *db.Queries) {
+	r.Get("/blips", loggingMiddleware(handlers.GetAllBlips(q)))
 	r.Post("/blips", loggingMiddleware(handlers.CreateBlip(q)))
 	r.Get("/blips/{id}", loggingMiddleware(handlers.GetBlip(q)))
 	r.Put("/blips/{id}", loggingMiddleware(handlers.UpdateBlip(q)))
@@ -94,6 +95,7 @@ func registerBlipsRoutes(r chi.Router, q *db.Queries) {
 }
 
 func registerTechnologiesRoutes(r chi.Router, q *db.Queries) {
+	r.Get("/technologies", loggingMiddleware(handlers.GetAllTechnologies(q)))
 	r.Post("/technologies", loggingMiddleware(handlers.CreateTechnology(q)))
 	r.Get("/technologies/{id}", loggingMiddleware(handlers.GetTechnology(q)))
 	r.Get("/technologies/by-name/{name}", loggingMiddleware(handlers.GetTechnologyByName(q)))
@@ -103,6 +105,7 @@ func registerTechnologiesRoutes(r chi.Router, q *db.Queries) {
 }
 
 func registerUsersRoutes(r chi.Router, q *db.Queries) {
+	r.Get("/users", loggingMiddleware(handlers.GetAllUsers(q)))
 	r.Post("/users", loggingMiddleware(handlers.CreateUser(q)))
 	r.Get("/users/{id}", loggingMiddleware(handlers.GetUser(q)))
 	r.Get("/users/by-email/{email}", loggingMiddleware(handlers.GetUserByEmail(q)))

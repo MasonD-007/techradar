@@ -131,6 +131,36 @@ func GetTechnologiesByQuadrant(q Querier) http.HandlerFunc {
 	}
 }
 
+// GetAllTechnologies godoc
+// @Summary Get all technologies
+// @Description Get all technologies
+// @Tags technologies
+// @Accept json
+// @Produce json
+// @Success 200 {array} Technology
+// @Failure 500 {object} Error
+// @Router /technologies [get]
+func GetAllTechnologies(q Querier) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		technologies, err := q.GetAllTechnologies(r.Context())
+		if err != nil {
+			http.Error(w, "Failed to fetch technologies", http.StatusInternalServerError)
+			return
+		}
+
+		if technologies == nil {
+			technologies = []db.Technology{}
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		err = json.NewEncoder(w).Encode(technologies)
+		if err != nil {
+			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+			return
+		}
+	}
+}
+
 // CreateTechnology godoc
 // @Summary Create a technology
 // @Description Create a new technology
@@ -149,6 +179,8 @@ func CreateTechnology(q Querier) http.HandlerFunc {
 			http.Error(w, "Invalid request body", http.StatusBadRequest)
 			return
 		}
+
+		params.ID = uuidutil.New()
 
 		tech, err := q.CreateTechnology(r.Context(), db.CreateTechnologyParams{
 			ID:         params.ID,
