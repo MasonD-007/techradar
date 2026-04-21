@@ -14,6 +14,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import SSOButtons from "./SSO-buttons";
 
 export const { fieldContext, formContext, useFieldContext } =
 	createFormHookContexts();
@@ -78,6 +79,7 @@ export default function LoginForm() {
 				>
 					Login
 				</Button>
+				<SSOButtons />
 				{/* <Button variant="outline" className="w-full">
                         Login with Google
                     </Button> */}
