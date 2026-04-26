@@ -1,13 +1,18 @@
 import { Button } from "@/components/ui/button";
+import type { Technology } from "@/lib/actions";
 
 export default function AddTechnologyButton({
+	userId,
 	tech,
 	selected,
 }: {
+	userId: string;
 	// TODO: make typesafe
-	tech: { id: string; name: string; quadrant_id?: number };
+	tech: Technology;
 	selected?: boolean;
 }) {
+	const addTechnology = () => {};
+
 	return (
 		<Button asChild>
 			<div

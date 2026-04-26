@@ -7,46 +7,34 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { api } from "@/lib/api";
+import {
+	getTechnologies,
+	getTechnologiesByUser,
+	type Technology,
+} from "@/lib/actions";
 import { useEffect, useState } from "react";
 import AddTechnologyButton from "./add-technology-button";
-
-type Technology = {
-	id: string;
-	name: string;
-	quadrant_id?: number;
-};
-
-type RadarClient = {
-	GET(
-		path: "/technologies",
-		init: Record<string, never>,
-	): Promise<{
-		data?: Technology[];
-		error?: unknown;
-		response?: Response;
-	}>;
-};
 
 export default function SearchTechnologiesDialogContent() {
 	const [search, setSearch] = useState("");
 	const [technologies, setTechnologies] = useState<Technology[]>([]);
+	const [selectedTechnologyIds, setSelectedTechnologyIds] = useState<string[]>(
+		[],
+	);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
+
+	const userId = "demo-user"; // TODO: get from auth context
 
 	useEffect(() => {
 		const fetchTechnologies = async () => {
 			setIsLoading(true);
 			setError(null);
 
-			const client = api as unknown as RadarClient;
-			const technologiesResult = await client.GET("/technologies", {});
+			const technologiesResult = await getTechnologies();
 
-			if (
-				technologiesResult.error ||
-				(technologiesResult.response && !technologiesResult.response.ok)
-			) {
-				setError("Failed to load technologies");
+			if (!technologiesResult.success) {
+				setError(technologiesResult.error || "Failed to load technologies");
 				setTechnologies([]);
 				setIsLoading(false);
 				return;
@@ -57,6 +45,28 @@ export default function SearchTechnologiesDialogContent() {
 		};
 
 		void fetchTechnologies();
+	}, []);
+
+	useEffect(() => {
+		const fetchUserTechnologies = async () => {
+			const userTechnologiesResult = await getTechnologiesByUser(userId);
+
+			if (!userTechnologiesResult.success) {
+				setError(
+					userTechnologiesResult.error || "Failed to load user technologies",
+				);
+				setSelectedTechnologyIds([]);
+				return;
+			}
+
+			const selectedIds = (userTechnologiesResult.data || [])
+				.map((item) => item.id)
+				.filter((id): id is string => Boolean(id));
+
+			setSelectedTechnologyIds(selectedIds);
+		};
+
+		void fetchUserTechnologies();
 	}, []);
 
 	const filtered = technologies.filter((tech) => {
@@ -88,7 +98,12 @@ export default function SearchTechnologiesDialogContent() {
 				{!isLoading && !error && (
 					<div className="max-h-72 space-y-2 overflow-y-auto">
 						{filtered.map((tech) => (
-							<AddTechnologyButton tech={tech} key={tech.id} />
+							<AddTechnologyButton
+								userId={userId}
+								tech={tech}
+								selected={selectedTechnologyIds.includes(tech.id ?? "")}
+								key={tech.id}
+							/>
 						))}
 						{filtered.length === 0 && (
 							<p className="text-muted-foreground text-sm">
