@@ -10,6 +10,7 @@ const apiClient = api as any;
 export type Blip = components["schemas"]["handlers.Blip"];
 export type Technology = components["schemas"]["handlers.Technology"];
 export type User = components["schemas"]["handlers.User"];
+export type UserTechnology = components["schemas"]["handlers.UserTechnology"];
 type CreateBlipRequest = components["schemas"]["handlers.CreateBlipRequest"];
 type UpdateBlipRequest = components["schemas"]["handlers.UpdateBlipRequest"];
 type CreateTechnologyRequest =
@@ -18,6 +19,8 @@ type UpdateTechnologyRequest =
 	components["schemas"]["handlers.UpdateTechnologyRequest"];
 type CreateUserRequest = components["schemas"]["handlers.CreateUserRequest"];
 type UpdateUserRequest = components["schemas"]["handlers.UpdateUserRequest"];
+type CreateUserTechnologyRequest =
+	components["schemas"]["handlers.CreateUserTechnologyRequest"];
 type ApiError = components["schemas"]["handlers.Error"];
 
 export interface ActionResult<T = unknown> {
@@ -571,5 +574,53 @@ export async function deleteUser(id: string): Promise<ActionResult> {
 	} catch (error) {
 		logError("deleteUser", "ERROR", getErrorMessage(error), { id });
 		return { success: false, error: "Failed to delete user" };
+	}
+}
+
+export async function addTechnologyToUser(
+	userId: string,
+	technologyId: string,
+): Promise<ActionResult<UserTechnology>> {
+	logInfo("addTechnologyToUser", "START", { userId, technologyId });
+
+	if (!userId || !technologyId) {
+		return { success: false, error: "userId and technologyId are required" };
+	}
+
+	try {
+		const body: CreateUserTechnologyRequest = {
+			user_id: userId,
+			technology_id: technologyId,
+		};
+		const result = (await apiClient.POST("/user-technologies", {
+			body,
+		})) as any as {
+			data?: UserTechnology;
+			response: Response;
+		};
+		const { data, response } = result;
+
+		if (!response.ok) {
+			const msg = getErrorMessage(data);
+			logError("addTechnologyToUser", "ERROR", msg, {
+				userId,
+				technologyId,
+				status: response.status,
+			});
+			return { success: false, error: msg };
+		}
+
+		logInfo("addTechnologyToUser", "SUCCESS", {
+			userId,
+			technologyId,
+			id: data?.id,
+		});
+		return { success: true, data };
+	} catch (error) {
+		logError("addTechnologyToUser", "ERROR", getErrorMessage(error), {
+			userId,
+			technologyId,
+		});
+		return { success: false, error: "Failed to add technology to user" };
 	}
 }
