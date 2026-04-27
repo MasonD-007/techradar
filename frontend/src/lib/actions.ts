@@ -299,44 +299,17 @@ export async function createTechnology(
 ): Promise<ActionResult<Technology>> {
 	const name = formData.get("name") as string;
 	const quadrantId = formData.get("quadrant_id") as string;
-	const blipId = formData.get("blip_id") as string;
 
-	logInfo("createTechnology", "START", { name, quadrantId, blipId });
+	logInfo("createTechnology", "START", { name, quadrantId });
 
 	if (!name || !quadrantId) {
 		return { success: false, error: "Name and quadrant_id are required" };
 	}
 
 	try {
-		let finalBlipId: number;
-
-		if (blipId) {
-			finalBlipId = parseInt(blipId, 10);
-		} else {
-			const blipBody: CreateBlipRequest = {
-				context: { created_from: "auto-technology" },
-			};
-			const blipResult = (await apiClient.POST("/blips", {
-				body: blipBody,
-			})) as any as { data?: Blip; response: Response };
-			if (!blipResult.response.ok || !blipResult.data) {
-				const msg = getErrorMessage(blipResult.data);
-				logError(
-					"createTechnology",
-					"ERROR",
-					`Failed to create blip: ${msg}`,
-					{},
-				);
-				return { success: false, error: "Failed to create blip" };
-			}
-			finalBlipId = blipResult.data.id as number;
-			logInfo("createTechnology", "AUTO_BLIP", { blipId: finalBlipId });
-		}
-
 		const body: CreateTechnologyRequest = {
 			name,
 			quadrant_id: parseInt(quadrantId, 10),
-			blip_id: finalBlipId,
 		};
 		const result = (await apiClient.POST("/technologies", { body })) as any as {
 			data?: Technology;

@@ -16,6 +16,36 @@ const docTemplate = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/blips": {
+            "get": {
+                "description": "Get all blips",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "blips"
+                ],
+                "summary": "Get all blips",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handlers.Blip"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Create a new blip",
                 "consumes": [
@@ -202,8 +232,38 @@ const docTemplate = `{
             }
         },
         "/technologies": {
+            "get": {
+                "description": "Get all technologies",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "technologies"
+                ],
+                "summary": "Get all technologies",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handlers.Technology"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    }
+                }
+            },
             "post": {
-                "description": "Create a new technology",
+                "description": "Create a new technology (automatically creates a blip)",
                 "consumes": [
                     "application/json"
                 ],
@@ -671,6 +731,36 @@ const docTemplate = `{
             }
         },
         "/users": {
+            "get": {
+                "description": "Get all users",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get all users",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handlers.User"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Create a new user",
                 "consumes": [
@@ -982,9 +1072,6 @@ const docTemplate = `{
         "handlers.CreateTechnologyRequest": {
             "type": "object",
             "properties": {
-                "blip_id": {
-                    "type": "integer"
-                },
                 "id": {
                     "type": "string"
                 },

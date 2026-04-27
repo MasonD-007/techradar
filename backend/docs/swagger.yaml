@@ -18,8 +18,6 @@ definitions:
     type: object
   handlers.CreateTechnologyRequest:
     properties:
-      blip_id:
-        type: integer
       id:
         type: string
       name:
@@ -169,6 +167,26 @@ info:
   version: "1.0"
 paths:
   /blips:
+    get:
+      consumes:
+      - application/json
+      description: Get all blips
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/handlers.Blip'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      summary: Get all blips
+      tags:
+      - blips
     post:
       consumes:
       - application/json
@@ -292,10 +310,30 @@ paths:
       tags:
       - blips
   /technologies:
+    get:
+      consumes:
+      - application/json
+      description: Get all technologies
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/handlers.Technology'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      summary: Get all technologies
+      tags:
+      - technologies
     post:
       consumes:
       - application/json
-      description: Create a new technology
+      description: Create a new technology (automatically creates a blip)
       parameters:
       - description: Technology data
         in: body
@@ -602,6 +640,26 @@ paths:
       tags:
       - user-technologies
   /users:
+    get:
+      consumes:
+      - application/json
+      description: Get all users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/handlers.User'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      summary: Get all users
+      tags:
+      - users
     post:
       consumes:
       - application/json

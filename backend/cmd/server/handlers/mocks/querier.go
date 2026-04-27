@@ -40,6 +40,12 @@ func (m *MockQuerier) DeleteBlip(ctx context.Context, id int32) error {
 	return args.Error(0)
 }
 
+func (m *MockQuerier) GetAllBlips(ctx context.Context) ([]db.GetAllBlipsRow, error) {
+	args := m.Called(ctx)
+	list, _ := args.Get(0).([]db.GetAllBlipsRow)
+	return list, args.Error(1)
+}
+
 func (m *MockQuerier) GetTechnologyID(ctx context.Context, id pgtype.UUID) (db.Technology, error) {
 	args := m.Called(ctx, id)
 	tech, _ := args.Get(0).(db.Technology)
@@ -54,6 +60,12 @@ func (m *MockQuerier) GetTechnologyName(ctx context.Context, name string) (db.Te
 
 func (m *MockQuerier) GetTechnologyQuad(ctx context.Context, quadrantID int32) ([]db.Technology, error) {
 	args := m.Called(ctx, quadrantID)
+	list, _ := args.Get(0).([]db.Technology)
+	return list, args.Error(1)
+}
+
+func (m *MockQuerier) GetAllTechnologies(ctx context.Context) ([]db.Technology, error) {
+	args := m.Called(ctx)
 	list, _ := args.Get(0).([]db.Technology)
 	return list, args.Error(1)
 }
@@ -85,6 +97,12 @@ func (m *MockQuerier) GetUserEmail(ctx context.Context, email string) (db.User, 
 	args := m.Called(ctx, email)
 	user, _ := args.Get(0).(db.User)
 	return user, args.Error(1)
+}
+
+func (m *MockQuerier) GetAllUsers(ctx context.Context) ([]db.User, error) {
+	args := m.Called(ctx)
+	list, _ := args.Get(0).([]db.User)
+	return list, args.Error(1)
 }
 
 func (m *MockQuerier) CreateUser(ctx context.Context, params db.CreateUserParams) (db.User, error) {

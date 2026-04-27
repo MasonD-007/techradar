@@ -6,6 +6,26 @@ info:
   version: "1.0"
 paths:
   /blips:
+    get:
+      description: Get all blips
+      tags:
+        - blips
+      summary: Get all blips
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/handlers.Blip"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
     post:
       description: Create a new blip
       tags:
@@ -31,26 +51,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/handlers.Error"
-        "500":
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/handlers.Error"
-    get:
-      description: Get all blips
-      tags:
-        - blips
-      summary: Get all blips
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/handlers.Blip"
         "500":
           description: Internal Server Error
           content:
@@ -161,8 +161,28 @@ paths:
               schema:
                 $ref: "#/components/schemas/handlers.Error"
   /technologies:
+    get:
+      description: Get all technologies
+      tags:
+        - technologies
+      summary: Get all technologies
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/handlers.Technology"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
     post:
-      description: Create a new technology
+      description: Create a new technology (automatically creates a blip)
       tags:
         - technologies
       summary: Create a technology
@@ -186,26 +206,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/handlers.Error"
-        "500":
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/handlers.Error"
-    get:
-      description: Get all technologies
-      tags:
-        - technologies
-      summary: Get all technologies
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/handlers.Technology"
         "500":
           description: Internal Server Error
           content:
@@ -523,6 +523,26 @@ paths:
               schema:
                 $ref: "#/components/schemas/handlers.Error"
   /users:
+    get:
+      description: Get all users
+      tags:
+        - users
+      summary: Get all users
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/handlers.User"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
     post:
       description: Create a new user
       tags:
@@ -548,26 +568,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/handlers.Error"
-        "500":
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/handlers.Error"
-    get:
-      description: Get all users
-      tags:
-        - users
-      summary: Get all users
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/handlers.User"
         "500":
           description: Internal Server Error
           content:
@@ -772,8 +772,6 @@ components:
     handlers.CreateTechnologyRequest:
       type: object
       properties:
-        blip_id:
-          type: integer
         id:
           type: string
         name:

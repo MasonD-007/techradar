@@ -6,10 +6,12 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/MasonD-007/template/backend/cmd/server/handlers"
 	_ "github.com/MasonD-007/template/backend/docs"
+	"github.com/MasonD-007/template/backend/internal/auth"
 	"github.com/MasonD-007/template/backend/internal/db"
 	"github.com/MasonD-007/template/backend/internal/db/migrate"
 	"github.com/MasonD-007/template/backend/internal/db/postgres"
@@ -26,6 +28,16 @@ import (
 // @BasePath /
 func main() {
 	_ = godotenv.Load("../.env")
+
+	jwtSecret := os.Getenv("JWT_SECRET")
+	if jwtSecret == "" {
+		log.Fatal("JWT_SECRET is not set in environment variables")
+	}
+	tokenExpiry, _ := strconv.Atoi(os.Getenv("TOKEN_EXPIRY_HOUR"))
+	if tokenExpiry == 0 {
+		tokenExpiry = 24
+	}
+	auth.InitAuth(jwtSecret, tokenExpiry)
 
 	dbURL := os.Getenv("DATABASE_URL")
 	if dbURL == "" {
@@ -59,6 +71,7 @@ func main() {
 		MaxAge:           300,
 	}))
 
+	registerAuthRoutes(r, q)
 	registerBlipsRoutes(r, q)
 	registerTechnologiesRoutes(r, q)
 	registerUsersRoutes(r, q)
@@ -84,6 +97,12 @@ func main() {
 	fmt.Println("Server starting on :8080")
 	fmt.Println("Swagger docs at http://localhost:8080/swagger/index.html")
 	log.Fatal(http.ListenAndServe(":8080", r))
+}
+
+func registerAuthRoutes(r chi.Router, q *db.Queries) {
+	r.Post("/auth/register", loggingMiddleware(handlers.Register(q)))
+	r.Post("/auth/login", loggingMiddleware(handlers.Login(q)))
+	r.Post("/auth/logout", loggingMiddleware(AuthMiddleware(handlers.Logout(q))))
 }
 
 func registerBlipsRoutes(r chi.Router, q *db.Queries) {
