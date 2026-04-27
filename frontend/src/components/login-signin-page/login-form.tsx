@@ -80,9 +80,6 @@ export default function LoginForm() {
 					Login
 				</Button>
 				<SSOButtons />
-				{/* <Button variant="outline" className="w-full">
-                        Login with Google
-                    </Button> */}
 			</CardFooter>
 		</Card>
 	);
