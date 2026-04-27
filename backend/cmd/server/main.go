@@ -88,7 +88,6 @@ func main() {
 
 func registerBlipsRoutes(r chi.Router, q *db.Queries) {
 	r.Get("/blips", loggingMiddleware(handlers.GetAllBlips(q)))
-	r.Post("/blips", loggingMiddleware(handlers.CreateBlip(q)))
 	r.Get("/blips/{id}", loggingMiddleware(handlers.GetBlip(q)))
 	r.Put("/blips/{id}", loggingMiddleware(handlers.UpdateBlip(q)))
 	r.Delete("/blips/{id}", loggingMiddleware(handlers.DeleteBlip(q)))

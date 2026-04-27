@@ -163,7 +163,7 @@ func GetAllTechnologies(q Querier) http.HandlerFunc {
 
 // CreateTechnology godoc
 // @Summary Create a technology
-// @Description Create a new technology
+// @Description Create a new technology (automatically creates a blip)
 // @Tags technologies
 // @Accept json
 // @Produce json
@@ -182,10 +182,22 @@ func CreateTechnology(q Querier) http.HandlerFunc {
 
 		params.ID = uuidutil.New()
 
+		initialContext, _ := json.Marshal(map[string]interface{}{
+			"status":   "new",
+			"ring":     "adopt",
+			"category": params.Name,
+		})
+
+		blip, err := q.CreateBlip(r.Context(), initialContext)
+		if err != nil {
+			http.Error(w, "Failed to create blip", http.StatusInternalServerError)
+			return
+		}
+
 		tech, err := q.CreateTechnology(r.Context(), db.CreateTechnologyParams{
 			ID:         params.ID,
 			Name:       params.Name,
-			BlipID:     params.BlipID,
+			BlipID:     blip.ID,
 			QuadrantID: params.QuadrantID,
 		})
 		if err != nil {

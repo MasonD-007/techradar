@@ -15,7 +15,6 @@ type UpdateBlipRequest struct {
 type CreateTechnologyRequest struct {
 	ID         pgtype.UUID `json:"id"`
 	Name       string      `json:"name"`
-	BlipID     int32       `json:"blip_id"`
 	QuadrantID int32       `json:"quadrant_id"`
 }
 
