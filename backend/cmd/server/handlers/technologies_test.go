@@ -201,6 +201,7 @@ func TestCreateTechnology(t *testing.T) {
 			name: "database error returns 500",
 			body: `{"id":"` + validUUIDStr + `", "name":"NewTech", "blip_id":1, "quadrant_id":2}`,
 			mockExpect: func(m *mocks.MockQuerier) {
+				m.On("CreateBlip", mock.Anything, mock.Anything).Return(db.Blip{ID: 1}, nil)
 				m.On("CreateTechnology", mock.Anything, mock.AnythingOfType("db.CreateTechnologyParams")).Return(db.Technology{}, errors.New("db error"))
 			},
 			wantCode: http.StatusInternalServerError,
@@ -209,6 +210,7 @@ func TestCreateTechnology(t *testing.T) {
 			name: "successful create returns 201",
 			body: `{"id":"` + validUUIDStr + `", "name":"NewTech", "blip_id":1, "quadrant_id":2}`,
 			mockExpect: func(m *mocks.MockQuerier) {
+				m.On("CreateBlip", mock.Anything, mock.Anything).Return(db.Blip{ID: 1}, nil)
 				m.On("CreateTechnology", mock.Anything, mock.AnythingOfType("db.CreateTechnologyParams")).Return(db.Technology{ID: validUUID, Name: "NewTech"}, nil)
 			},
 			wantCode: http.StatusCreated,

@@ -14,6 +14,7 @@ type contextKey string
 
 const userIDKey contextKey = "user_id"
 const usernameKey contextKey = "username"
+const roleKey contextKey = "role"
 
 func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -48,6 +49,7 @@ func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 
 		ctx := context.WithValue(r.Context(), userIDKey, userID)
 		ctx = context.WithValue(ctx, usernameKey, claims.Username)
+		ctx = context.WithValue(ctx, roleKey, claims.Role)
 
 		next(w, r.WithContext(ctx))
 	}
@@ -61,4 +63,20 @@ func GetUserIDFromRequest(r *http.Request) (uuid.UUID, bool) {
 func GetUsernameFromRequest(r *http.Request) (string, bool) {
 	username, ok := r.Context().Value(usernameKey).(string)
 	return username, ok
+}
+
+func GetRoleFromRequest(r *http.Request) (string, bool) {
+	role, ok := r.Context().Value(roleKey).(string)
+	return role, ok
+}
+
+func AdminMiddleware(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		role, ok := GetRoleFromRequest(r)
+		if !ok || role != "admin" {
+			http.Error(w, "Admin access required", http.StatusForbidden)
+			return
+		}
+		next(w, r)
+	}
 }

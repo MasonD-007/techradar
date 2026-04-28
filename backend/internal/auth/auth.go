@@ -27,6 +27,7 @@ type User struct {
 type Claims struct {
 	UserID   string `json:"user_id"`
 	Username string `json:"username"`
+	Role     string `json:"role"`
 	jwt.RegisteredClaims
 }
 
@@ -48,10 +49,11 @@ func CheckPassword(password, hash string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 }
 
-func GenerateToken(userID uuid.UUID, username string) (string, error) {
+func GenerateToken(userID uuid.UUID, username, role string) (string, error) {
 	claims := &Claims{
 		UserID:   userID.String(),
 		Username: username,
+		Role:     role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(tokenExpiry)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
@@ -83,4 +85,9 @@ func ValidateToken(tokenString string) (*Claims, error) {
 func GetUserIDFromContext(ctx context.Context) (uuid.UUID, bool) {
 	userID, ok := ctx.Value("user_id").(uuid.UUID)
 	return userID, ok
+}
+
+func GetRoleFromContext(ctx context.Context) (string, bool) {
+	role, ok := ctx.Value("role").(string)
+	return role, ok
 }

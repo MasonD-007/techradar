@@ -10,6 +10,11 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const (
+	ErrOwnership    = "You do not have permission to access this resource"
+	ErrNotFound    = "User technology not found"
+)
+
 // GetUserTechnology godoc
 // @Summary Get a user technology
 // @Description Get user technology by ID
@@ -38,7 +43,14 @@ func GetUserTechnology(q Querier) http.HandlerFunc {
 
 		ut, err := q.GetUserTechnologyID(r.Context(), id)
 		if err != nil {
-			http.Error(w, "User technology not found", http.StatusNotFound)
+			http.Error(w, ErrNotFound, http.StatusNotFound)
+			return
+		}
+
+		userID, ok := GetUserIDFromRequest(r)
+		role, _ := GetRoleFromRequest(r)
+		if ok && ut.UserID.Bytes != userID && role != "admin" {
+			http.Error(w, ErrOwnership, http.StatusForbidden)
 			return
 		}
 
@@ -61,7 +73,7 @@ func GetUserTechnology(q Querier) http.HandlerFunc {
 // @Success 200 {array} UserTechnology
 // @Failure 400 {object} Error
 // @Failure 500 {object} Error
-// @Router /users/{user_id}/technologies [get]
+// @Router /user-technologies/user/{user_id} [get]
 func GetUserTechnologiesByUser(q Querier) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		userIDStr := r.PathValue("user_id")
@@ -162,6 +174,19 @@ func DeleteUserTechnology(q Querier) http.HandlerFunc {
 			return
 		}
 
+		existingUT, err := q.GetUserTechnologyID(r.Context(), id)
+		if err != nil {
+			http.Error(w, ErrNotFound, http.StatusNotFound)
+			return
+		}
+
+		userID, ok := GetUserIDFromRequest(r)
+		role, _ := GetRoleFromRequest(r)
+		if !ok || (existingUT.UserID.Bytes != userID && role != "admin") {
+			http.Error(w, ErrOwnership, http.StatusForbidden)
+			return
+		}
+
 		if err := q.DeleteUserTechnology(r.Context(), id); err != nil {
 			http.Error(w, "Failed to delete user technology", http.StatusInternalServerError)
 			return
@@ -194,6 +219,19 @@ func UpdateUserTechnology(q Querier) http.HandlerFunc {
 		id, err := uuidutil.Parse(idStr)
 		if err != nil {
 			http.Error(w, "Invalid id", http.StatusBadRequest)
+			return
+		}
+
+		existingUT, err := q.GetUserTechnologyID(r.Context(), id)
+		if err != nil {
+			http.Error(w, ErrNotFound, http.StatusNotFound)
+			return
+		}
+
+		userID, ok := GetUserIDFromRequest(r)
+		role, _ := GetRoleFromRequest(r)
+		if !ok || (existingUT.UserID.Bytes != userID && role != "admin") {
+			http.Error(w, ErrOwnership, http.StatusForbidden)
 			return
 		}
 

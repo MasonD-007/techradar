@@ -10,15 +10,21 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const (
+	ErrUserNotFound  = "User not found"
+	ErrUserOwnership = "You can only access your own profile"
+)
+
 // GetUser godoc
 // @Summary Get a user
-// @Description Get user by ID
+// @Description Get user by ID (only own profile or admin)
 // @Tags users
 // @Accept json
 // @Produce json
 // @Param id path string true "User ID"
 // @Success 200 {object} User
 // @Failure 400 {object} Error
+// @Failure 403 {object} Error
 // @Failure 404 {object} Error
 // @Failure 500 {object} Error
 // @Router /users/{id} [get]
@@ -38,7 +44,14 @@ func GetUser(q Querier) http.HandlerFunc {
 
 		user, err := q.GetUserID(r.Context(), id)
 		if err != nil {
-			http.Error(w, "User not found", http.StatusNotFound)
+			http.Error(w, ErrUserNotFound, http.StatusNotFound)
+			return
+		}
+
+		authUserID, ok := GetUserIDFromRequest(r)
+		role, _ := GetRoleFromRequest(r)
+		if !ok || (user.ID.Bytes != authUserID && role != "admin") {
+			http.Error(w, ErrUserOwnership, http.StatusForbidden)
 			return
 		}
 
@@ -196,7 +209,7 @@ func DeleteUser(q Querier) http.HandlerFunc {
 
 // UpdateUser godoc
 // @Summary Update a user
-// @Description Update user by ID
+// @Description Update user by ID (only own profile or admin)
 // @Tags users
 // @Accept json
 // @Produce json
@@ -204,6 +217,7 @@ func DeleteUser(q Querier) http.HandlerFunc {
 // @Param User body UpdateUserRequest true "User data"
 // @Success 200 {object} User
 // @Failure 400 {object} Error
+// @Failure 403 {object} Error
 // @Failure 500 {object} Error
 // @Router /users/{id} [put]
 func UpdateUser(q Querier) http.HandlerFunc {
@@ -220,10 +234,28 @@ func UpdateUser(q Querier) http.HandlerFunc {
 			return
 		}
 
+		existingUser, err := q.GetUserID(r.Context(), id)
+		if err != nil {
+			http.Error(w, ErrUserNotFound, http.StatusNotFound)
+			return
+		}
+
+		authUserID, ok := GetUserIDFromRequest(r)
+		role, _ := GetRoleFromRequest(r)
+		if !ok || (existingUser.ID.Bytes != authUserID && role != "admin") {
+			http.Error(w, ErrUserOwnership, http.StatusForbidden)
+			return
+		}
+
 		var params dto.UpdateUserRequest
 		if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
 			http.Error(w, "Invalid request body", http.StatusBadRequest)
 			return
+		}
+
+		userRole := existingUser.Role
+		if role == "admin" && params.Role != "" {
+			userRole = params.Role
 		}
 
 		user, err := q.UpdateUser(r.Context(), db.UpdateUserParams{
@@ -232,6 +264,7 @@ func UpdateUser(q Querier) http.HandlerFunc {
 			Email:          params.Email,
 			Username:       params.Username,
 			HashedPassword: params.HashedPassword,
+			Role:           userRole,
 			LastLoggedIn:   params.LastLoggedIn,
 		})
 		if err != nil {

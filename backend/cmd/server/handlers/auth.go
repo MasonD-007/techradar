@@ -11,6 +11,17 @@ import (
 	"github.com/google/uuid"
 )
 
+// Register godoc
+// @Summary Register a new user
+// @Description Create a new user account and return authentication token
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param RegisterRequest body dto.RegisterRequest true "Registration data"
+// @Success 201 {object} dto.AuthResponse
+// @Failure 400 {object} Error
+// @Failure 500 {object} Error
+// @Router /auth/register [post]
 func Register(q Querier) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req dto.RegisterRequest
@@ -37,13 +48,14 @@ func Register(q Querier) http.HandlerFunc {
 			Email:          req.Email,
 			Username:       req.Username,
 			HashedPassword: hashedPassword,
+			Role:           "user",
 		})
 		if err != nil {
 			http.Error(w, "Failed to create user", http.StatusInternalServerError)
 			return
 		}
 
-		token, err := auth.GenerateToken(userUUID, user.Username)
+		token, err := auth.GenerateToken(userUUID, user.Username, user.Role)
 		if err != nil {
 			http.Error(w, "Failed to generate token", http.StatusInternalServerError)
 			return
@@ -58,7 +70,7 @@ func Register(q Querier) http.HandlerFunc {
 				Name:     user.Name,
 				Email:    user.Email,
 				Username: user.Username,
-				IsAdmin:  false,
+				IsAdmin:  user.Role == "admin",
 			},
 		}); err != nil {
 			log.Printf("Failed to encode response: %v", err)
@@ -66,6 +78,18 @@ func Register(q Querier) http.HandlerFunc {
 	}
 }
 
+// Login godoc
+// @Summary Login user
+// @Description Authenticate user and return JWT token
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param LoginRequest body dto.LoginRequest true "Login credentials"
+// @Success 200 {object} dto.AuthResponse
+// @Failure 400 {object} Error
+// @Failure 401 {object} Error
+// @Failure 500 {object} Error
+// @Router /auth/login [post]
 func Login(q Querier) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req dto.LoginRequest
@@ -95,7 +119,7 @@ func Login(q Querier) http.HandlerFunc {
 			return
 		}
 
-		token, err := auth.GenerateToken(user.ID.Bytes, user.Username)
+		token, err := auth.GenerateToken(user.ID.Bytes, user.Username, user.Role)
 		if err != nil {
 			http.Error(w, "Failed to generate token", http.StatusInternalServerError)
 			return
@@ -109,7 +133,7 @@ func Login(q Querier) http.HandlerFunc {
 				Name:     user.Name,
 				Email:    user.Email,
 				Username: user.Username,
-				IsAdmin:  false,
+				IsAdmin:  user.Role == "admin",
 			},
 		}); err != nil {
 			log.Printf("Failed to encode response: %v", err)
@@ -117,6 +141,14 @@ func Login(q Querier) http.HandlerFunc {
 	}
 }
 
+// Logout godoc
+// @Summary Logout user
+// @Description Logout current user (client should discard token)
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Success 200 {object} map[string]string
+// @Router /auth/logout [post]
 func Logout(q Querier) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

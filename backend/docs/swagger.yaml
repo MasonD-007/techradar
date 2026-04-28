@@ -1,5 +1,43 @@
 basePath: /
 definitions:
+  dto.AuthResponse:
+    properties:
+      token:
+        type: string
+      user:
+        $ref: '#/definitions/dto.UserDTO'
+    type: object
+  dto.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  dto.RegisterRequest:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  dto.UserDTO:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+      is_admin:
+        type: boolean
+      name:
+        type: string
+      username:
+        type: string
+    type: object
   handlers.Blip:
     properties:
       context: {}
@@ -102,6 +140,8 @@ definitions:
         type: string
       name:
         type: string
+      role:
+        type: string
       username:
         type: string
     type: object
@@ -166,6 +206,87 @@ info:
   title: Tech Radar API
   version: "1.0"
 paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user and return JWT token
+      parameters:
+      - description: Login credentials
+        in: body
+        name: LoginRequest
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AuthResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      summary: Login user
+      tags:
+      - auth
+  /auth/logout:
+    post:
+      consumes:
+      - application/json
+      description: Logout current user (client should discard token)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Logout user
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user account and return authentication token
+      parameters:
+      - description: Registration data
+        in: body
+        name: RegisterRequest
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.AuthResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      summary: Register a new user
+      tags:
+      - auth
   /blips:
     get:
       consumes:
@@ -639,6 +760,37 @@ paths:
       summary: Update a user technology
       tags:
       - user-technologies
+  /user-technologies/user/{user_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get all technologies assigned to a user
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/handlers.UserTechnology'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      summary: Get technologies for a user
+      tags:
+      - user-technologies
   /users:
     get:
       consumes:
@@ -719,7 +871,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get user by ID
+      description: Get user by ID (only own profile or admin)
       parameters:
       - description: User ID
         in: path
@@ -737,6 +889,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/handlers.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.Error'
         "404":
           description: Not Found
           schema:
@@ -751,7 +907,7 @@ paths:
     put:
       consumes:
       - application/json
-      description: Update user by ID
+      description: Update user by ID (only own profile or admin)
       parameters:
       - description: User ID
         in: path
@@ -775,6 +931,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/handlers.Error'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handlers.Error'
         "500":
           description: Internal Server Error
           schema:
@@ -782,37 +942,6 @@ paths:
       summary: Update a user
       tags:
       - users
-  /users/{user_id}/technologies:
-    get:
-      consumes:
-      - application/json
-      description: Get all technologies assigned to a user
-      parameters:
-      - description: User ID
-        in: path
-        name: user_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/handlers.UserTechnology'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handlers.Error'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handlers.Error'
-      summary: Get technologies for a user
-      tags:
-      - user-technologies
   /users/by-email/{email}:
     get:
       consumes:

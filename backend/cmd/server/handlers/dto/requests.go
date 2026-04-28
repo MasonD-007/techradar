@@ -38,6 +38,7 @@ type UpdateUserRequest struct {
 	Email          string             `json:"email"`
 	Username       string             `json:"username"`
 	HashedPassword string             `json:"hashed_password"`
+	Role           string             `json:"role"`
 	LastLoggedIn   pgtype.Timestamptz `json:"last_logged_in" swaggertype:"string"`
 }
 

@@ -1,6 +1,7 @@
 package handlers_test
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -11,14 +12,17 @@ import (
 	"github.com/MasonD-007/template/backend/cmd/server/handlers"
 	"github.com/MasonD-007/template/backend/cmd/server/handlers/mocks"
 	"github.com/MasonD-007/template/backend/internal/db"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
 
 func TestGetUser(t *testing.T) {
+	testUserID := uuid.MustParse(validUUIDStr)
 	tests := []struct {
 		name       string
 		pathID     string
+		userID     string
 		mockExpect func(*mocks.MockQuerier)
 		wantCode   int
 	}{
@@ -42,10 +46,19 @@ func TestGetUser(t *testing.T) {
 		{
 			name:   "successful fetch returns user",
 			pathID: validUUIDStr,
+			userID: validUUIDStr,
 			mockExpect: func(m *mocks.MockQuerier) {
 				m.On("GetUserID", mock.Anything, validUUID).Return(db.User{ID: validUUID, Email: "test@example.com"}, nil)
 			},
 			wantCode: http.StatusOK,
+		},
+		{
+			name:   "unauthorized when different user",
+			pathID: validUUIDStr,
+			mockExpect: func(m *mocks.MockQuerier) {
+				m.On("GetUserID", mock.Anything, validUUID).Return(db.User{ID: validUUID, Email: "test@example.com"}, nil)
+			},
+			wantCode: http.StatusForbidden,
 		},
 	}
 
@@ -60,6 +73,9 @@ func TestGetUser(t *testing.T) {
 			req := httptest.NewRequest(http.MethodGet, "/users/"+tt.pathID, nil)
 			if tt.pathID != "" {
 				req.SetPathValue("id", tt.pathID)
+			}
+			if tt.userID != "" {
+				req = req.WithContext(context.WithValue(req.Context(), "user_id", testUserID))
 			}
 			recorder := httptest.NewRecorder()
 			handler(recorder, req)
@@ -175,10 +191,13 @@ func TestCreateUser(t *testing.T) {
 }
 
 func TestUpdateUser(t *testing.T) {
+	testUserID := uuid.MustParse(validUUIDStr)
+
 	tests := []struct {
 		name       string
 		pathID     string
 		body       string
+		userID     string
 		mockExpect func(*mocks.MockQuerier)
 		wantCode   int
 	}{
@@ -197,13 +216,19 @@ func TestUpdateUser(t *testing.T) {
 			name:     "invalid json returns bad request",
 			pathID:   validUUIDStr,
 			body:     `{bad json}`,
+			userID:   validUUIDStr,
+			mockExpect: func(m *mocks.MockQuerier) {
+				m.On("GetUserID", mock.Anything, validUUID).Return(db.User{ID: validUUID}, nil)
+			},
 			wantCode: http.StatusBadRequest,
 		},
 		{
 			name:   "update error returns 500",
 			pathID: validUUIDStr,
 			body:   `{"email":"new@example.com"}`,
+			userID: validUUIDStr,
 			mockExpect: func(m *mocks.MockQuerier) {
+				m.On("GetUserID", mock.Anything, validUUID).Return(db.User{ID: validUUID}, nil)
 				m.On("UpdateUser", mock.Anything, mock.AnythingOfType("db.UpdateUserParams")).Return(db.User{}, errors.New("fail"))
 			},
 			wantCode: http.StatusInternalServerError,
@@ -212,10 +237,21 @@ func TestUpdateUser(t *testing.T) {
 			name:   "successful update returns payload",
 			pathID: validUUIDStr,
 			body:   `{"email":"new@example.com"}`,
+			userID: validUUIDStr,
 			mockExpect: func(m *mocks.MockQuerier) {
+				m.On("GetUserID", mock.Anything, validUUID).Return(db.User{ID: validUUID}, nil)
 				m.On("UpdateUser", mock.Anything, mock.AnythingOfType("db.UpdateUserParams")).Return(db.User{Email: "new@example.com"}, nil)
 			},
 			wantCode: http.StatusOK,
+		},
+		{
+			name:   "unauthorized when different user",
+			pathID: validUUIDStr,
+			body:   `{"email":"new@example.com"}`,
+			mockExpect: func(m *mocks.MockQuerier) {
+				m.On("GetUserID", mock.Anything, validUUID).Return(db.User{ID: validUUID}, nil)
+			},
+			wantCode: http.StatusForbidden,
 		},
 	}
 
@@ -230,6 +266,9 @@ func TestUpdateUser(t *testing.T) {
 			req := httptest.NewRequest(http.MethodPut, "/users/"+tt.pathID, strings.NewReader(tt.body))
 			if tt.pathID != "" {
 				req.SetPathValue("id", tt.pathID)
+			}
+			if tt.userID != "" {
+				req = req.WithContext(context.WithValue(req.Context(), "user_id", testUserID))
 			}
 			recorder := httptest.NewRecorder()
 			handler(recorder, req)

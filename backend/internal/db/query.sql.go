@@ -90,14 +90,16 @@ INSERT INTO users (
     email,
     username,
     hashed_password,
+    role,
     last_logged_in
 )
-VALUES ($1, $2, $3, $4, $5, $6)
+VALUES ($1, $2, $3, $4, $5, $6, $7)
 RETURNING id,
     name,
     email,
     username,
     hashed_password,
+    role,
     created_at,
     last_logged_in
 `
@@ -108,6 +110,7 @@ type CreateUserParams struct {
 	Email          string             `json:"email"`
 	Username       string             `json:"username"`
 	HashedPassword string             `json:"hashed_password"`
+	Role           string             `json:"role"`
 	LastLoggedIn   pgtype.Timestamptz `json:"last_logged_in"`
 }
 
@@ -118,6 +121,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		arg.Email,
 		arg.Username,
 		arg.HashedPassword,
+		arg.Role,
 		arg.LastLoggedIn,
 	)
 	var i User
@@ -127,6 +131,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.Email,
 		&i.Username,
 		&i.HashedPassword,
+		&i.Role,
 		&i.CreatedAt,
 		&i.LastLoggedIn,
 	)
@@ -219,37 +224,6 @@ func (q *Queries) DeleteUserTechnology(ctx context.Context, id pgtype.UUID) erro
 	return err
 }
 
-const getBlip = `-- name: GetBlip :one
-SELECT
-    id,
-    context::text,
-    created_at,
-    updated_at
-FROM
-    blips
-WHERE
-    id = $1
-`
-
-type GetBlipRow struct {
-	ID        int32              `json:"id"`
-	Context   string             `json:"context"`
-	CreatedAt pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
-}
-
-func (q *Queries) GetBlip(ctx context.Context, id int32) (GetBlipRow, error) {
-	row := q.db.QueryRow(ctx, getBlip, id)
-	var i GetBlipRow
-	err := row.Scan(
-		&i.ID,
-		&i.Context,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
-}
-
 const getAllBlips = `-- name: GetAllBlips :many
 SELECT
     id,
@@ -287,7 +261,125 @@ func (q *Queries) GetAllBlips(ctx context.Context) ([]GetAllBlipsRow, error) {
 		}
 		items = append(items, i)
 	}
-	return items, rows.Err()
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAllTechnologies = `-- name: GetAllTechnologies :many
+SELECT
+    id,
+    name,
+    blip_id,
+    quadrant_id,
+    created_at,
+    updated_at
+FROM
+    technology
+ORDER BY name
+`
+
+func (q *Queries) GetAllTechnologies(ctx context.Context) ([]Technology, error) {
+	rows, err := q.db.Query(ctx, getAllTechnologies)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Technology
+	for rows.Next() {
+		var i Technology
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.BlipID,
+			&i.QuadrantID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAllUsers = `-- name: GetAllUsers :many
+SELECT
+    id,
+    name,
+    email,
+    username,
+    hashed_password,
+    role,
+    created_at,
+    last_logged_in
+FROM
+    users
+ORDER BY name
+`
+
+func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
+	rows, err := q.db.Query(ctx, getAllUsers)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []User
+	for rows.Next() {
+		var i User
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Email,
+			&i.Username,
+			&i.HashedPassword,
+			&i.Role,
+			&i.CreatedAt,
+			&i.LastLoggedIn,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getBlip = `-- name: GetBlip :one
+SELECT
+    id,
+    context::text,
+    created_at,
+    updated_at
+FROM
+    blips
+WHERE
+    id = $1
+`
+
+type GetBlipRow struct {
+	ID        int32              `json:"id"`
+	Context   string             `json:"context"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
+}
+
+func (q *Queries) GetBlip(ctx context.Context, id int32) (GetBlipRow, error) {
+	row := q.db.QueryRow(ctx, getBlip, id)
+	var i GetBlipRow
+	err := row.Scan(
+		&i.ID,
+		&i.Context,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const getTechnologyID = `-- name: GetTechnologyID :one
@@ -387,46 +479,6 @@ func (q *Queries) GetTechnologyQuad(ctx context.Context, quadrantID int32) ([]Te
 	return items, nil
 }
 
-const getAllTechnologies = `-- name: GetAllTechnologies :many
-SELECT
-    id,
-    name,
-    blip_id,
-    quadrant_id,
-    created_at,
-    updated_at
-FROM
-    technology
-ORDER BY name
-`
-
-func (q *Queries) GetAllTechnologies(ctx context.Context) ([]Technology, error) {
-	rows, err := q.db.Query(ctx, getAllTechnologies)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Technology
-	for rows.Next() {
-		var i Technology
-		if err := rows.Scan(
-			&i.ID,
-			&i.Name,
-			&i.BlipID,
-			&i.QuadrantID,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const getUserEmail = `-- name: GetUserEmail :one
 SELECT
     id,
@@ -434,6 +486,7 @@ SELECT
     email,
     username,
     hashed_password,
+    role,
     created_at,
     last_logged_in
 FROM
@@ -451,52 +504,11 @@ func (q *Queries) GetUserEmail(ctx context.Context, email string) (User, error) 
 		&i.Email,
 		&i.Username,
 		&i.HashedPassword,
+		&i.Role,
 		&i.CreatedAt,
 		&i.LastLoggedIn,
 	)
 	return i, err
-}
-
-const getAllUsers = `-- name: GetAllUsers :many
-SELECT
-    id,
-    name,
-    email,
-    username,
-    hashed_password,
-    created_at,
-    last_logged_in
-FROM
-    users
-ORDER BY name
-`
-
-func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
-	rows, err := q.db.Query(ctx, getAllUsers)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []User
-	for rows.Next() {
-		var i User
-		if err := rows.Scan(
-			&i.ID,
-			&i.Name,
-			&i.Email,
-			&i.Username,
-			&i.HashedPassword,
-			&i.CreatedAt,
-			&i.LastLoggedIn,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
 }
 
 const getUserID = `-- name: GetUserID :one
@@ -506,6 +518,7 @@ SELECT
     email,
     username,
     hashed_password,
+    role,
     created_at,
     last_logged_in
 FROM
@@ -523,6 +536,7 @@ func (q *Queries) GetUserID(ctx context.Context, id pgtype.UUID) (User, error) {
 		&i.Email,
 		&i.Username,
 		&i.HashedPassword,
+		&i.Role,
 		&i.CreatedAt,
 		&i.LastLoggedIn,
 	)
@@ -682,7 +696,8 @@ SET name = $2,
     email = $3,
     username = $4,
     hashed_password = $5,
-    last_logged_in = $6
+    role = $6,
+    last_logged_in = $7
 WHERE
     id = $1
 RETURNING id,
@@ -690,6 +705,7 @@ RETURNING id,
     email,
     username,
     hashed_password,
+    role,
     created_at,
     last_logged_in
 `
@@ -700,6 +716,7 @@ type UpdateUserParams struct {
 	Email          string             `json:"email"`
 	Username       string             `json:"username"`
 	HashedPassword string             `json:"hashed_password"`
+	Role           string             `json:"role"`
 	LastLoggedIn   pgtype.Timestamptz `json:"last_logged_in"`
 }
 
@@ -710,6 +727,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		arg.Email,
 		arg.Username,
 		arg.HashedPassword,
+		arg.Role,
 		arg.LastLoggedIn,
 	)
 	var i User
@@ -719,6 +737,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.Email,
 		&i.Username,
 		&i.HashedPassword,
+		&i.Role,
 		&i.CreatedAt,
 		&i.LastLoggedIn,
 	)

@@ -30,6 +30,7 @@ CREATE TABLE users (
     email TEXT NOT NULL UNIQUE,
     username TEXT NOT NULL UNIQUE,
     hashed_password TEXT NOT NULL,
+    role TEXT NOT NULL DEFAULT 'user',
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     last_logged_in TIMESTAMPTZ
 );

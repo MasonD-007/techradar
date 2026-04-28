@@ -371,3 +371,226 @@ func TestLogout_Success(t *testing.T) {
 	assert.Equal(t, http.StatusOK, recorder.Code)
 	assert.Contains(t, recorder.Body.String(), "Logged out successfully")
 }
+
+func TestGenerateToken_WithUserRole(t *testing.T) {
+	userID := uuid.New()
+	username := "testuser"
+	role := "user"
+
+	token, err := auth.GenerateToken(userID, username, role)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, token)
+
+	claims, err := auth.ValidateToken(token)
+	assert.NoError(t, err)
+	assert.Equal(t, userID.String(), claims.UserID)
+	assert.Equal(t, username, claims.Username)
+	assert.Equal(t, role, claims.Role)
+}
+
+func TestGenerateToken_WithAdminRole(t *testing.T) {
+	userID := uuid.New()
+	username := "adminuser"
+	role := "admin"
+
+	token, err := auth.GenerateToken(userID, username, role)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, token)
+
+	claims, err := auth.ValidateToken(token)
+	assert.NoError(t, err)
+	assert.Equal(t, userID.String(), claims.UserID)
+	assert.Equal(t, username, claims.Username)
+	assert.Equal(t, role, claims.Role)
+}
+
+func TestRegister_AdminUserCreation(t *testing.T) {
+	adminUserID := uuid.New()
+	mockQuerier := mocks.NewMockQuerier()
+	mockQuerier.On("CreateUser", mock.Anything, mock.AnythingOfType("db.CreateUserParams")).
+		Return(db.User{
+			ID:             pgtype.UUID{Bytes: adminUserID, Valid: true},
+			Name:           "Admin User",
+			Email:          "admin@example.com",
+			Username:       "admin",
+			HashedPassword: hashPassword("adminpass123"),
+			Role:           "admin",
+		}, nil)
+
+	handler := handlers.Register(mockQuerier)
+	body := `{"name":"Admin User","email":"admin@example.com","username":"admin","password":"adminpass123"}`
+	req := httptest.NewRequest(http.MethodPost, "/auth/register", strings.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	recorder := httptest.NewRecorder()
+	handler(recorder, req)
+
+	assert.Equal(t, http.StatusCreated, recorder.Code)
+
+	var resp dto.AuthResponse
+	err := json.Unmarshal(recorder.Body.Bytes(), &resp)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, resp.Token)
+	assert.True(t, resp.User.IsAdmin)
+
+	mockQuerier.AssertExpectations(t)
+}
+
+func TestRegister_NewUserDefaultRole(t *testing.T) {
+	mockQuerier := mocks.NewMockQuerier()
+	mockQuerier.On("CreateUser", mock.Anything, mock.AnythingOfType("db.CreateUserParams")).
+		Return(db.User{
+			ID:             pgtype.UUID{Bytes: authValidUUID, Valid: true},
+			Name:           "New User",
+			Email:          "newuser@example.com",
+			Username:       "newuser",
+			HashedPassword: hashPassword("password123"),
+			Role:           "user",
+		}, nil)
+
+	handler := handlers.Register(mockQuerier)
+	body := `{"name":"New User","email":"newuser@example.com","username":"newuser","password":"password123"}`
+	req := httptest.NewRequest(http.MethodPost, "/auth/register", strings.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	recorder := httptest.NewRecorder()
+	handler(recorder, req)
+
+	assert.Equal(t, http.StatusCreated, recorder.Code)
+
+	var resp dto.AuthResponse
+	err := json.Unmarshal(recorder.Body.Bytes(), &resp)
+	assert.NoError(t, err)
+	assert.False(t, resp.User.IsAdmin)
+
+	claims, err := auth.ValidateToken(resp.Token)
+	assert.NoError(t, err)
+	assert.Equal(t, "user", claims.Role)
+
+	mockQuerier.AssertExpectations(t)
+}
+
+func TestLogin_AdminUser(t *testing.T) {
+	password := "adminpass123"
+	hashedPassword := hashPassword(password)
+
+	mockQuerier := mocks.NewMockQuerier()
+	mockQuerier.On("GetUserEmail", mock.Anything, "admin@example.com").
+		Return(db.User{
+			ID:             pgtype.UUID{Bytes: authValidUUID, Valid: true},
+			Name:           "Admin User",
+			Email:          "admin@example.com",
+			Username:       "admin",
+			HashedPassword: hashedPassword,
+			Role:           "admin",
+		}, nil)
+
+	handler := handlers.Login(mockQuerier)
+	body := `{"email":"admin@example.com","password":"` + password + `"}`
+	req := httptest.NewRequest(http.MethodPost, "/auth/login", strings.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	recorder := httptest.NewRecorder()
+	handler(recorder, req)
+
+	assert.Equal(t, http.StatusOK, recorder.Code)
+
+	var resp dto.AuthResponse
+	err := json.Unmarshal(recorder.Body.Bytes(), &resp)
+	assert.NoError(t, err)
+	assert.True(t, resp.User.IsAdmin)
+
+	mockQuerier.AssertExpectations(t)
+}
+
+func TestLogin_NonAdminUser(t *testing.T) {
+	password := "userpass123"
+	hashedPassword := hashPassword(password)
+
+	mockQuerier := mocks.NewMockQuerier()
+	mockQuerier.On("GetUserEmail", mock.Anything, "user@example.com").
+		Return(db.User{
+			ID:             pgtype.UUID{Bytes: authValidUUID, Valid: true},
+			Name:           "Regular User",
+			Email:          "user@example.com",
+			Username:       "regularuser",
+			HashedPassword: hashedPassword,
+			Role:           "user",
+		}, nil)
+
+	handler := handlers.Login(mockQuerier)
+	body := `{"email":"user@example.com","password":"` + password + `"}`
+	req := httptest.NewRequest(http.MethodPost, "/auth/login", strings.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	recorder := httptest.NewRecorder()
+	handler(recorder, req)
+
+	assert.Equal(t, http.StatusOK, recorder.Code)
+
+	var resp dto.AuthResponse
+	err := json.Unmarshal(recorder.Body.Bytes(), &resp)
+	assert.NoError(t, err)
+	assert.False(t, resp.User.IsAdmin)
+
+	mockQuerier.AssertExpectations(t)
+}
+
+func TestLogin_TokenContainsRole(t *testing.T) {
+	password := "password123"
+	hashedPassword := hashPassword(password)
+
+	testRole := "user"
+	mockQuerier := mocks.NewMockQuerier()
+	mockQuerier.On("GetUserEmail", mock.Anything, testUserEmail).
+		Return(db.User{
+			ID:             pgtype.UUID{Bytes: authValidUUID, Valid: true},
+			Name:           "Test User",
+			Email:          testUserEmail,
+			Username:       "testuser",
+			HashedPassword: hashedPassword,
+			Role:           testRole,
+		}, nil)
+
+	handler := handlers.Login(mockQuerier)
+	body := `{"email":"test@example.com","password":"` + password + `"}`
+	req := httptest.NewRequest(http.MethodPost, "/auth/login", strings.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	recorder := httptest.NewRecorder()
+	handler(recorder, req)
+
+	assert.Equal(t, http.StatusOK, recorder.Code)
+
+	var resp dto.AuthResponse
+	err := json.Unmarshal(recorder.Body.Bytes(), &resp)
+	assert.NoError(t, err)
+
+	claims, err := auth.ValidateToken(resp.Token)
+	assert.NoError(t, err)
+	assert.Equal(t, testRole, claims.Role)
+
+	mockQuerier.AssertExpectations(t)
+}
+
+func TestRegister_DBReturnsEmptyRole(t *testing.T) {
+	mockQuerier := mocks.NewMockQuerier()
+	mockQuerier.On("CreateUser", mock.Anything, mock.AnythingOfType("db.CreateUserParams")).
+		Return(db.User{
+			ID:             pgtype.UUID{Bytes: authValidUUID, Valid: true},
+			Name:           "Test User",
+			Email:          "test@example.com",
+			Username:       "testuser",
+			HashedPassword: hashPassword("password123"),
+			Role:           "",
+		}, nil)
+
+	handler := handlers.Register(mockQuerier)
+	body := `{"name":"Test User","email":"test@example.com","username":"testuser","password":"password123"}`
+	req := httptest.NewRequest(http.MethodPost, "/auth/register", strings.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	recorder := httptest.NewRecorder()
+	handler(recorder, req)
+
+	assert.Equal(t, http.StatusCreated, recorder.Code)
+
+	var resp dto.AuthResponse
+	err := json.Unmarshal(recorder.Body.Bytes(), &resp)
+	assert.NoError(t, err)
+	assert.False(t, resp.User.IsAdmin)
+}
