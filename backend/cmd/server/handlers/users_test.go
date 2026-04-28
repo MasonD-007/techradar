@@ -75,7 +75,7 @@ func TestGetUser(t *testing.T) {
 				req.SetPathValue("id", tt.pathID)
 			}
 			if tt.userID != "" {
-				req = req.WithContext(context.WithValue(req.Context(), "user_id", testUserID))
+				req = req.WithContext(context.WithValue(req.Context(), handlers.UserIDKey, testUserID))
 			}
 			recorder := httptest.NewRecorder()
 			handler(recorder, req)
@@ -213,10 +213,10 @@ func TestUpdateUser(t *testing.T) {
 			wantCode: http.StatusBadRequest,
 		},
 		{
-			name:     "invalid json returns bad request",
-			pathID:   validUUIDStr,
-			body:     `{bad json}`,
-			userID:   validUUIDStr,
+			name:   "invalid json returns bad request",
+			pathID: validUUIDStr,
+			body:   `{bad json}`,
+			userID: validUUIDStr,
 			mockExpect: func(m *mocks.MockQuerier) {
 				m.On("GetUserID", mock.Anything, validUUID).Return(db.User{ID: validUUID}, nil)
 			},
@@ -268,7 +268,7 @@ func TestUpdateUser(t *testing.T) {
 				req.SetPathValue("id", tt.pathID)
 			}
 			if tt.userID != "" {
-				req = req.WithContext(context.WithValue(req.Context(), "user_id", testUserID))
+				req = req.WithContext(context.WithValue(req.Context(), handlers.UserIDKey, testUserID))
 			}
 			recorder := httptest.NewRecorder()
 			handler(recorder, req)

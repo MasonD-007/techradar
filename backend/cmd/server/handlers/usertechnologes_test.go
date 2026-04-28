@@ -203,10 +203,10 @@ func TestUpdateUserTechnology(t *testing.T) {
 			wantCode: http.StatusBadRequest,
 		},
 		{
-			name:     "invalid json returns bad request",
-			pathID:   validUUIDStr,
-			body:     `{bad}`,
-			userID:   validUUIDStr,
+			name:   "invalid json returns bad request",
+			pathID: validUUIDStr,
+			body:   `{bad}`,
+			userID: validUUIDStr,
 			mockExpect: func(m *mocks.MockQuerier) {
 				m.On("GetUserTechnologyID", mock.Anything, validUUID).Return(db.UserTechnology{ID: validUUID, UserID: validUUID}, nil)
 			},
@@ -258,7 +258,7 @@ func TestUpdateUserTechnology(t *testing.T) {
 				req.SetPathValue("id", tt.pathID)
 			}
 			if tt.userID != "" {
-				req = req.WithContext(context.WithValue(req.Context(), "user_id", testUserID))
+				req = req.WithContext(context.WithValue(req.Context(), handlers.UserIDKey, testUserID))
 			}
 			recorder := httptest.NewRecorder()
 			handler(recorder, req)
@@ -330,7 +330,7 @@ func TestDeleteUserTechnology(t *testing.T) {
 				req.SetPathValue("id", tt.pathID)
 			}
 			if tt.userID != "" {
-				req = req.WithContext(context.WithValue(req.Context(), "user_id", testUserID))
+				req = req.WithContext(context.WithValue(req.Context(), handlers.UserIDKey, testUserID))
 			}
 			recorder := httptest.NewRecorder()
 			handler(recorder, req)

@@ -3,12 +3,10 @@
 import {
 	createFormHook,
 	createFormHookContexts,
-	useForm,
 } from "@tanstack/react-form";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
-	CardAction,
 	CardContent,
 	CardDescription,
 	CardFooter,
@@ -59,10 +57,10 @@ export default function SignUpForm() {
 				>
 					<div className="flex flex-col gap-6">
 						<form.AppField name="email">
-							{(field) => <field.EmailField label="email" />}
+							{(field) => <field.EmailField />}
 						</form.AppField>
 						<form.AppField name="password">
-							{(field) => <field.PasswordField label="password" />}
+							{(field) => <field.PasswordField />}
 						</form.AppField>
 					</div>
 				</form>

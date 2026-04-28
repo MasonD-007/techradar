@@ -193,10 +193,9 @@ export default function AdminPage() {
 		name?: string;
 		quadrant_id?: string;
 	}>({});
-	const [importFile, setImportFile] = useState<File | null>(null);
-	const [importPreview, setImportPreview] = useState<
-		{ name: string; quadrant_id: string }[] | null
-	>(null);
+const [importPreview, setImportPreview] = useState<
+ 		{ name: string; quadrant_id: string }[] | null
+ 	>(null);
 	const [conflictDialogOpen, setConflictDialogOpen] = useState(false);
 
 	useEffect(() => {

@@ -25,8 +25,8 @@ func init() {
 }
 
 var (
-	authValidUUID     = uuid.New()
-	authValidUUIDStr  = authValidUUID.String()
+	authValidUUID = uuid.New()
+	//authValidUUIDStr  = authValidUUID.String()
 	testUserEmail = "test@example.com"
 )
 
@@ -594,3 +594,4 @@ func TestRegister_DBReturnsEmptyRole(t *testing.T) {
 	assert.NoError(t, err)
 	assert.False(t, resp.User.IsAdmin)
 }
+

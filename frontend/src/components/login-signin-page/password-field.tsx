@@ -2,7 +2,7 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { useFieldContext } from "./login-form";
 
-export function PasswordField({ label }: { label: string }) {
+export function PasswordField() {
 	// The `Field` infers that it should have a `value` type of `string`
 	const field = useFieldContext<string>();
 	return (

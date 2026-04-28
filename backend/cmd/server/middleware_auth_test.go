@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/MasonD-007/template/backend/cmd/server/handlers"
 	"github.com/MasonD-007/template/backend/internal/auth"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
@@ -97,8 +98,8 @@ func TestAuthMiddleware_ValidToken(t *testing.T) {
 	var capturedName string
 
 	handler := AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
-		capturedID, _ = GetUserIDFromRequest(r)
-		capturedName, _ = GetUsernameFromRequest(r)
+		capturedID, _ = handlers.GetUserIDFromRequest(r)
+		capturedName, _ = handlers.GetUsernameFromRequest(r)
 		w.WriteHeader(http.StatusOK)
 	})
 
@@ -114,49 +115,49 @@ func TestAuthMiddleware_ValidToken(t *testing.T) {
 
 func TestGetUserIDFromRequest_NoContext(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/test", nil)
-	_, ok := GetUserIDFromRequest(req)
+	_, ok := handlers.GetUserIDFromRequest(req)
 	assert.False(t, ok)
 }
 
 func TestGetUserIDFromRequest_WithContext(t *testing.T) {
 	testID := uuid.New()
-	ctx := context.WithValue(context.Background(), userIDKey, testID)
+	ctx := context.WithValue(context.Background(), handlers.UserIDKey, testID)
 	req := httptest.NewRequest(http.MethodGet, "/test", nil).WithContext(ctx)
 
-	id, ok := GetUserIDFromRequest(req)
+	id, ok := handlers.GetUserIDFromRequest(req)
 	assert.True(t, ok)
 	assert.Equal(t, testID, id)
 }
 
 func TestGetUserIDFromRequest_InvalidType(t *testing.T) {
-	ctx := context.WithValue(context.Background(), userIDKey, "not-a-uuid")
+	ctx := context.WithValue(context.Background(), handlers.UserIDKey, "not-a-uuid")
 	req := httptest.NewRequest(http.MethodGet, "/test", nil).WithContext(ctx)
 
-	id, ok := GetUserIDFromRequest(req)
+	id, ok := handlers.GetUserIDFromRequest(req)
 	assert.False(t, ok)
 	assert.Equal(t, uuid.Nil, id)
 }
 
 func TestGetUsernameFromRequest_NoContext(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/test", nil)
-	_, ok := GetUsernameFromRequest(req)
+	_, ok := handlers.GetUsernameFromRequest(req)
 	assert.False(t, ok)
 }
 
 func TestGetUsernameFromRequest_WithContext(t *testing.T) {
-	ctx := context.WithValue(context.Background(), usernameKey, "testuser")
+	ctx := context.WithValue(context.Background(), handlers.UsernameKey, "testuser")
 	req := httptest.NewRequest(http.MethodGet, "/test", nil).WithContext(ctx)
 
-	name, ok := GetUsernameFromRequest(req)
+	name, ok := handlers.GetUsernameFromRequest(req)
 	assert.True(t, ok)
 	assert.Equal(t, "testuser", name)
 }
 
 func TestGetUsernameFromRequest_InvalidType(t *testing.T) {
-	ctx := context.WithValue(context.Background(), usernameKey, 12345)
+	ctx := context.WithValue(context.Background(), handlers.UsernameKey, 12345)
 	req := httptest.NewRequest(http.MethodGet, "/test", nil).WithContext(ctx)
 
-	name, ok := GetUsernameFromRequest(req)
+	name, ok := handlers.GetUsernameFromRequest(req)
 	assert.False(t, ok)
 	assert.Equal(t, "", name)
 }
@@ -174,9 +175,9 @@ func TestAuthMiddleware_RoleStoredInContext(t *testing.T) {
 	var capturedRole string
 
 	handler := AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
-		capturedID, _ = GetUserIDFromRequest(r)
-		capturedName, _ = GetUsernameFromRequest(r)
-		capturedRole, _ = GetRoleFromRequest(r)
+		capturedID, _ = handlers.GetUserIDFromRequest(r)
+		capturedName, _ = handlers.GetUsernameFromRequest(r)
+		capturedRole, _ = handlers.GetRoleFromRequest(r)
 		w.WriteHeader(http.StatusOK)
 	})
 
@@ -202,7 +203,7 @@ func TestAuthMiddleware_AdminRoleInContext(t *testing.T) {
 	var capturedRole string
 
 	handler := AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
-		capturedRole, _ = GetRoleFromRequest(r)
+		capturedRole, _ = handlers.GetRoleFromRequest(r)
 		w.WriteHeader(http.StatusOK)
 	})
 
@@ -217,24 +218,24 @@ func TestAuthMiddleware_AdminRoleInContext(t *testing.T) {
 
 func TestGetRoleFromRequest_NoContext(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/test", nil)
-	_, ok := GetRoleFromRequest(req)
+	_, ok := handlers.GetRoleFromRequest(req)
 	assert.False(t, ok)
 }
 
 func TestGetRoleFromRequest_WithContext(t *testing.T) {
-	ctx := context.WithValue(context.Background(), roleKey, "admin")
+	ctx := context.WithValue(context.Background(), handlers.RoleKey, "admin")
 	req := httptest.NewRequest(http.MethodGet, "/test", nil).WithContext(ctx)
 
-	role, ok := GetRoleFromRequest(req)
+	role, ok := handlers.GetRoleFromRequest(req)
 	assert.True(t, ok)
 	assert.Equal(t, "admin", role)
 }
 
 func TestGetRoleFromRequest_InvalidType(t *testing.T) {
-	ctx := context.WithValue(context.Background(), roleKey, 12345)
+	ctx := context.WithValue(context.Background(), handlers.RoleKey, 12345)
 	req := httptest.NewRequest(http.MethodGet, "/test", nil).WithContext(ctx)
 
-	role, ok := GetRoleFromRequest(req)
+	role, ok := handlers.GetRoleFromRequest(req)
 	assert.False(t, ok)
 	assert.Equal(t, "", role)
 }

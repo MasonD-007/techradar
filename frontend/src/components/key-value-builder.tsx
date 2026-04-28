@@ -78,8 +78,6 @@ export function KeyValueBuilder({
     onChange?.(obj);
   };
 
-  const isValid = !error && pairs.every((p) => p.key.trim() !== "");
-
   return (
     <div className="space-y-2">
       <Label>{label}</Label>

@@ -1,11 +1,7 @@
 "use server";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { revalidatePath } from "next/cache";
-import { api } from "./api";
-import { logError, logInfo } from "./logger";
-import type { components } from "./openapi";
-
-const apiClient = api as any;
 
 export type Blip = components["schemas"]["handlers.Blip"];
 export type Technology = components["schemas"]["handlers.Technology"];
@@ -40,11 +36,8 @@ export async function getBlips(): Promise<Blip[]> {
 	logInfo("getBlips", "START", {});
 
 	try {
-		const result = (await apiClient.GET("/blips")) as any as {
-			data?: Blip[];
-			response: Response;
-		};
-		const { data, response } = result;
+		const result = await api.GET("/blips");
+		const { data, response } = result as GetResponse<Blip[]>;
 
 		if (!response.ok) {
 			const msg = getErrorMessage(data);
@@ -64,11 +57,8 @@ export async function getBlip(id: number): Promise<ActionResult<Blip>> {
 	logInfo("getBlip", "START", { id });
 
 	try {
-		const result = (await apiClient.GET(`/blips/${id}`, {})) as any as {
-			data?: Blip;
-			response: Response;
-		};
-		const { data, response } = result;
+		const result = await api.GET(`/blips/${id}`, {});
+		const { data, response } = result as GetResponse<Blip>;
 
 		if (!response.ok) {
 			const msg = getErrorMessage(data);
@@ -97,7 +87,7 @@ export async function createBlip(
 
 	try {
 		const body: CreateBlipRequest = { context: JSON.parse(context) };
-		const result = (await apiClient.POST("/blips", { body })) as any as {
+		const result = (await api.POST("/blips", { body })) as any as {
 			data?: Blip;
 			response: Response;
 		};
@@ -132,7 +122,7 @@ export async function updateBlip(
 
 	try {
 		const body: UpdateBlipRequest = { context: JSON.parse(context) };
-		const result = (await apiClient.PUT(`/blips/${id}`, { body })) as any as {
+		const result = (await api.PUT(`/blips/${id}`, { body })) as any as {
 			data?: Blip;
 			response: Response;
 		};
@@ -156,7 +146,7 @@ export async function deleteBlip(id: number): Promise<ActionResult> {
 	logInfo("deleteBlip", "START", { id });
 
 	try {
-		const result = (await apiClient.DELETE(`/blips/${id}`, {})) as any as {
+		const result = (await api.DELETE(`/blips/${id}`, {})) as any as {
 			response: Response;
 		};
 		const { response } = result;
@@ -180,7 +170,7 @@ export async function getTechnologies(): Promise<ActionResult<Technology[]>> {
 	logInfo("getTechnologies", "START", {});
 
 	try {
-		const result = (await apiClient.GET("/technologies", {})) as any as {
+		const result = (await api.GET("/technologies", {})) as any as {
 			data?: Technology[];
 			response: Response;
 		};
@@ -206,7 +196,7 @@ export async function getTechnology(
 	logInfo("getTechnology", "START", { id });
 
 	try {
-		const result = (await apiClient.GET(`/technologies/${id}`, {})) as any as {
+		const result = (await api.GET(`/technologies/${id}`, {})) as any as {
 			data?: Technology;
 			response: Response;
 		};
@@ -232,7 +222,7 @@ export async function getTechnologiesByQuadrant(
 	logInfo("getTechnologiesByQuadrant", "START", { quadrantId });
 
 	try {
-		const result = (await apiClient.GET(
+		const result = (await api.GET(
 			`/technologies/by-quadrant/${quadrantId}`,
 			{},
 		)) as any as { data?: Technology[]; response: Response };
@@ -266,7 +256,7 @@ export async function getTechnologiesByUser(
 	logInfo("getTechnologiesByUser", "START", { userId });
 
 	try {
-		const result = (await apiClient.GET(
+		const result = (await api.GET(
 			`/technologies/by-user/${userId}`,
 			{},
 		)) as any as { data?: Technology[]; response: Response };
@@ -311,7 +301,7 @@ export async function createTechnology(
 			name,
 			quadrant_id: parseInt(quadrantId, 10),
 		};
-		const result = (await apiClient.POST("/technologies", { body })) as any as {
+		const result = (await api.POST("/technologies", { body })) as any as {
 			data?: Technology;
 			response: Response;
 		};
@@ -348,7 +338,7 @@ export async function updateTechnology(
 			quadrant_id: quadrantId ? parseInt(quadrantId, 10) : undefined,
 			blip_id: blipId ? parseInt(blipId, 10) : undefined,
 		};
-		const result = (await apiClient.PUT(`/technologies/${id}`, {
+		const result = (await api.PUT(`/technologies/${id}`, {
 			body,
 		})) as any as { data?: Technology; response: Response };
 		const { data, response } = result;
@@ -374,7 +364,7 @@ export async function deleteTechnology(id: string): Promise<ActionResult> {
 	logInfo("deleteTechnology", "START", { id });
 
 	try {
-		const result = (await apiClient.DELETE(
+		const result = (await api.DELETE(
 			`/technologies/${id}`,
 			{},
 		)) as any as { response: Response };
@@ -402,7 +392,7 @@ export async function getUsers(): Promise<User[]> {
 	logInfo("getUsers", "START", {});
 
 	try {
-		const result = (await apiClient.GET("/users", {})) as any as {
+		const result = (await api.GET("/users", {})) as any as {
 			data?: User[];
 			response: Response;
 		};
@@ -426,7 +416,7 @@ export async function getUser(id: string): Promise<ActionResult<User>> {
 	logInfo("getUser", "START", { id });
 
 	try {
-		const result = (await apiClient.GET(`/users/${id}`, {})) as any as {
+		const result = (await api.GET(`/users/${id}`, {})) as any as {
 			data?: User;
 			response: Response;
 		};
@@ -467,7 +457,7 @@ export async function createUser(
 			username,
 			hashed_password: password,
 		};
-		const result = (await apiClient.POST("/users", { body })) as any as {
+		const result = (await api.POST("/users", { body })) as any as {
 			data?: User;
 			response: Response;
 		};
@@ -506,7 +496,7 @@ export async function updateUser(
 			username,
 			hashed_password: password || undefined,
 		};
-		const result = (await apiClient.PUT(`/users/${id}`, { body })) as any as {
+		const result = (await api.PUT(`/users/${id}`, { body })) as any as {
 			data?: User;
 			response: Response;
 		};
@@ -530,7 +520,7 @@ export async function deleteUser(id: string): Promise<ActionResult> {
 	logInfo("deleteUser", "START", { id });
 
 	try {
-		const result = (await apiClient.DELETE(`/users/${id}`, {})) as any as {
+		const result = (await api.DELETE(`/users/${id}`, {})) as any as {
 			response: Response;
 		};
 		const { response } = result;
@@ -565,7 +555,7 @@ export async function addTechnologyToUser(
 			user_id: userId,
 			technology_id: technologyId,
 		};
-		const result = (await apiClient.POST("/user-technologies", {
+		const result = (await api.POST("/user-technologies", {
 			body,
 		})) as any as {
 			data?: UserTechnology;
