@@ -15,3 +15,11 @@ func Parse(idStr string) (pgtype.UUID, error) {
 	id.Valid = true
 	return id, nil
 }
+
+func New() pgtype.UUID {
+	var id pgtype.UUID
+	u := uuid.New()
+	id.Bytes = u
+	id.Valid = true
+	return id
+}

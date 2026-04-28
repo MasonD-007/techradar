@@ -54,6 +54,18 @@ FROM
 WHERE
     quadrant_id = $1;
 
+-- name: GetAllTechnologies :many
+SELECT
+    id,
+    name,
+    blip_id,
+    quadrant_id,
+    created_at,
+    updated_at
+FROM
+    technology
+ORDER BY name;
+
 -- name: UpdateTechnology :one
 UPDATE technology
 SET name = $2,
@@ -80,14 +92,14 @@ INSERT INTO blips (
 )
 VALUES ($1)
 RETURNING id,
-    context,
+    context::text,
     created_at,
     updated_at;
 
 -- name: GetBlip :one
 SELECT
     id,
-    context,
+    context::text,
     created_at,
     updated_at
 FROM
@@ -102,7 +114,7 @@ SET context = $2,
 WHERE
     id = $1
 RETURNING id,
-    context,
+    context::text,
     created_at,
     updated_at;
 
@@ -111,6 +123,16 @@ DELETE FROM blips
 WHERE
     id = $1;
 
+-- name: GetAllBlips :many
+SELECT
+    id,
+    context::text,
+    created_at,
+    updated_at
+FROM
+    blips
+ORDER BY id;
+
 -- name: CreateUser :one
 INSERT INTO users (
     id,
@@ -118,14 +140,16 @@ INSERT INTO users (
     email,
     username,
     hashed_password,
+    role,
     last_logged_in
 )
-VALUES ($1, $2, $3, $4, $5, $6)
+VALUES ($1, $2, $3, $4, $5, $6, $7)
 RETURNING id,
     name,
     email,
     username,
     hashed_password,
+    role,
     created_at,
     last_logged_in;
 
@@ -136,6 +160,7 @@ SELECT
     email,
     username,
     hashed_password,
+    role,
     created_at,
     last_logged_in
 FROM
@@ -150,6 +175,7 @@ SELECT
     email,
     username,
     hashed_password,
+    role,
     created_at,
     last_logged_in
 FROM
@@ -157,13 +183,28 @@ FROM
 WHERE
     email = $1;
 
+-- name: GetAllUsers :many
+SELECT
+    id,
+    name,
+    email,
+    username,
+    hashed_password,
+    role,
+    created_at,
+    last_logged_in
+FROM
+    users
+ORDER BY name;
+
 -- name: UpdateUser :one
 UPDATE users
 SET name = $2,
     email = $3,
     username = $4,
     hashed_password = $5,
-    last_logged_in = $6
+    role = $6,
+    last_logged_in = $7
 WHERE
     id = $1
 RETURNING id,
@@ -171,6 +212,7 @@ RETURNING id,
     email,
     username,
     hashed_password,
+    role,
     created_at,
     last_logged_in;
 

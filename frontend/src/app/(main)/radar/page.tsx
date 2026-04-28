@@ -1,14 +1,11 @@
+import SearchTechnologiesDialog from "@/components/radar-page/search-technologies/search-technologies-dialog";
+
 export default function RadarPage() {
 	return (
-		<main className="min-h-screen flex flex-col items-center bg-background gap-10">
-			<h1 className="text-4xl font-bold mt-5">Your Tech Radar</h1>
-			<div className="p-5 bg-accent w-1/2" />
-			<div className="flex items-center gap-10">
-				{/* RADAR */}
-				<div className="rounded-full bg-accent size-170" />
-				{/* Blip info (might change to be under radar) */}
-				<div className="bg-accent size-100" />
-			</div>
+		<main className="flex min-h-screen flex-col items-center gap-10 bg-background">
+			<h1 className="mt-5 font-bold text-4xl">Your Tech Radar</h1>
+			{/* <CreateBlipDialog /> */}
+			<SearchTechnologiesDialog />
 		</main>
 	);
 }

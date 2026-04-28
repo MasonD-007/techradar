@@ -1,6 +1,7 @@
 package handlers_test
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -11,6 +12,7 @@ import (
 	"github.com/MasonD-007/template/backend/cmd/server/handlers"
 	"github.com/MasonD-007/template/backend/cmd/server/handlers/mocks"
 	"github.com/MasonD-007/template/backend/internal/db"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -180,10 +182,12 @@ func TestCreateUserTechnology(t *testing.T) {
 }
 
 func TestUpdateUserTechnology(t *testing.T) {
+	testUserID := uuid.MustParse(validUUIDStr)
 	tests := []struct {
 		name       string
 		pathID     string
 		body       string
+		userID     string
 		mockExpect func(*mocks.MockQuerier)
 		wantCode   int
 	}{
@@ -199,16 +203,22 @@ func TestUpdateUserTechnology(t *testing.T) {
 			wantCode: http.StatusBadRequest,
 		},
 		{
-			name:     "invalid json returns bad request",
-			pathID:   validUUIDStr,
-			body:     `{bad}`,
+			name:   "invalid json returns bad request",
+			pathID: validUUIDStr,
+			body:   `{bad}`,
+			userID: validUUIDStr,
+			mockExpect: func(m *mocks.MockQuerier) {
+				m.On("GetUserTechnologyID", mock.Anything, validUUID).Return(db.UserTechnology{ID: validUUID, UserID: validUUID}, nil)
+			},
 			wantCode: http.StatusBadRequest,
 		},
 		{
 			name:   "update error returns 500",
 			pathID: validUUIDStr,
 			body:   `{"ring_id":2}`,
+			userID: validUUIDStr,
 			mockExpect: func(m *mocks.MockQuerier) {
+				m.On("GetUserTechnologyID", mock.Anything, validUUID).Return(db.UserTechnology{ID: validUUID, UserID: validUUID}, nil)
 				m.On("UpdateUserTechnology", mock.Anything, mock.AnythingOfType("db.UpdateUserTechnologyParams")).Return(db.UserTechnology{}, errors.New("fail"))
 			},
 			wantCode: http.StatusInternalServerError,
@@ -217,10 +227,21 @@ func TestUpdateUserTechnology(t *testing.T) {
 			name:   "successful update returns payload",
 			pathID: validUUIDStr,
 			body:   `{"ring_id":2}`,
+			userID: validUUIDStr,
 			mockExpect: func(m *mocks.MockQuerier) {
+				m.On("GetUserTechnologyID", mock.Anything, validUUID).Return(db.UserTechnology{ID: validUUID, UserID: validUUID}, nil)
 				m.On("UpdateUserTechnology", mock.Anything, mock.AnythingOfType("db.UpdateUserTechnologyParams")).Return(db.UserTechnology{ID: validUUID, RingID: 2}, nil)
 			},
 			wantCode: http.StatusOK,
+		},
+		{
+			name:   "unauthorized when no user context",
+			pathID: validUUIDStr,
+			body:   `{"ring_id":2}`,
+			mockExpect: func(m *mocks.MockQuerier) {
+				m.On("GetUserTechnologyID", mock.Anything, validUUID).Return(db.UserTechnology{ID: validUUID, UserID: validUUID}, nil)
+			},
+			wantCode: http.StatusForbidden,
 		},
 	}
 
@@ -236,6 +257,9 @@ func TestUpdateUserTechnology(t *testing.T) {
 			if tt.pathID != "" {
 				req.SetPathValue("id", tt.pathID)
 			}
+			if tt.userID != "" {
+				req = req.WithContext(context.WithValue(req.Context(), handlers.UserIDKey, testUserID))
+			}
 			recorder := httptest.NewRecorder()
 			handler(recorder, req)
 
@@ -246,9 +270,11 @@ func TestUpdateUserTechnology(t *testing.T) {
 }
 
 func TestDeleteUserTechnology(t *testing.T) {
+	testUserID := uuid.MustParse(validUUIDStr)
 	tests := []struct {
 		name       string
 		pathID     string
+		userID     string
 		mockExpect func(*mocks.MockQuerier)
 		wantCode   int
 	}{
@@ -264,7 +290,9 @@ func TestDeleteUserTechnology(t *testing.T) {
 		{
 			name:   "delete error returns 500",
 			pathID: validUUIDStr,
+			userID: validUUIDStr,
 			mockExpect: func(m *mocks.MockQuerier) {
+				m.On("GetUserTechnologyID", mock.Anything, validUUID).Return(db.UserTechnology{ID: validUUID, UserID: validUUID}, nil)
 				m.On("DeleteUserTechnology", mock.Anything, validUUID).Return(errors.New("boom"))
 			},
 			wantCode: http.StatusInternalServerError,
@@ -272,10 +300,20 @@ func TestDeleteUserTechnology(t *testing.T) {
 		{
 			name:   "successful delete returns no content",
 			pathID: validUUIDStr,
+			userID: validUUIDStr,
 			mockExpect: func(m *mocks.MockQuerier) {
+				m.On("GetUserTechnologyID", mock.Anything, validUUID).Return(db.UserTechnology{ID: validUUID, UserID: validUUID}, nil)
 				m.On("DeleteUserTechnology", mock.Anything, validUUID).Return(nil)
 			},
 			wantCode: http.StatusNoContent,
+		},
+		{
+			name:   "unauthorized when no user context",
+			pathID: validUUIDStr,
+			mockExpect: func(m *mocks.MockQuerier) {
+				m.On("GetUserTechnologyID", mock.Anything, validUUID).Return(db.UserTechnology{ID: validUUID, UserID: validUUID}, nil)
+			},
+			wantCode: http.StatusForbidden,
 		},
 	}
 
@@ -290,6 +328,9 @@ func TestDeleteUserTechnology(t *testing.T) {
 			req := httptest.NewRequest(http.MethodDelete, "/user-technologies/"+tt.pathID, nil)
 			if tt.pathID != "" {
 				req.SetPathValue("id", tt.pathID)
+			}
+			if tt.userID != "" {
+				req = req.WithContext(context.WithValue(req.Context(), handlers.UserIDKey, testUserID))
 			}
 			recorder := httptest.NewRecorder()
 			handler(recorder, req)

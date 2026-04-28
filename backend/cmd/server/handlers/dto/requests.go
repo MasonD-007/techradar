@@ -15,7 +15,6 @@ type UpdateBlipRequest struct {
 type CreateTechnologyRequest struct {
 	ID         pgtype.UUID `json:"id"`
 	Name       string      `json:"name"`
-	BlipID     int32       `json:"blip_id"`
 	QuadrantID int32       `json:"quadrant_id"`
 }
 
@@ -39,6 +38,7 @@ type UpdateUserRequest struct {
 	Email          string             `json:"email"`
 	Username       string             `json:"username"`
 	HashedPassword string             `json:"hashed_password"`
+	Role           string             `json:"role"`
 	LastLoggedIn   pgtype.Timestamptz `json:"last_logged_in" swaggertype:"string"`
 }
 
@@ -53,4 +53,29 @@ type UpdateUserTechnologyRequest struct {
 	UserID       pgtype.UUID `json:"user_id"`
 	TechnologyID pgtype.UUID `json:"technology_id"`
 	RingID       int32       `json:"ring_id"`
+}
+
+type RegisterRequest struct {
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type LoginRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type AuthResponse struct {
+	Token string  `json:"token"`
+	User  UserDTO `json:"user"`
+}
+
+type UserDTO struct {
+	ID       string `json:"id"`
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Username string `json:"username"`
+	IsAdmin  bool   `json:"is_admin"`
 }

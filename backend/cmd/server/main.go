@@ -6,10 +6,12 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/MasonD-007/template/backend/cmd/server/handlers"
 	_ "github.com/MasonD-007/template/backend/docs"
+	"github.com/MasonD-007/template/backend/internal/auth"
 	"github.com/MasonD-007/template/backend/internal/db"
 	"github.com/MasonD-007/template/backend/internal/db/migrate"
 	"github.com/MasonD-007/template/backend/internal/db/postgres"
@@ -26,6 +28,16 @@ import (
 // @BasePath /
 func main() {
 	_ = godotenv.Load("../.env")
+
+	jwtSecret := os.Getenv("JWT_SECRET")
+	if jwtSecret == "" {
+		log.Fatal("JWT_SECRET is not set in environment variables")
+	}
+	tokenExpiry, _ := strconv.Atoi(os.Getenv("TOKEN_EXPIRY_HOUR"))
+	if tokenExpiry == 0 {
+		tokenExpiry = 24
+	}
+	auth.InitAuth(jwtSecret, tokenExpiry)
 
 	dbURL := os.Getenv("DATABASE_URL")
 	if dbURL == "" {
@@ -59,6 +71,7 @@ func main() {
 		MaxAge:           300,
 	}))
 
+	registerAuthRoutes(r, q)
 	registerBlipsRoutes(r, q)
 	registerTechnologiesRoutes(r, q)
 	registerUsersRoutes(r, q)
@@ -86,34 +99,42 @@ func main() {
 	log.Fatal(http.ListenAndServe(":8080", r))
 }
 
+func registerAuthRoutes(r chi.Router, q *db.Queries) {
+	r.Post("/auth/register", loggingMiddleware(handlers.Register(q)))
+	r.Post("/auth/login", loggingMiddleware(handlers.Login(q)))
+	r.Post("/auth/logout", loggingMiddleware(AuthMiddleware(handlers.Logout(q))))
+}
+
 func registerBlipsRoutes(r chi.Router, q *db.Queries) {
-	r.Post("/blips", loggingMiddleware(handlers.CreateBlip(q)))
+	r.Get("/blips", loggingMiddleware(handlers.GetAllBlips(q)))
 	r.Get("/blips/{id}", loggingMiddleware(handlers.GetBlip(q)))
-	r.Put("/blips/{id}", loggingMiddleware(handlers.UpdateBlip(q)))
-	r.Delete("/blips/{id}", loggingMiddleware(handlers.DeleteBlip(q)))
+	r.Put("/blips/{id}", loggingMiddleware(AuthMiddleware(AdminMiddleware(handlers.UpdateBlip(q)))))
+	r.Delete("/blips/{id}", loggingMiddleware(AuthMiddleware(AdminMiddleware(handlers.DeleteBlip(q)))))
 }
 
 func registerTechnologiesRoutes(r chi.Router, q *db.Queries) {
-	r.Post("/technologies", loggingMiddleware(handlers.CreateTechnology(q)))
+	r.Get("/technologies", loggingMiddleware(handlers.GetAllTechnologies(q)))
+	r.Post("/technologies", loggingMiddleware(AuthMiddleware(AdminMiddleware(handlers.CreateTechnology(q)))))
 	r.Get("/technologies/{id}", loggingMiddleware(handlers.GetTechnology(q)))
 	r.Get("/technologies/by-name/{name}", loggingMiddleware(handlers.GetTechnologyByName(q)))
 	r.Get("/technologies/by-quadrant/{quadrant_id}", loggingMiddleware(handlers.GetTechnologiesByQuadrant(q)))
-	r.Put("/technologies/{id}", loggingMiddleware(handlers.UpdateTechnology(q)))
-	r.Delete("/technologies/{id}", loggingMiddleware(handlers.DeleteTechnology(q)))
+	r.Put("/technologies/{id}", loggingMiddleware(AuthMiddleware(AdminMiddleware(handlers.UpdateTechnology(q)))))
+	r.Delete("/technologies/{id}", loggingMiddleware(AuthMiddleware(AdminMiddleware(handlers.DeleteTechnology(q)))))
 }
 
 func registerUsersRoutes(r chi.Router, q *db.Queries) {
-	r.Post("/users", loggingMiddleware(handlers.CreateUser(q)))
-	r.Get("/users/{id}", loggingMiddleware(handlers.GetUser(q)))
-	r.Get("/users/by-email/{email}", loggingMiddleware(handlers.GetUserByEmail(q)))
-	r.Put("/users/{id}", loggingMiddleware(handlers.UpdateUser(q)))
-	r.Delete("/users/{id}", loggingMiddleware(handlers.DeleteUser(q)))
+	r.Get("/users", loggingMiddleware(AuthMiddleware(AdminMiddleware(handlers.GetAllUsers(q)))))
+	r.Post("/users", loggingMiddleware(AuthMiddleware(AdminMiddleware(handlers.CreateUser(q)))))
+	r.Get("/users/{id}", loggingMiddleware(AuthMiddleware(handlers.GetUser(q))))
+	r.Get("/users/by-email/{email}", loggingMiddleware(AuthMiddleware(AdminMiddleware(handlers.GetUserByEmail(q)))))
+	r.Put("/users/{id}", loggingMiddleware(AuthMiddleware(handlers.UpdateUser(q))))
+	r.Delete("/users/{id}", loggingMiddleware(AuthMiddleware(AdminMiddleware(handlers.DeleteUser(q)))))
 }
 
 func registerUserTechnologiesRoutes(r chi.Router, q *db.Queries) {
-	r.Post("/user-technologies", loggingMiddleware(handlers.CreateUserTechnology(q)))
-	r.Get("/user-technologies/{id}", loggingMiddleware(handlers.GetUserTechnology(q)))
-	r.Get("/user-technologies/user/{user_id}", loggingMiddleware(handlers.GetUserTechnologiesByUser(q)))
-	r.Put("/user-technologies/{id}", loggingMiddleware(handlers.UpdateUserTechnology(q)))
-	r.Delete("/user-technologies/{id}", loggingMiddleware(handlers.DeleteUserTechnology(q)))
+	r.Post("/user-technologies", loggingMiddleware(AuthMiddleware(handlers.CreateUserTechnology(q))))
+	r.Get("/user-technologies/{id}", loggingMiddleware(AuthMiddleware(handlers.GetUserTechnology(q))))
+	r.Get("/user-technologies/user/{user_id}", loggingMiddleware(AuthMiddleware(handlers.GetUserTechnologiesByUser(q))))
+	r.Put("/user-technologies/{id}", loggingMiddleware(AuthMiddleware(handlers.UpdateUserTechnology(q))))
+	r.Delete("/user-technologies/{id}", loggingMiddleware(AuthMiddleware(handlers.DeleteUserTechnology(q))))
 }
