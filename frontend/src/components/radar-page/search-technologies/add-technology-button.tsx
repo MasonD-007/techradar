@@ -10,15 +10,14 @@ export default function AddTechnologyButton({
 	tech,
 	selected,
 }: {
-	userId: string;
-	// TODO: make typesafe
+	userId: string | null;
 	tech: Technology;
 	selected?: boolean;
 }) {
 	const [isAdding, setIsAdding] = useState(false);
 
 	const addTechnology = async () => {
-		if (selected || isAdding || !tech.id) {
+		if (!userId || selected || isAdding || !tech.id) {
 			return;
 		}
 
@@ -30,19 +29,23 @@ export default function AddTechnologyButton({
 		}
 	};
 
+	const isLoggedIn = !!userId;
+
 	return (
 		<Button
 			type="button"
 			variant={selected ? "secondary" : "outline"}
 			className="flex w-full justify-between p-2 text-sm"
 			onClick={() => void addTechnology()}
-			disabled={selected || isAdding || !tech.id}
+			disabled={selected || isAdding || !tech.id || !isLoggedIn}
 		>
 			<p className="font-medium">{tech.name}</p>
 			<p className="text-muted-foreground">
 				{selected || isAdding
 					? "Added"
-					: `Quadrant: ${tech.quadrant_id ?? "-"}`}
+					: !isLoggedIn
+						? "Sign in to add"
+						: `Quadrant: ${tech.quadrant_id ?? "-"}`}
 			</p>
 		</Button>
 	);

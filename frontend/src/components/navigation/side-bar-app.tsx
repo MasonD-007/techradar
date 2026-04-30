@@ -12,16 +12,20 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "../ui/sidebar";
+import { type User } from "@/lib/actions";
 import CollapsedIcons from "./collapsed-icons";
 import CollapsedSettings from "./collapsed-settings";
 import RadarMenuItem from "./radar-menu-item";
 import Settings from "./settings";
 
-export default function SideBarApp() {
+interface SideBarAppProps {
+	user: User | null;
+}
+
+export default function SideBarApp({ user }: SideBarAppProps) {
 	const router = useRouter();
 	return (
 		<Sidebar collapsible="icon">
-			{/* TODO: Use user's name? maybe switch between different radars */}
 			<SidebarHeader className="group-data-[collapsible=icon]:hidden">
 				<SidebarMenuButton
 					onClick={() => router.push("/radar")}
@@ -80,8 +84,8 @@ export default function SideBarApp() {
 				</SidebarGroup>
 			</SidebarContent>
 			<SidebarFooter>
-				<Settings />
-				<CollapsedSettings />
+				<Settings user={user} />
+				<CollapsedSettings user={user} />
 			</SidebarFooter>
 		</Sidebar>
 	);

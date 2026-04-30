@@ -1,63 +1,65 @@
+"use client";
+
 import { ChevronsUpDown } from "lucide-react";
-// import { ThemeToggle } from "../light-dark-button";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import {
-    DropdownMenu,
-    // DropdownMenuContent,
-    // DropdownMenuGroup,
-    // DropdownMenuItem,
-    // DropdownMenuLabel,
-    DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-// import { Separator } from "../ui/separator";
 import {
-    SidebarGroup,
-    SidebarMenuButton,
-    SidebarMenuItem,
+	SidebarGroup,
+	SidebarMenuButton,
+	SidebarMenuItem,
 } from "../ui/sidebar";
+import { type User } from "@/lib/actions";
 import DropdownSettings from "./dropdown-settings";
 
-export default function Settings() {
-    return (
-        <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-            <SidebarMenuItem className="list-none">
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <SidebarMenuButton
-                            size="lg"
-                            className="cursor-pointer border-2 border-accent"
-                        >
-                            <div className="flex w-full items-center gap-2">
-                                <Avatar>
-                                    <AvatarImage src="https://github.com/shadcn.png" />
-                                    <AvatarFallback>CN</AvatarFallback>
-                                </Avatar>
-                                <div className="flex flex-col items-start justify-center">
-                                    {/* TODO: Replace with auth data */}
-                                    <p>John Doe</p>
-                                    <p>{"example@example.com".slice(0, 12) + "..."}</p>
-                                </div>
-                                <ChevronsUpDown className="ml-auto" />
-                            </div>
-                        </SidebarMenuButton>
-                    </DropdownMenuTrigger>
-                    {/* <DropdownMenuContent side="right" align="end">
-						<DropdownMenuGroup>
-							<DropdownMenuLabel>My Account</DropdownMenuLabel>
-							<DropdownMenuItem>Profile</DropdownMenuItem>
-							<DropdownMenuItem>Settings</DropdownMenuItem>
-							<DropdownMenuItem>Logout</DropdownMenuItem>
-						</DropdownMenuGroup>
-						<Separator />
-						<DropdownMenuGroup>
-							<div className="flex w-full p-2">
-								<ThemeToggle className="cursor-pointer bg-accent" />
+interface SettingsProps {
+	user: User | null;
+}
+
+export default function Settings({ user }: SettingsProps) {
+	if (!user) {
+		return (
+			<SidebarGroup className="group-data-[collapsible=icon]:hidden">
+				<SidebarMenuItem className="list-none">
+					<SidebarMenuButton asChild className="cursor-pointer">
+						<a href="/login">Sign in</a>
+					</SidebarMenuButton>
+				</SidebarMenuItem>
+			</SidebarGroup>
+		);
+	}
+
+	return (
+		<SidebarGroup className="group-data-[collapsible=icon]:hidden">
+			<SidebarMenuItem className="list-none">
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<SidebarMenuButton
+							size="lg"
+							className="cursor-pointer border-2 border-accent"
+						>
+							<div className="flex w-full items-center gap-2">
+								<Avatar>
+									<AvatarImage src="https://github.com/shadcn.png" />
+									<AvatarFallback>
+										{user.name?.slice(0, 2).toUpperCase() || "U"}
+									</AvatarFallback>
+								</Avatar>
+								<div className="flex flex-col items-start justify-center">
+									<p>{user.name || user.username}</p>
+									<p className="text-xs text-muted-foreground">
+										{user.email}
+									</p>
+								</div>
+								<ChevronsUpDown className="ml-auto" />
 							</div>
-						</DropdownMenuGroup>
-					</DropdownMenuContent> */}
-                    <DropdownSettings />
-                </DropdownMenu>
-            </SidebarMenuItem>
-        </SidebarGroup>
-    );
+						</SidebarMenuButton>
+					</DropdownMenuTrigger>
+					<DropdownSettings />
+				</DropdownMenu>
+			</SidebarMenuItem>
+		</SidebarGroup>
+	);
 }

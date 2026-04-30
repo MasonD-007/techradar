@@ -2,6 +2,9 @@
 
 import { createFormHook, createFormHookContexts } from "@tanstack/react-form";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { login } from "@/lib/actions";
+import { toast } from "sonner";
 import { EmailField } from "@/components/login-signin-page/email-field";
 import { PasswordField } from "@/components/login-signin-page/password-field";
 import { Button } from "@/components/ui/button";
@@ -31,13 +34,29 @@ const { useAppForm } = createFormHook({
 
 export default function LoginForm() {
 	const router = useRouter();
+	const [isLoading, setIsLoading] = useState(false);
 	const form = useAppForm({
 		defaultValues: {
 			email: "",
 			password: "",
 		},
-		onSubmit: (values) => {
-			console.log(values);
+		onSubmit: async ({ value }) => {
+			setIsLoading(true);
+			const formData = new FormData();
+			formData.append("email", value.email);
+			formData.append("password", value.password);
+
+			const result = await login(formData);
+
+			if (result.success) {
+				toast.success("Login successful");
+				router.push("/radar");
+				router.refresh();
+			} else {
+				toast.error(result.error || "Login failed");
+			}
+
+			setIsLoading(false);
 		},
 	});
 
@@ -75,9 +94,10 @@ export default function LoginForm() {
 				<Button
 					type="submit"
 					className="w-full"
+					disabled={isLoading}
 					onClick={() => form.handleSubmit()}
 				>
-					Login
+					{isLoading ? "Logging in..." : "Login"}
 				</Button>
 				<SSOButtons />
 			</CardFooter>
