@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { api } from "@/lib/api";
+import { apiClient } from "@/lib/api-client";
 import { Button } from "../ui/button";
 
 export default function TestApiButtons() {
@@ -11,7 +11,7 @@ export default function TestApiButtons() {
 	const createBlip = async () => {
 		setLoading(true);
 		setResult("Creating blip...");
-		const { data, error } = await api.POST("/blips", { body: { context: {} } });
+		const { data, error } = await apiClient.POST("/blips", { body: { context: {} } });
 		setLoading(false);
 		if (error) {
 			setResult(`Error: ${JSON.stringify(error)}`);
@@ -28,7 +28,7 @@ export default function TestApiButtons() {
 		}
 		setLoading(true);
 		setResult("Fetching blip...");
-		const { data, error } = await api.GET("/blips/{id}", {
+		const { data, error } = await apiClient.GET("/blips/{id}", {
 			params: { path: { id: createdId } },
 		});
 		setLoading(false);
