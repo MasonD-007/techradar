@@ -14,8 +14,15 @@ import {
 } from "@/lib/actions";
 import { useEffect, useState } from "react";
 import AddTechnologyButton from "./add-technology-button";
+import Link from "next/link";
 
-export default function SearchTechnologiesDialogContent() {
+interface SearchTechnologiesDialogContentProps {
+	userId: string | null;
+}
+
+export default function SearchTechnologiesDialogContent({
+	userId,
+}: SearchTechnologiesDialogContentProps) {
 	const [search, setSearch] = useState("");
 	const [technologies, setTechnologies] = useState<Technology[]>([]);
 	const [selectedTechnologyIds, setSelectedTechnologyIds] = useState<string[]>(
@@ -23,8 +30,6 @@ export default function SearchTechnologiesDialogContent() {
 	);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
-
-	const userId = "demo-user"; // TODO: get from auth context
 
 	useEffect(() => {
 		const fetchTechnologies = async () => {
@@ -49,6 +54,11 @@ export default function SearchTechnologiesDialogContent() {
 
 	useEffect(() => {
 		const fetchUserTechnologies = async () => {
+			if (!userId) {
+				setSelectedTechnologyIds([]);
+				return;
+			}
+
 			const userTechnologiesResult = await getTechnologiesByUser(userId);
 
 			if (!userTechnologiesResult.success) {
@@ -67,7 +77,7 @@ export default function SearchTechnologiesDialogContent() {
 		};
 
 		void fetchUserTechnologies();
-	}, []);
+	}, [userId]);
 
 	const filtered = technologies.filter((tech) => {
 		const name = tech.name || "";
@@ -80,6 +90,14 @@ export default function SearchTechnologiesDialogContent() {
 				<DialogTitle>Search Technologies</DialogTitle>
 				<DialogDescription>
 					Find technologies available in the radar.
+					{!userId && (
+						<span className="block mt-2">
+							<Link href="/login" className="underline">
+								Sign in
+							</Link>{" "}
+							to add technologies to your radar.
+						</span>
+					)}
 				</DialogDescription>
 			</DialogHeader>
 

@@ -2,8 +2,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { api } from "./api";
 import { logError, logInfo } from "./logger";
+import { decodeJwt } from "./jwt";
 import type { components } from "./openapi";
 
 type GetResponse<T> = {
@@ -26,6 +28,9 @@ type UpdateUserRequest = components["schemas"]["handlers.UpdateUserRequest"];
 type CreateUserTechnologyRequest =
 	components["schemas"]["handlers.CreateUserTechnologyRequest"];
 type ApiError = components["schemas"]["handlers.Error"];
+type LoginRequest = components["schemas"]["dto.LoginRequest"];
+type RegisterRequest = components["schemas"]["dto.RegisterRequest"];
+export type AuthResponse = components["schemas"]["dto.AuthResponse"];
 
 export interface ActionResult<T = unknown> {
 	success: boolean;
@@ -592,5 +597,154 @@ export async function addTechnologyToUser(
 			technologyId,
 		});
 		return { success: false, error: "Failed to add technology to user" };
+	}
+}
+
+const COOKIE_NAME = "auth_token";
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
+
+async function setAuthCookie(token: string): Promise<void> {
+	const cookieStore = await cookies();
+	cookieStore.set(COOKIE_NAME, token, {
+		httpOnly: true,
+		secure: process.env.NODE_ENV === "production",
+		sameSite: "lax",
+		maxAge: COOKIE_MAX_AGE,
+		path: "/",
+	});
+}
+
+async function deleteAuthCookie(): Promise<void> {
+	const cookieStore = await cookies();
+	cookieStore.delete(COOKIE_NAME);
+}
+
+export async function login(formData: FormData): Promise<ActionResult<AuthResponse>> {
+	const email = formData.get("email") as string;
+	const password = formData.get("password") as string;
+
+	logInfo("login", "START", { email });
+
+	if (!email || !password) {
+		return { success: false, error: "Email and password are required" };
+	}
+
+	try {
+		const body: LoginRequest = { email, password };
+		const result = (await api.POST("/auth/login", { body })) as any as {
+			data?: AuthResponse;
+			response: Response;
+		};
+		const { data, response } = result;
+
+		if (!response.ok) {
+			const msg = getErrorMessage(data);
+			logError("login", "ERROR", msg, { status: response.status });
+			return { success: false, error: msg };
+		}
+
+		if (data?.token) {
+			await setAuthCookie(data.token);
+		}
+
+		logInfo("login", "SUCCESS", { email });
+		revalidatePath("/");
+		return { success: true, data };
+	} catch (error) {
+		logError("login", "ERROR", getErrorMessage(error), { email });
+		return { success: false, error: "Failed to login" };
+	}
+}
+
+export async function register(
+	formData: FormData,
+): Promise<ActionResult<AuthResponse>> {
+	const name = formData.get("name") as string;
+	const email = formData.get("email") as string;
+	const username = formData.get("username") as string;
+	const password = formData.get("password") as string;
+
+	logInfo("register", "START", { email, username });
+
+	if (!name || !email || !username || !password) {
+		return { success: false, error: "All fields are required" };
+	}
+
+	try {
+		const body: RegisterRequest = { name, email, username, password };
+		const result = (await api.POST("/auth/register", { body })) as any as {
+			data?: AuthResponse;
+			response: Response;
+		};
+		const { data, response } = result;
+
+		if (!response.ok) {
+			const msg = getErrorMessage(data);
+			logError("register", "ERROR", msg, { status: response.status });
+			return { success: false, error: msg };
+		}
+
+		if (data?.token) {
+			await setAuthCookie(data.token);
+		}
+
+		logInfo("register", "SUCCESS", { email });
+		revalidatePath("/");
+		return { success: true, data };
+	} catch (error) {
+		logError("register", "ERROR", getErrorMessage(error), {});
+		return { success: false, error: "Failed to register" };
+	}
+}
+
+export async function logout(): Promise<ActionResult> {
+	logInfo("logout", "START", {});
+
+	try {
+		const result = (await api.POST("/auth/logout", {})) as any as {
+			response: Response;
+		};
+		const { response } = result;
+
+		if (!response.ok) {
+			logError("logout", "ERROR", "Logout API failed", {
+				status: response.status,
+			});
+		}
+	} catch (error) {
+		logError("logout", "ERROR", getErrorMessage(error), {});
+	} finally {
+		await deleteAuthCookie();
+	}
+
+	logInfo("logout", "SUCCESS", {});
+	revalidatePath("/");
+	return { success: true };
+}
+
+export async function getCurrentUserId(): Promise<string | null> {
+	const cookieStore = await cookies();
+	const token = cookieStore.get(COOKIE_NAME)?.value;
+	if (!token) return null;
+
+	const decoded = decodeJwt(token);
+	return decoded?.userId || null;
+}
+
+export async function getCurrentUser(): Promise<User | null> {
+	const userId = await getCurrentUserId();
+	if (!userId) return null;
+
+	try {
+		const result = (await api.GET(`/users/${userId}`, {})) as any as {
+			data?: User;
+			response: Response;
+		};
+		const { data, response } = result;
+
+		if (!response.ok) return null;
+		return data || null;
+	} catch {
+		return null;
 	}
 }
