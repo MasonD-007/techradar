@@ -1,42 +1,49 @@
 "use client";
+
 import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 
 export function ThemeToggle({ className }: { className?: string }) {
-	const [isDark, setIsDark] = useState(() => {
-		if (typeof document === "undefined") return false;
-		const saved = localStorage.getItem("theme");
-		if (saved === "dark") return true;
-		if (saved === "light") return false;
-		return document.documentElement.classList.contains("dark");
-	});
+	const [mounted, setMounted] = useState(false);
+	const [isDark, setIsDark] = useState(false);
 
 	useEffect(() => {
+		setMounted(true);
+
 		const saved = localStorage.getItem("theme");
-		if (saved === "dark") document.documentElement.classList.add("dark");
-		else if (saved === "light")
-			document.documentElement.classList.remove("dark");
-		else if (
-			!document.documentElement.classList.contains("dark") &&
-			!document.documentElement.classList.contains("light")
-		) {
-			document.documentElement.classList.add("light");
-		}
+
+		const dark =
+			saved === "dark" ||
+			(!saved && window.matchMedia("(prefers-color-scheme: dark)").matches);
+
+		document.documentElement.classList.toggle("dark", dark);
+		setIsDark(dark);
 	}, []);
 
 	const toggleTheme = () => {
-		if (typeof document === "undefined") return;
-		const nextDark = !document.documentElement.classList.contains("dark");
+		const nextDark = !isDark;
+
 		document.documentElement.classList.toggle("dark", nextDark);
 		localStorage.setItem("theme", nextDark ? "dark" : "light");
+
 		setIsDark(nextDark);
 	};
+
+	if (!mounted) {
+		return (
+			<Button
+				className={className || "size-10 rounded-full p-0"}
+				aria-label="Toggle theme"
+			/>
+		);
+	}
 
 	return (
 		<Button
 			onClick={toggleTheme}
-			className={className || "size-13 cursor-pointer rounded-full p-0"}
+			className={className || "size-10 rounded-full p-0"}
+			aria-label="Toggle theme"
 		>
 			{isDark ? <Sun /> : <Moon />}
 		</Button>
