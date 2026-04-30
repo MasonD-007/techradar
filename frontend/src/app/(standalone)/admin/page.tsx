@@ -80,28 +80,6 @@ import {
 } from "@/lib/actions";
 
 export default function AdminPage() {
-	// const handleDelete = async () => {
-	// 	if (!deleteTarget || !deleteTarget.id) return;
-	// 	if (deleteTarget.type === "technology") {
-	// 		const result = await deleteTechnology(deleteTarget.id);
-	// 		if (result.success) {
-	// 			setTechnologies(technologies.filter((t) => t.id !== deleteTarget.id));
-	// 		}
-	// 	} else if (deleteTarget.type === "blip") {
-	// 		const result = await deleteBlip(Number(deleteTarget.id));
-	// 		if (result.success) {
-	// 			setBlips(blips.filter((b) => b.id !== Number(deleteTarget.id)));
-	// 		}
-	// 	} else if (deleteTarget.type === "user") {
-	// 		const result = await deleteUser(deleteTarget.id);
-	// 		if (result.success) {
-	// 			setUsers(users.filter((u) => u.id !== deleteTarget.id));
-	// 		}
-	// 	}
-	// 	setIsDeleteOpen(false);
-	// 	setDeleteTarget(null);
-	// };
-
 	return (
 		<div className="min-h-screen space-y-6 bg-background p-6">
 			<div className="flex items-center justify-between">

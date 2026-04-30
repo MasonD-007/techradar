@@ -37,7 +37,7 @@ export default function UsersContent({
 	} | null>(null);
 
 	const handleDelete = async () => {
-		if (!deleteTarget || !deleteTarget.id) return;
+		if (!deleteTarget?.id) return;
 		const result = await deleteUser(deleteTarget.id);
 		if (result.success) {
 			setUsers(users.filter((u) => String(u.id) !== String(deleteTarget.id)));

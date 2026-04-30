@@ -95,8 +95,8 @@ export default function TechnologiesContent({
 			formData.set("blip_id", newTechnology.blip_id);
 		}
 		const result = await createTechnology(formData);
-		if (result.success) {
-			setTechnologies([...technologies, result.data!]);
+		if (result.success && result.data) {
+			setTechnologies([...technologies, result.data]);
 			setIsAddTechnologyOpen(false);
 			setNewTechnology({ name: "", quadrant_id: "", blip_id: "" });
 			setTechFormErrors({});
@@ -104,7 +104,7 @@ export default function TechnologiesContent({
 	};
 
 	const handleDelete = async () => {
-		if (!deleteTarget || !deleteTarget.id) return;
+		if (!deleteTarget?.id) return;
 		const result = await deleteTechnology(String(deleteTarget.id));
 		if (result.success) {
 			setTechnologies(
@@ -154,7 +154,7 @@ export default function TechnologiesContent({
 							/>
 						</div>
 						<Select value={quadrantFilter} onValueChange={setQuadrantFilter}>
-							<SelectTrigger className="w-[180px]">
+							<SelectTrigger className="w-45">
 								<SelectValue placeholder="Filter by quadrant" />
 							</SelectTrigger>
 							<SelectContent>

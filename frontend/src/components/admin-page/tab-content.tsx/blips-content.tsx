@@ -54,7 +54,7 @@ export default function BlipsContent({
 	} | null>(null);
 
 	const handleDelete = async () => {
-		if (!deleteTarget || !deleteTarget.id) return;
+		if (!deleteTarget?.id) return;
 		const result = await deleteBlip(Number(deleteTarget.id));
 		if (result.success) {
 			setBlips(blips.filter((b) => b.id !== Number(deleteTarget.id)));
@@ -77,8 +77,8 @@ export default function BlipsContent({
 			const formData = new FormData();
 			formData.set("context", JSON.stringify(newBlipContext));
 			const result = await createBlip(formData);
-			if (result.success) {
-				setBlips([...blips, result.data!]);
+			if (result.success && result.data) {
+				setBlips([...blips, result.data]);
 				setIsAddBlipOpen(false);
 				setNewBlipContext({});
 				setBlipFormErrors({});

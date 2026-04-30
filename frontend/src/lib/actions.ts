@@ -2,6 +2,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { revalidatePath } from "next/cache";
+import { api } from "./api";
+import { logError, logInfo } from "./logger";
+import type { components } from "./openapi";
+
+type GetResponse<T> = {
+	data?: T;
+	response: Response;
+};
 
 export type Blip = components["schemas"]["handlers.Blip"];
 export type Technology = components["schemas"]["handlers.Technology"];
@@ -364,10 +372,9 @@ export async function deleteTechnology(id: string): Promise<ActionResult> {
 	logInfo("deleteTechnology", "START", { id });
 
 	try {
-		const result = (await api.DELETE(
-			`/technologies/${id}`,
-			{},
-		)) as any as { response: Response };
+		const result = (await api.DELETE(`/technologies/${id}`, {})) as any as {
+			response: Response;
+		};
 		const { response } = result;
 
 		if (!response.ok) {
