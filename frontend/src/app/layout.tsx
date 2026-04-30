@@ -42,7 +42,7 @@ export default function RootLayout({
 		// TODO: fix theming flash on page load
 		<html
 			lang="en"
-			className={cn("font-mono", jetbrainsMono.variable)}
+			className={cn("dark font-mono", jetbrainsMono.variable)}
 			suppressHydrationWarning
 		>
 			<head>
