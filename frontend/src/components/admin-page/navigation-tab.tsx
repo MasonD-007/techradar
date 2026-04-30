@@ -7,19 +7,17 @@ import {
 	Upload,
 	UserMinus,
 	UserPlus,
-	Users,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
 	type Blip,
-	createTechnology,
 	getBlips,
 	getTechnologies,
 	getUsers,
 	type Technology,
 	type User as UserType,
 } from "@/lib/actions";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 import BlipsContent from "./tab-content.tsx/blips-content";
 import ImportContent from "./tab-content.tsx/import-content";
 import OverviewContent from "./tab-content.tsx/overview-content";
@@ -117,14 +115,14 @@ export default function NavigationTab() {
 
 	useEffect(() => {
 		async function loadData() {
-			const [techs, blips, usrs] = await Promise.all([
+			const [techsResult, blipsResult, usersResult] = await Promise.all([
 				getTechnologies(),
 				getBlips(),
 				getUsers(),
 			]);
-			setTechnologies(techs);
-			setBlips(blips as typeof blips);
-			setUsers(usrs);
+			setTechnologies(techsResult.success ? (techsResult.data ?? []) : []);
+			setBlips(blipsResult);
+			setUsers(usersResult);
 		}
 		loadData();
 	}, []);
