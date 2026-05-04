@@ -4,8 +4,8 @@
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { api } from "./api";
-import { logError, logInfo } from "./logger";
 import { decodeJwt } from "./jwt";
+import { logError, logInfo } from "./logger";
 import type { components } from "./openapi";
 
 type GetResponse<T> = {
@@ -265,14 +265,14 @@ export async function getTechnologiesByQuadrant(
 
 export async function getTechnologiesByUser(
 	userId: string,
-): Promise<ActionResult<Technology[]>> {
+): Promise<ActionResult<UserTechnology[]>> {
 	logInfo("getTechnologiesByUser", "START", { userId });
 
 	try {
 		const result = (await api.GET(
-			`/technologies/by-user/${userId}`,
+			`/user-technologies/user/${userId}`,
 			{},
-		)) as any as { data?: Technology[]; response: Response };
+		)) as any as { data?: UserTechnology[]; response: Response };
 		const { data, response } = result;
 
 		if (!response.ok) {
@@ -555,6 +555,7 @@ export async function deleteUser(id: string): Promise<ActionResult> {
 export async function addTechnologyToUser(
 	userId: string,
 	technologyId: string,
+	ringId: number = 1,
 ): Promise<ActionResult<UserTechnology>> {
 	logInfo("addTechnologyToUser", "START", { userId, technologyId });
 
@@ -566,6 +567,7 @@ export async function addTechnologyToUser(
 		const body: CreateUserTechnologyRequest = {
 			user_id: userId,
 			technology_id: technologyId,
+			ring_id: ringId,
 		};
 		const result = (await api.POST("/user-technologies", {
 			body,
@@ -600,6 +602,42 @@ export async function addTechnologyToUser(
 	}
 }
 
+export async function deleteTechnologyFromUser(
+	userTechnologyId: string,
+): Promise<ActionResult> {
+	logInfo("deleteTechnologyFromUser", "START", { userTechnologyId });
+
+	if (!userTechnologyId) {
+		return { success: false, error: "userTechnologyId is required" };
+	}
+
+	try {
+		const result = (await api.DELETE(
+			`/user-technologies/${userTechnologyId}`,
+			{},
+		)) as any as {
+			response: Response;
+		};
+		const { response } = result;
+
+		if (!response.ok) {
+			const msg = getErrorMessage(null);
+			logError("deleteTechnologyFromUser", "ERROR", msg, {
+				userTechnologyId,
+				status: response.status,
+			});
+			return { success: false, error: msg };
+		}
+
+		logInfo("deleteTechnologyFromUser", "SUCCESS", { userTechnologyId });
+		return { success: true };
+	} catch (error) {
+		logError("deleteTechnologyFromUser", "ERROR", getErrorMessage(error), {
+			userTechnologyId,
+		});
+		return { success: false, error: "Failed to delete technology from user" };
+	}
+}
 const COOKIE_NAME = "auth_token";
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 
@@ -619,7 +657,9 @@ async function deleteAuthCookie(): Promise<void> {
 	cookieStore.delete(COOKIE_NAME);
 }
 
-export async function login(formData: FormData): Promise<ActionResult<AuthResponse>> {
+export async function login(
+	formData: FormData,
+): Promise<ActionResult<AuthResponse>> {
 	const email = formData.get("email") as string;
 	const password = formData.get("password") as string;
 
