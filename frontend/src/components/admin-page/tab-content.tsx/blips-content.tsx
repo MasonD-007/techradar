@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/table";
 import { TabsContent } from "@/components/ui/tabs";
 import { type Blip, createBlip, deleteBlip } from "@/lib/actions";
+import CreateBlipDialog from "../create-blip-form/create-blip-dialog";
 
 export default function BlipsContent({
 	blips,
@@ -112,7 +113,8 @@ export default function BlipsContent({
 							<Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
 							<Input placeholder="Search blips..." className="pl-10" />
 						</div>
-						<Dialog open={isAddBlipOpen} onOpenChange={setIsAddBlipOpen}>
+						<CreateBlipDialog />
+						{/* <Dialog open={isAddBlipOpen} onOpenChange={setIsAddBlipOpen}>
 							<DialogTrigger asChild>
 								<Button>
 									<Plus className="mr-2 h-4 w-4" /> Add Blip
@@ -141,7 +143,7 @@ export default function BlipsContent({
 									<Button onClick={handleAddBlip}>Save</Button>
 								</DialogFooter>
 							</DialogContent>
-						</Dialog>
+						</Dialog> */}
 					</div>
 
 					<Table>
