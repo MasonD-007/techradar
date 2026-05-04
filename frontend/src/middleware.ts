@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
 const COOKIE_NAME = "auth_token";
 const PUBLIC_ROUTES = ["/", "/login", "/sign-up"];
@@ -31,7 +31,9 @@ function getAuthToken(request: NextRequest): string | undefined {
 }
 
 function isPublicRoute(pathname: string): boolean {
-	return PUBLIC_ROUTES.some((route) => pathname === route || pathname.startsWith(route + "/"));
+	return PUBLIC_ROUTES.some(
+		(route) => pathname === route || pathname.startsWith(route + "/"),
+	);
 }
 
 export function middleware(request: NextRequest) {
@@ -50,7 +52,9 @@ export function middleware(request: NextRequest) {
 			return NextResponse.redirect(new URL(LOGIN_REDIRECT, request.url));
 		}
 		if (!isAdmin) {
-			return NextResponse.redirect(new URL(AUTHENTICATED_REDIRECT, request.url));
+			return NextResponse.redirect(
+				new URL(AUTHENTICATED_REDIRECT, request.url),
+			);
 		}
 		return NextResponse.next();
 	}
