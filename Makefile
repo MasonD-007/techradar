@@ -37,8 +37,12 @@ backend-sqlc:
 backend-docs:
 	cd backend && swag init -g cmd/server/main.go -o docs
 
+.PHONY: backend-seed
+backend-seed:
+	cd backend && go run ./cmd/seed/
+
 .PHONY: backend-dev
-backend-dev:
+backend-dev: backend-seed
 	cd backend && go run ./cmd/server/
 
 .PHONY: backend-lint

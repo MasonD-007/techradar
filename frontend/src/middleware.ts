@@ -51,11 +51,11 @@ export function middleware(request: NextRequest) {
 		if (!isAuthenticated) {
 			return NextResponse.redirect(new URL(LOGIN_REDIRECT, request.url));
 		}
-		if (!isAdmin) {
-			return NextResponse.redirect(
-				new URL(AUTHENTICATED_REDIRECT, request.url),
-			);
-		}
+		// if (!isAdmin) {
+		// 	return NextResponse.redirect(
+		// 		new URL(AUTHENTICATED_REDIRECT, request.url),
+		// 	);
+		// }
 		return NextResponse.next();
 	}
 
