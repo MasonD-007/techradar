@@ -73,7 +73,7 @@ export async function getBlip(id: number): Promise<ActionResult<Blip>> {
 		const result = await api.GET("/blips/{id}", {
 			params: { path: { id } },
 		});
-		const { data, response } = result as any;
+		const { data, response } = result as GetResponse<Blip>;
 
 		if (!response.ok) {
 			const msg = getErrorMessage(data);
@@ -138,8 +138,8 @@ export async function updateBlip(
 	try {
 		const body: UpdateBlipRequest = { context: JSON.parse(context) };
 		const result = (await api.PUT("/blips/{id}", {
-			params: { path: { id } },
 			body,
+			params: { path: { id } },
 		})) as any as {
 			data?: Blip;
 			response: Response;
@@ -244,10 +244,9 @@ export async function getTechnologiesByQuadrant(
 	logInfo("getTechnologiesByQuadrant", "START", { quadrantId });
 
 	try {
-		const result = (await api.GET(
-			"/technologies/by-quadrant/{quadrantId}" as any,
-			{ params: { path: { quadrantId } } },
-		)) as any as { data?: Technology[]; response: Response };
+		const result = (await api.GET("/technologies/by-quadrant/{quadrant_id}", {
+			params: { path: { quadrant_id: quadrantId } },
+		})) as any as { data?: Technology[]; response: Response };
 		const { data, response } = result;
 
 		if (!response.ok) {
@@ -278,10 +277,9 @@ export async function getTechnologiesByUser(
 	logInfo("getTechnologiesByUser", "START", { userId });
 
 	try {
-		const result = (await api.GET(
-			`/user-technologies/user/${userId}`,
-			{},
-		)) as any as { data?: UserTechnology[]; response: Response };
+		const result = (await api.GET("/user-technologies/user/{user_id}", {
+			params: { path: { user_id: userId } },
+		})) as any as { data?: UserTechnology[]; response: Response };
 		const { data, response } = result;
 
 		if (!response.ok) {
@@ -361,8 +359,8 @@ export async function updateTechnology(
 			blip_id: blipId ? parseInt(blipId, 10) : undefined,
 		};
 		const result = (await api.PUT("/technologies/{id}", {
-			params: { path: { id } },
 			body,
+			params: { path: { id } },
 		})) as any as { data?: Technology; response: Response };
 		const { data, response } = result;
 
@@ -387,7 +385,9 @@ export async function deleteTechnology(id: string): Promise<ActionResult> {
 	logInfo("deleteTechnology", "START", { id });
 
 	try {
-		const result = (await api.DELETE(`/technologies/${id}`, {})) as any as {
+		const result = (await api.DELETE("/technologies/{id}", {
+			params: { path: { id } },
+		})) as any as {
 			response: Response;
 		};
 		const { response } = result;
@@ -521,8 +521,8 @@ export async function updateUser(
 			hashed_password: password || undefined,
 		};
 		const result = (await api.PUT("/users/{id}", {
-			params: { path: { id } },
 			body,
+			params: { path: { id } },
 		})) as any as {
 			data?: User;
 			response: Response;
@@ -629,10 +629,9 @@ export async function deleteTechnologyFromUser(
 	}
 
 	try {
-		const result = (await api.DELETE(
-			`/user-technologies/${userTechnologyId}`,
-			{},
-		)) as any as {
+		const result = (await api.DELETE("/user-technologies/{id}", {
+			params: { path: { id: userTechnologyId } },
+		})) as any as {
 			response: Response;
 		};
 		const { response } = result;
@@ -793,7 +792,9 @@ export async function getCurrentUser(): Promise<User | null> {
 	if (!userId) return null;
 
 	try {
-		const result = (await api.GET(`/users/${userId}`, {})) as any as {
+		const result = (await api.GET("/users/{id}", {
+			params: { path: { id: userId } },
+		})) as any as {
 			data?: User;
 			response: Response;
 		};
