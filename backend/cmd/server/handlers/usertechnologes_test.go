@@ -21,7 +21,7 @@ func TestGetUserTechnology(t *testing.T) {
 	tests := []struct {
 		name       string
 		pathID     string
-		mockExpect func(*mocks.MockQuerier)
+		mockExpect func(*mocks.MockQuerier, *mocks.MockRLSExecutor)
 		wantCode   int
 	}{
 		{
@@ -36,7 +36,8 @@ func TestGetUserTechnology(t *testing.T) {
 		{
 			name:   "not found error returns 404",
 			pathID: validUUIDStr,
-			mockExpect: func(m *mocks.MockQuerier) {
+			mockExpect: func(m *mocks.MockQuerier, rls *mocks.MockRLSExecutor) {
+				rls.On("Execute", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
 				m.On("GetUserTechnologyID", mock.Anything, validUUID).Return(db.UserTechnology{}, errors.New("not found"))
 			},
 			wantCode: http.StatusNotFound,
@@ -44,7 +45,8 @@ func TestGetUserTechnology(t *testing.T) {
 		{
 			name:   "successful fetch returns user technology",
 			pathID: validUUIDStr,
-			mockExpect: func(m *mocks.MockQuerier) {
+			mockExpect: func(m *mocks.MockQuerier, rls *mocks.MockRLSExecutor) {
+				rls.On("Execute", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
 				m.On("GetUserTechnologyID", mock.Anything, validUUID).Return(db.UserTechnology{ID: validUUID, RingID: 3}, nil)
 			},
 			wantCode: http.StatusOK,
@@ -54,11 +56,13 @@ func TestGetUserTechnology(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			mockQuerier := mocks.NewMockQuerier()
+			mockRLS := mocks.NewMockRLSExecutor()
+			mockRLS.SetQuerier(mockQuerier)
 			if tt.mockExpect != nil {
-				tt.mockExpect(mockQuerier)
+				tt.mockExpect(mockQuerier, mockRLS)
 			}
 
-			handler := handlers.GetUserTechnology(mockQuerier)
+			handler := handlers.GetUserTechnology(mockQuerier, mockRLS)
 			req := httptest.NewRequest(http.MethodGet, "/user-technologies/"+tt.pathID, nil)
 			if tt.pathID != "" {
 				req.SetPathValue("id", tt.pathID)
@@ -82,7 +86,7 @@ func TestGetUserTechnologiesByUser(t *testing.T) {
 	tests := []struct {
 		name       string
 		pathUserID string
-		mockExpect func(*mocks.MockQuerier)
+		mockExpect func(*mocks.MockQuerier, *mocks.MockRLSExecutor)
 		wantCode   int
 	}{
 		{
@@ -97,7 +101,8 @@ func TestGetUserTechnologiesByUser(t *testing.T) {
 		{
 			name:       "fetch error returns 500",
 			pathUserID: validUUIDStr,
-			mockExpect: func(m *mocks.MockQuerier) {
+			mockExpect: func(m *mocks.MockQuerier, rls *mocks.MockRLSExecutor) {
+				rls.On("Execute", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
 				m.On("GetUserTechnologyUserId", mock.Anything, validUUID).Return([]db.UserTechnology(nil), errors.New("db error"))
 			},
 			wantCode: http.StatusInternalServerError,
@@ -105,7 +110,8 @@ func TestGetUserTechnologiesByUser(t *testing.T) {
 		{
 			name:       "successful fetch returns list",
 			pathUserID: validUUIDStr,
-			mockExpect: func(m *mocks.MockQuerier) {
+			mockExpect: func(m *mocks.MockQuerier, rls *mocks.MockRLSExecutor) {
+				rls.On("Execute", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
 				m.On("GetUserTechnologyUserId", mock.Anything, validUUID).Return([]db.UserTechnology{{RingID: 2}}, nil)
 			},
 			wantCode: http.StatusOK,
@@ -115,11 +121,13 @@ func TestGetUserTechnologiesByUser(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			mockQuerier := mocks.NewMockQuerier()
+			mockRLS := mocks.NewMockRLSExecutor()
+			mockRLS.SetQuerier(mockQuerier)
 			if tt.mockExpect != nil {
-				tt.mockExpect(mockQuerier)
+				tt.mockExpect(mockQuerier, mockRLS)
 			}
 
-			handler := handlers.GetUserTechnologiesByUser(mockQuerier)
+			handler := handlers.GetUserTechnologiesByUser(mockQuerier, mockRLS)
 			req := httptest.NewRequest(http.MethodGet, "/user-technologies/user/"+tt.pathUserID, nil)
 			if tt.pathUserID != "" {
 				req.SetPathValue("user_id", tt.pathUserID)
@@ -137,7 +145,7 @@ func TestCreateUserTechnology(t *testing.T) {
 	tests := []struct {
 		name       string
 		body       string
-		mockExpect func(*mocks.MockQuerier)
+		mockExpect func(*mocks.MockQuerier, *mocks.MockRLSExecutor)
 		wantCode   int
 	}{
 		{
@@ -148,7 +156,8 @@ func TestCreateUserTechnology(t *testing.T) {
 		{
 			name: "database error returns 500",
 			body: `{"user_id":"` + validUUIDStr + `", "technology_id":"` + validUUIDStr + `", "ring_id":1}`,
-			mockExpect: func(m *mocks.MockQuerier) {
+			mockExpect: func(m *mocks.MockQuerier, rls *mocks.MockRLSExecutor) {
+				rls.On("Execute", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
 				m.On("CreateUserTechnology", mock.Anything, mock.AnythingOfType("db.CreateUserTechnologyParams")).Return(db.UserTechnology{}, errors.New("db error"))
 			},
 			wantCode: http.StatusInternalServerError,
@@ -156,7 +165,8 @@ func TestCreateUserTechnology(t *testing.T) {
 		{
 			name: "successful create returns 201",
 			body: `{"user_id":"` + validUUIDStr + `", "technology_id":"` + validUUIDStr + `", "ring_id":1}`,
-			mockExpect: func(m *mocks.MockQuerier) {
+			mockExpect: func(m *mocks.MockQuerier, rls *mocks.MockRLSExecutor) {
+				rls.On("Execute", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
 				m.On("CreateUserTechnology", mock.Anything, mock.AnythingOfType("db.CreateUserTechnologyParams")).Return(db.UserTechnology{ID: validUUID, RingID: 1}, nil)
 			},
 			wantCode: http.StatusCreated,
@@ -166,11 +176,13 @@ func TestCreateUserTechnology(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			mockQuerier := mocks.NewMockQuerier()
+			mockRLS := mocks.NewMockRLSExecutor()
+			mockRLS.SetQuerier(mockQuerier)
 			if tt.mockExpect != nil {
-				tt.mockExpect(mockQuerier)
+				tt.mockExpect(mockQuerier, mockRLS)
 			}
 
-			handler := handlers.CreateUserTechnology(mockQuerier)
+			handler := handlers.CreateUserTechnology(mockQuerier, mockRLS)
 			req := httptest.NewRequest(http.MethodPost, "/user-technologies", strings.NewReader(tt.body))
 			recorder := httptest.NewRecorder()
 			handler(recorder, req)
@@ -188,7 +200,7 @@ func TestUpdateUserTechnology(t *testing.T) {
 		pathID     string
 		body       string
 		userID     string
-		mockExpect func(*mocks.MockQuerier)
+		mockExpect func(*mocks.MockQuerier, *mocks.MockRLSExecutor)
 		wantCode   int
 	}{
 		{
@@ -207,9 +219,6 @@ func TestUpdateUserTechnology(t *testing.T) {
 			pathID: validUUIDStr,
 			body:   `{bad}`,
 			userID: validUUIDStr,
-			mockExpect: func(m *mocks.MockQuerier) {
-				m.On("GetUserTechnologyID", mock.Anything, validUUID).Return(db.UserTechnology{ID: validUUID, UserID: validUUID}, nil)
-			},
 			wantCode: http.StatusBadRequest,
 		},
 		{
@@ -217,42 +226,35 @@ func TestUpdateUserTechnology(t *testing.T) {
 			pathID: validUUIDStr,
 			body:   `{"ring_id":2}`,
 			userID: validUUIDStr,
-			mockExpect: func(m *mocks.MockQuerier) {
-				m.On("GetUserTechnologyID", mock.Anything, validUUID).Return(db.UserTechnology{ID: validUUID, UserID: validUUID}, nil)
-				m.On("UpdateUserTechnology", mock.Anything, mock.AnythingOfType("db.UpdateUserTechnologyParams")).Return(db.UserTechnology{}, errors.New("fail"))
+			mockExpect: func(m *mocks.MockQuerier, rls *mocks.MockRLSExecutor) {
+				rls.On("Execute", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
+				m.On("UpdateUserTechnology", mock.Anything, mock.Anything).Return(db.UserTechnology{}, errors.New("fail"))
 			},
 			wantCode: http.StatusInternalServerError,
 		},
 		{
 			name:   "successful update returns payload",
 			pathID: validUUIDStr,
-			body:   `{"ring_id":2}`,
 			userID: validUUIDStr,
-			mockExpect: func(m *mocks.MockQuerier) {
-				m.On("GetUserTechnologyID", mock.Anything, validUUID).Return(db.UserTechnology{ID: validUUID, UserID: validUUID}, nil)
-				m.On("UpdateUserTechnology", mock.Anything, mock.AnythingOfType("db.UpdateUserTechnologyParams")).Return(db.UserTechnology{ID: validUUID, RingID: 2}, nil)
+			body:   `{"ring_id":2}`,
+			mockExpect: func(m *mocks.MockQuerier, rls *mocks.MockRLSExecutor) {
+				rls.On("Execute", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
+				m.On("UpdateUserTechnology", mock.Anything, mock.Anything).Return(db.UserTechnology{ID: validUUID, RingID: 2}, nil)
 			},
 			wantCode: http.StatusOK,
-		},
-		{
-			name:   "unauthorized when no user context",
-			pathID: validUUIDStr,
-			body:   `{"ring_id":2}`,
-			mockExpect: func(m *mocks.MockQuerier) {
-				m.On("GetUserTechnologyID", mock.Anything, validUUID).Return(db.UserTechnology{ID: validUUID, UserID: validUUID}, nil)
-			},
-			wantCode: http.StatusForbidden,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			mockQuerier := mocks.NewMockQuerier()
+			mockRLS := mocks.NewMockRLSExecutor()
+			mockRLS.SetQuerier(mockQuerier)
 			if tt.mockExpect != nil {
-				tt.mockExpect(mockQuerier)
+				tt.mockExpect(mockQuerier, mockRLS)
 			}
 
-			handler := handlers.UpdateUserTechnology(mockQuerier)
+			handler := handlers.UpdateUserTechnology(mockQuerier, mockRLS)
 			req := httptest.NewRequest(http.MethodPut, "/user-technologies/"+tt.pathID, strings.NewReader(tt.body))
 			if tt.pathID != "" {
 				req.SetPathValue("id", tt.pathID)
@@ -275,7 +277,7 @@ func TestDeleteUserTechnology(t *testing.T) {
 		name       string
 		pathID     string
 		userID     string
-		mockExpect func(*mocks.MockQuerier)
+		mockExpect func(*mocks.MockQuerier, *mocks.MockRLSExecutor)
 		wantCode   int
 	}{
 		{
@@ -291,8 +293,8 @@ func TestDeleteUserTechnology(t *testing.T) {
 			name:   "delete error returns 500",
 			pathID: validUUIDStr,
 			userID: validUUIDStr,
-			mockExpect: func(m *mocks.MockQuerier) {
-				m.On("GetUserTechnologyID", mock.Anything, validUUID).Return(db.UserTechnology{ID: validUUID, UserID: validUUID}, nil)
+			mockExpect: func(m *mocks.MockQuerier, rls *mocks.MockRLSExecutor) {
+				rls.On("Execute", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
 				m.On("DeleteUserTechnology", mock.Anything, validUUID).Return(errors.New("boom"))
 			},
 			wantCode: http.StatusInternalServerError,
@@ -301,30 +303,24 @@ func TestDeleteUserTechnology(t *testing.T) {
 			name:   "successful delete returns no content",
 			pathID: validUUIDStr,
 			userID: validUUIDStr,
-			mockExpect: func(m *mocks.MockQuerier) {
-				m.On("GetUserTechnologyID", mock.Anything, validUUID).Return(db.UserTechnology{ID: validUUID, UserID: validUUID}, nil)
+			mockExpect: func(m *mocks.MockQuerier, rls *mocks.MockRLSExecutor) {
+				rls.On("Execute", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
 				m.On("DeleteUserTechnology", mock.Anything, validUUID).Return(nil)
 			},
 			wantCode: http.StatusNoContent,
-		},
-		{
-			name:   "unauthorized when no user context",
-			pathID: validUUIDStr,
-			mockExpect: func(m *mocks.MockQuerier) {
-				m.On("GetUserTechnologyID", mock.Anything, validUUID).Return(db.UserTechnology{ID: validUUID, UserID: validUUID}, nil)
-			},
-			wantCode: http.StatusForbidden,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			mockQuerier := mocks.NewMockQuerier()
+			mockRLS := mocks.NewMockRLSExecutor()
+			mockRLS.SetQuerier(mockQuerier)
 			if tt.mockExpect != nil {
-				tt.mockExpect(mockQuerier)
+				tt.mockExpect(mockQuerier, mockRLS)
 			}
 
-			handler := handlers.DeleteUserTechnology(mockQuerier)
+			handler := handlers.DeleteUserTechnology(mockQuerier, mockRLS)
 			req := httptest.NewRequest(http.MethodDelete, "/user-technologies/"+tt.pathID, nil)
 			if tt.pathID != "" {
 				req.SetPathValue("id", tt.pathID)

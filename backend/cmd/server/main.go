@@ -17,6 +17,7 @@ import (
 	"github.com/MasonD-007/template/backend/internal/db/postgres"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
@@ -74,8 +75,8 @@ func main() {
 	registerAuthRoutes(r, q)
 	registerBlipsRoutes(r, q)
 	registerTechnologiesRoutes(r, q)
-	registerUsersRoutes(r, q)
-	registerUserTechnologiesRoutes(r, q)
+	registerUsersRoutes(r, q, conn)
+	registerUserTechnologiesRoutes(r, q, conn)
 
 	r.HandleFunc("/swagger/doc.json", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "docs/swagger.json")
@@ -122,19 +123,21 @@ func registerTechnologiesRoutes(r chi.Router, q *db.Queries) {
 	r.Delete("/technologies/{id}", loggingMiddleware(AuthMiddleware(AdminMiddleware(handlers.DeleteTechnology(q)))))
 }
 
-func registerUsersRoutes(r chi.Router, q *db.Queries) {
-	r.Get("/users", loggingMiddleware(AuthMiddleware(AdminMiddleware(handlers.GetAllUsers(q)))))
-	r.Post("/users", loggingMiddleware(AuthMiddleware(AdminMiddleware(handlers.CreateUser(q)))))
-	r.Get("/users/{id}", loggingMiddleware(AuthMiddleware(handlers.GetUser(q))))
-	r.Get("/users/by-email/{email}", loggingMiddleware(AuthMiddleware(AdminMiddleware(handlers.GetUserByEmail(q)))))
-	r.Put("/users/{id}", loggingMiddleware(AuthMiddleware(handlers.UpdateUser(q))))
-	r.Delete("/users/{id}", loggingMiddleware(AuthMiddleware(AdminMiddleware(handlers.DeleteUser(q)))))
+func registerUsersRoutes(r chi.Router, q *db.Queries, pool *pgxpool.Pool) {
+	rls := handlers.NewDBRLSExecutor(pool)
+	r.Get("/users", loggingMiddleware(AuthMiddleware(AdminMiddleware(handlers.GetAllUsers(q, rls)))))
+	r.Post("/users", loggingMiddleware(AuthMiddleware(AdminMiddleware(handlers.CreateUser(q, rls)))))
+	r.Get("/users/{id}", loggingMiddleware(AuthMiddleware(handlers.GetUser(q, rls))))
+	r.Get("/users/by-email/{email}", loggingMiddleware(AuthMiddleware(AdminMiddleware(handlers.GetUserByEmail(q, rls)))))
+	r.Put("/users/{id}", loggingMiddleware(AuthMiddleware(handlers.UpdateUser(q, rls))))
+	r.Delete("/users/{id}", loggingMiddleware(AuthMiddleware(AdminMiddleware(handlers.DeleteUser(q, rls)))))
 }
 
-func registerUserTechnologiesRoutes(r chi.Router, q *db.Queries) {
-	r.Post("/user-technologies", loggingMiddleware(AuthMiddleware(handlers.CreateUserTechnology(q))))
-	r.Get("/user-technologies/{id}", loggingMiddleware(AuthMiddleware(handlers.GetUserTechnology(q))))
-	r.Get("/user-technologies/user/{user_id}", loggingMiddleware(AuthMiddleware(handlers.GetUserTechnologiesByUser(q))))
-	r.Put("/user-technologies/{id}", loggingMiddleware(AuthMiddleware(handlers.UpdateUserTechnology(q))))
-	r.Delete("/user-technologies/{id}", loggingMiddleware(AuthMiddleware(handlers.DeleteUserTechnology(q))))
+func registerUserTechnologiesRoutes(r chi.Router, q *db.Queries, pool *pgxpool.Pool) {
+	rls := handlers.NewDBRLSExecutor(pool)
+	r.Post("/user-technologies", loggingMiddleware(AuthMiddleware(handlers.CreateUserTechnology(q, rls))))
+	r.Get("/user-technologies/{id}", loggingMiddleware(AuthMiddleware(handlers.GetUserTechnology(q, rls))))
+	r.Get("/user-technologies/user/{user_id}", loggingMiddleware(AuthMiddleware(handlers.GetUserTechnologiesByUser(q, rls))))
+	r.Put("/user-technologies/{id}", loggingMiddleware(AuthMiddleware(handlers.UpdateUserTechnology(q, rls))))
+	r.Delete("/user-technologies/{id}", loggingMiddleware(AuthMiddleware(handlers.DeleteUserTechnology(q, rls))))
 }
