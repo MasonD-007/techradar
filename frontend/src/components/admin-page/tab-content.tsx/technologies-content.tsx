@@ -1,5 +1,3 @@
-import { Plus, Search, Trash2 } from "lucide-react";
-import { useState } from "react";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -40,6 +38,8 @@ import {
 import { TabsContent } from "@/components/ui/tabs";
 import type { Technology } from "@/lib/actions";
 import { createTechnology, deleteTechnology } from "@/lib/actions";
+import { Plus, Search, Trash2 } from "lucide-react";
+import { useState } from "react";
 
 const quadrantOptions = [
 	{ value: "1", label: "Tools" },

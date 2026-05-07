@@ -1,6 +1,3 @@
-import { Plus, Search, Trash2 } from "lucide-react";
-import { useState } from "react";
-import { KeyValueBuilder } from "@/components/key-value-builder";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -12,15 +9,6 @@ import {
 	AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
 	Table,
@@ -32,6 +20,8 @@ import {
 } from "@/components/ui/table";
 import { TabsContent } from "@/components/ui/tabs";
 import { type Blip, createBlip, deleteBlip } from "@/lib/actions";
+import { Search, Trash2 } from "lucide-react";
+import { useState } from "react";
 import CreateBlipDialog from "../create-blip-form/create-blip-dialog";
 
 export default function BlipsContent({

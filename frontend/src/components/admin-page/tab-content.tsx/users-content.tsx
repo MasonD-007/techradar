@@ -1,5 +1,3 @@
-import { Search, Trash2 } from "lucide-react";
-import { useState } from "react";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -22,6 +20,8 @@ import {
 } from "@/components/ui/table";
 import { TabsContent } from "@/components/ui/tabs";
 import { deleteUser, type User as UserType } from "@/lib/actions";
+import { Search, Trash2 } from "lucide-react";
+import { useState } from "react";
 
 export default function UsersContent({
 	users,
