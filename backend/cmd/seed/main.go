@@ -90,7 +90,7 @@ func main() {
 
 	csvPath := os.Getenv("SEED_DATA_CSV")
 	if csvPath == "" {
-		csvPath = filepath.Clean(filepath.Join("..", "frontend", "public", "data.csv"))
+		csvPath = filepath.Clean("./data.csv")
 	}
 
 	seededCount, err := seedTechnologies(context.Background(), tx, q, csvPath)
@@ -281,3 +281,4 @@ func jsonFromSeed(record technologySeedRecord) ([]byte, error) {
 		"category":    record.Category,
 	})
 }
+
