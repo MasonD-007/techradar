@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/MasonD-007/template/backend/cmd/server/handlers/dto"
@@ -38,6 +39,7 @@ func GetUser(q Querier, rls RLSExecutor) http.HandlerFunc {
 			return err
 		})
 		if err != nil {
+			log.Printf("DB error in GetUser: %v", err)
 			http.Error(w, ErrUserNotFound, http.StatusNotFound)
 			return
 		}
@@ -68,6 +70,7 @@ func GetUserByEmail(q Querier, rls RLSExecutor) http.HandlerFunc {
 			return err
 		})
 		if err != nil {
+			log.Printf("DB error in GetUserByEmail: %v", err)
 			http.Error(w, "User not found", http.StatusNotFound)
 			return
 		}

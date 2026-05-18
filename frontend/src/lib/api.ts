@@ -20,7 +20,7 @@ async function authFetch(url: string, options: RequestInit = {}) {
     headers,
   });
 
-  if (response.status === 401) {
+  if (response.status === 401 && !url.includes('/auth/')) {
     redirect('/login');
   }
 

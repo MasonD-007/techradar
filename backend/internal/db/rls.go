@@ -21,9 +21,9 @@ func WithRLS(ctx context.Context, pool *pgxpool.Pool, userID, role string, q *Qu
 	defer tx.Rollback(ctx)
 
 	if userID == "" {
-		_, err = tx.Exec(ctx, "SET LOCAL app.current_role = 'user'")
+		_, err = tx.Exec(ctx, "SELECT set_config('app.current_role', 'user', true)")
 	} else {
-		_, err = tx.Exec(ctx, "SET LOCAL app.current_user_id = $1, SET LOCAL app.current_role = $2", userID, role)
+		_, err = tx.Exec(ctx, "SELECT set_config('app.current_user_id', $1, true), set_config('app.current_role', $2, true)", userID, role)
 	}
 	if err != nil {
 		return err
