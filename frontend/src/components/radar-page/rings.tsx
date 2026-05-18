@@ -1,5 +1,15 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
+import {
+	Card,
+	CardAction,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { positionedItems, ringLabels } from "./radar-data";
 
 export default function RingData() {
@@ -9,26 +19,43 @@ export default function RingData() {
 	}));
 
 	return (
-		<div className="rounded-[1.75rem] border border-white/10 bg-slate-950/55 p-5 shadow-slate-950/30 shadow-xl backdrop-blur">
-			<p className="font-semibold text-slate-400 text-xs uppercase tracking-[0.3em]">
-				Rings
-			</p>
-			<div className="mt-4 space-y-3">
+		<Card className="border-border bg-card/75 shadow-foreground/10 shadow-xl backdrop-blur">
+			<CardHeader className="px-5 py-5">
+				<CardTitle className="font-semibold text-muted-foreground text-xs uppercase tracking-[0.3em]">
+					Rings
+				</CardTitle>
+				<CardDescription className="text-muted-foreground text-sm">
+					Each ring reflects confidence and how close a technology is to
+					production use.
+				</CardDescription>
+			</CardHeader>
+			<Separator className="bg-border" />
+			<CardContent className="space-y-3 px-5 py-5">
 				{ringStats.map((ring) => (
-					<div
+					<Card
 						key={ring.key}
-						className="rounded-2xl border border-white/10 bg-white/5 p-3"
+						size="sm"
+						className="border-border bg-background/40 shadow-none"
 					>
-						<div className="flex items-center justify-between gap-3">
-							<p className="font-semibold text-white">{ring.title}</p>
-							<span className="rounded-full border border-white/10 bg-slate-900/60 px-2 py-1 text-slate-300 text-xs">
-								{ring.count}
-							</span>
-						</div>
-						<p className="mt-1 text-slate-400 text-sm">{ring.blurb}</p>
-					</div>
+						<CardHeader className="px-4 py-3">
+							<CardTitle className="font-semibold text-base text-card-foreground">
+								{ring.title}
+							</CardTitle>
+							<CardDescription className="text-muted-foreground text-sm">
+								{ring.blurb}
+							</CardDescription>
+							<CardAction>
+								<Badge
+									variant="secondary"
+									className="border-border bg-background/60 text-foreground"
+								>
+									{ring.count}
+								</Badge>
+							</CardAction>
+						</CardHeader>
+					</Card>
 				))}
-			</div>
-		</div>
+			</CardContent>
+		</Card>
 	);
 }

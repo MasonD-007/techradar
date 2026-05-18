@@ -2,6 +2,15 @@
 
 import * as d3 from "d3";
 import { useEffect, useRef, useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import {
+	Card,
+	CardAction,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import {
 	blipRadius,
 	CENTER,
@@ -22,20 +31,20 @@ const quadrantColor = d3
 	.scaleOrdinal<QuadrantKey, string>()
 	.domain(["tools", "techniques", "platforms", "languages"])
 	.range([
-		"rgba(56, 189, 248, 0.14)",
-		"rgba(16, 185, 129, 0.14)",
-		"rgba(245, 158, 11, 0.14)",
-		"rgba(168, 85, 247, 0.14)",
+		"color-mix(in oklab, var(--chart-1) 18%, transparent)",
+		"color-mix(in oklab, var(--chart-2) 18%, transparent)",
+		"color-mix(in oklab, var(--chart-3) 18%, transparent)",
+		"color-mix(in oklab, var(--primary) 18%, transparent)",
 	]);
 
 const quadrantStroke = d3
 	.scaleOrdinal<QuadrantKey, string>()
 	.domain(["tools", "techniques", "platforms", "languages"])
 	.range([
-		"rgba(56, 189, 248, 0.38)",
-		"rgba(16, 185, 129, 0.38)",
-		"rgba(245, 158, 11, 0.38)",
-		"rgba(168, 85, 247, 0.38)",
+		"color-mix(in oklab, var(--chart-1) 40%, transparent)",
+		"color-mix(in oklab, var(--chart-2) 40%, transparent)",
+		"color-mix(in oklab, var(--chart-3) 40%, transparent)",
+		"color-mix(in oklab, var(--primary) 40%, transparent)",
 	]);
 
 const quadrantArc = d3
@@ -77,15 +86,15 @@ function Radar() {
 		backgroundGradient
 			.append("stop")
 			.attr("offset", "0%")
-			.attr("stop-color", "#0f172a");
+			.attr("stop-color", "var(--background-900)");
 		backgroundGradient
 			.append("stop")
 			.attr("offset", "55%")
-			.attr("stop-color", "#111827");
+			.attr("stop-color", "var(--background-950)");
 		backgroundGradient
 			.append("stop")
 			.attr("offset", "100%")
-			.attr("stop-color", "#020617");
+			.attr("stop-color", "var(--background)");
 
 		const glowGradient = defs
 			.append("radialGradient")
@@ -97,11 +106,14 @@ function Radar() {
 		glowGradient
 			.append("stop")
 			.attr("offset", "0%")
-			.attr("stop-color", "rgba(56, 189, 248, 0.18)");
+			.attr(
+				"stop-color",
+				"color-mix(in oklab, var(--primary) 18%, transparent)",
+			);
 		glowGradient
 			.append("stop")
 			.attr("offset", "100%")
-			.attr("stop-color", "rgba(56, 189, 248, 0)");
+			.attr("stop-color", "transparent");
 
 		defs
 			.append("pattern")
@@ -112,7 +124,7 @@ function Radar() {
 			.append("path")
 			.attr("d", "M56 0H0V56")
 			.attr("fill", "none")
-			.attr("stroke", "rgba(148, 163, 184, 0.05)")
+			.attr("stroke", "color-mix(in oklab, var(--border) 15%, transparent)")
 			.attr("stroke-width", 1);
 
 		defs
@@ -129,7 +141,7 @@ function Radar() {
 			.append("rect")
 			.attr("width", RADAR_SIZE)
 			.attr("height", RADAR_SIZE)
-			.attr("fill", "url(#radar-background-gradient)");
+			.attr("fill", "var(--background)");
 		svg
 			.append("rect")
 			.attr("width", RADAR_SIZE)
@@ -141,7 +153,7 @@ function Radar() {
 			.attr("cx", CENTER)
 			.attr("cy", CENTER)
 			.attr("r", 240)
-			.attr("fill", "url(#radar-glow)");
+			.attr("fill", "transparent");
 
 		const root = svg
 			.append("g")
@@ -150,8 +162,8 @@ function Radar() {
 		root
 			.append("circle")
 			.attr("r", 24)
-			.attr("fill", "rgba(2, 6, 23, 0.9)")
-			.attr("stroke", "rgba(148, 163, 184, 0.15)")
+			.attr("fill", "var(--background)")
+			.attr("stroke", "color-mix(in oklab, var(--border) 35%, transparent)")
 			.attr("stroke-width", 1.2)
 			.attr("filter", "url(#radar-soft-glow)");
 
@@ -189,7 +201,7 @@ function Radar() {
 					quadrantArc({ startAngle: d.startAngle, endAngle: d.endAngle }) ?? "",
 			)
 			.attr("fill", "none")
-			.attr("stroke", "rgba(255,255,255,0.04)")
+			.attr("stroke", "color-mix(in oklab, var(--foreground) 4%, transparent)")
 			.attr("stroke-width", 1);
 
 		root
@@ -204,8 +216,8 @@ function Radar() {
 			.attr("fill", "none")
 			.attr("stroke", (_radius, index) =>
 				index === ringPaths.length - 1
-					? "rgba(226, 232, 240, 0.24)"
-					: "rgba(226, 232, 240, 0.16)",
+					? "color-mix(in oklab, var(--foreground) 24%, transparent)"
+					: "color-mix(in oklab, var(--foreground) 16%, transparent)",
 			)
 			.attr("stroke-width", (_radius, index) =>
 				index === ringPaths.length - 1 ? 2 : 1,
@@ -220,7 +232,7 @@ function Radar() {
 			.attr("y1", 0)
 			.attr("x2", (angle) => Math.sin(angle) * outerRadius)
 			.attr("y2", (angle) => -Math.cos(angle) * outerRadius)
-			.attr("stroke", "rgba(226, 232, 240, 0.18)")
+			.attr("stroke", "color-mix(in oklab, var(--foreground) 18%, transparent)")
 			.attr("stroke-width", 1.3);
 
 		root
@@ -228,7 +240,7 @@ function Radar() {
 			.data(quadrantLabels)
 			.join("text")
 			.attr("class", "quadrant-label")
-			.attr("fill", "rgba(248, 250, 252, 0.95)")
+			.attr("fill", "var(--foreground)")
 			.attr("font-size", 22)
 			.attr("font-weight", 800)
 			.attr("dominant-baseline", "middle")
@@ -269,7 +281,7 @@ function Radar() {
 			.attr("class", "ring-label")
 			.attr("x", 0)
 			.attr("y", (d) => -d.radius + 16)
-			.attr("fill", "rgba(203, 213, 225, 0.82)")
+			.attr("fill", "color-mix(in oklab, var(--foreground) 82%, transparent)")
 			.attr("font-size", 10)
 			.attr("font-weight", 600)
 			.attr("text-anchor", "middle")
@@ -286,7 +298,10 @@ function Radar() {
 			.attr("class", "ring-blurb")
 			.attr("x", 0)
 			.attr("y", (d) => -d.radius + 30)
-			.attr("fill", "rgba(148, 163, 184, 0.68)")
+			.attr(
+				"fill",
+				"color-mix(in oklab, var(--muted-foreground) 68%, transparent)",
+			)
 			.attr("font-size", 8)
 			.attr("font-weight", 500)
 			.attr("text-anchor", "middle")
@@ -326,7 +341,7 @@ function Radar() {
 				d.id === activeItemId ? 11 : blipRadius,
 			)
 			.attr("fill", (d: PositionedRadarItem) => quadrantStroke(d.quadrant))
-			.attr("stroke", "rgba(2, 6, 23, 0.96)")
+			.attr("stroke", "var(--background)")
 			.attr("stroke-width", 2);
 
 		blip
@@ -347,15 +362,15 @@ function Radar() {
 			.attr("y", 1)
 			.attr("text-anchor", "middle")
 			.attr("dominant-baseline", "middle")
-			.attr("fill", "rgba(248, 250, 252, 0.96)")
+			.attr("fill", "var(--foreground)")
 			.attr("font-size", (d: PositionedRadarItem) =>
 				d.id === activeItemId ? 10 : 8,
 			)
 			.attr("font-weight", 700)
 			.attr("paint-order", "stroke")
-			.attr("stroke", "rgba(2, 6, 23, 0.92)")
+			.attr("stroke", "var(--background)")
 			.attr("stroke-width", 2)
-			.text((d: PositionedRadarItem, i: number) => `${i + 1}`);
+			.text((_d: PositionedRadarItem, i: number) => `${i + 1}`);
 
 		blip
 			.append("title")
@@ -366,25 +381,28 @@ function Radar() {
 	}, [activeItemId]);
 
 	return (
-		<div className="overflow-hidden rounded-[2rem] border border-white/10 bg-slate-950/60 shadow-2xl shadow-slate-950/35 backdrop-blur">
-			<div className="flex items-center justify-between border-white/5 border-b px-5 py-4">
-				<div>
-					<p className="font-semibold text-slate-400 text-sm uppercase tracking-[0.3em]">
-						Radar canvas
-					</p>
-					<p className="mt-1 text-slate-300 text-sm">
-						Hover or tab a blip to inspect it.
-					</p>
-				</div>
-				<div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 font-medium text-slate-300 text-xs">
-					SVG + D3 geometry
-				</div>
-			</div>
+		<Card className="overflow-hidden border-border bg-card/80 shadow-2xl shadow-foreground/10 backdrop-blur">
+			<CardHeader className="border-border border-b px-5 py-4">
+				<CardTitle className="font-semibold text-muted-foreground text-sm uppercase tracking-[0.3em]">
+					Radar canvas
+				</CardTitle>
+				<CardDescription className="text-muted-foreground text-sm">
+					Hover or tab a blip to inspect it.
+				</CardDescription>
+				<CardAction>
+					<Badge
+						variant="secondary"
+						className="border-border bg-background/60 text-foreground"
+					>
+						SVG + D3 geometry
+					</Badge>
+				</CardAction>
+			</CardHeader>
 
-			<div className="relative aspect-square w-full">
-				<svg ref={svgRef} className="block h-full w-full" />
-			</div>
-		</div>
+			<CardContent className="px-0 py-0">
+				<svg ref={svgRef} className="block aspect-square w-full" />
+			</CardContent>
+		</Card>
 	);
 }
 
