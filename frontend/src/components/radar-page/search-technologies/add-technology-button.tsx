@@ -45,7 +45,7 @@ export default function AddTechnologyButton({
 			if (result.success) {
 				setSelected((prev) => [...prev, tech.id ?? ""]);
 				if (result.data) {
-					setUserTechnologies((prev) => [...prev, result.data]);
+					setUserTechnologies((prev) => [...prev, result.data!]);
 				}
 			} else {
 				console.log("Failed to add technology:", result.error);

@@ -303,8 +303,8 @@ export default function TechnologiesContent({
 												size="icon"
 												onClick={() => {
 													setDeleteTarget({
-														id: tech.id,
-														name: tech.name,
+														id: tech.id || "",
+														name: tech.name || "",
 													});
 													setIsDeleteOpen(true);
 												}}

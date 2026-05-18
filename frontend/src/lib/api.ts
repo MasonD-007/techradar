@@ -6,7 +6,7 @@ import type { paths } from './openapi';
 const baseUrl = process.env.API_URL || 'http://localhost:8080';
 const COOKIE_NAME = 'auth_token';
 
-async function authFetch(url: string, options: RequestInit = {}) {
+async function authFetch(input: RequestInfo | URL, options: RequestInit = {}) {
   const cookieStore = await cookies();
   const token = cookieStore.get(COOKIE_NAME)?.value;
 
@@ -15,12 +15,12 @@ async function authFetch(url: string, options: RequestInit = {}) {
     headers.set('Authorization', `Bearer ${token}`);
   }
 
-  const response = await fetch(url, {
+  const response = await fetch(input, {
     ...options,
     headers,
   });
 
-  if (response.status === 401 && !url.includes('/auth/')) {
+  if (response.status === 401 && !String(input).includes('/auth/')) {
     redirect('/login');
   }
 
