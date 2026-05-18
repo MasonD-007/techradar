@@ -11,23 +11,11 @@ import (
 )
 
 const (
-	ErrOwnership    = "You do not have permission to access this resource"
-	ErrNotFound    = "User technology not found"
+	ErrOwnership = "You do not have permission to access this resource"
+	ErrNotFound = "User technology not found"
 )
 
-// GetUserTechnology godoc
-// @Summary Get a user technology
-// @Description Get user technology by ID
-// @Tags user-technologies
-// @Accept json
-// @Produce json
-// @Param id path string true "UserTechnology ID"
-// @Success 200 {object} UserTechnology
-// @Failure 400 {object} Error
-// @Failure 404 {object} Error
-// @Failure 500 {object} Error
-// @Router /user-technologies/{id} [get]
-func GetUserTechnology(q Querier) http.HandlerFunc {
+func GetUserTechnology(q Querier, rls RLSExecutor) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		idStr := r.PathValue("id")
 		if idStr == "" {
@@ -41,16 +29,16 @@ func GetUserTechnology(q Querier) http.HandlerFunc {
 			return
 		}
 
-		ut, err := q.GetUserTechnologyID(r.Context(), id)
+		userID, _ := GetUserIDFromRequest(r)
+		role, _ := GetRoleFromRequest(r)
+
+		var ut db.UserTechnology
+		err = rls.Execute(r.Context(), userID.String(), role, func(q Querier) error {
+			ut, err = q.GetUserTechnologyID(r.Context(), id)
+			return err
+		})
 		if err != nil {
 			http.Error(w, ErrNotFound, http.StatusNotFound)
-			return
-		}
-
-		userID, ok := GetUserIDFromRequest(r)
-		role, _ := GetRoleFromRequest(r)
-		if ok && ut.UserID.Bytes != userID && role != "admin" {
-			http.Error(w, ErrOwnership, http.StatusForbidden)
 			return
 		}
 
@@ -63,18 +51,7 @@ func GetUserTechnology(q Querier) http.HandlerFunc {
 	}
 }
 
-// GetUserTechnologiesByUser godoc
-// @Summary Get technologies for a user
-// @Description Get all technologies assigned to a user
-// @Tags user-technologies
-// @Accept json
-// @Produce json
-// @Param user_id path string true "User ID"
-// @Success 200 {array} UserTechnology
-// @Failure 400 {object} Error
-// @Failure 500 {object} Error
-// @Router /user-technologies/user/{user_id} [get]
-func GetUserTechnologiesByUser(q Querier) http.HandlerFunc {
+func GetUserTechnologiesByUser(q Querier, rls RLSExecutor) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		userIDStr := r.PathValue("user_id")
 		if userIDStr == "" {
@@ -88,7 +65,14 @@ func GetUserTechnologiesByUser(q Querier) http.HandlerFunc {
 			return
 		}
 
-		uts, err := q.GetUserTechnologyUserId(r.Context(), userID)
+		authUserID, _ := GetUserIDFromRequest(r)
+		role, _ := GetRoleFromRequest(r)
+
+		var uts []db.UserTechnology
+		err = rls.Execute(r.Context(), authUserID.String(), role, func(q Querier) error {
+			uts, err = q.GetUserTechnologyUserId(r.Context(), userID)
+			return err
+		})
 		if err != nil {
 			http.Error(w, "Failed to fetch user technologies", http.StatusInternalServerError)
 			return
@@ -107,18 +91,7 @@ func GetUserTechnologiesByUser(q Querier) http.HandlerFunc {
 	}
 }
 
-// CreateUserTechnology godoc
-// @Summary Create a user technology
-// @Description Assign a technology to a user with a ring
-// @Tags user-technologies
-// @Accept json
-// @Produce json
-// @Param UserTechnology body CreateUserTechnologyRequest true "UserTechnology data"
-// @Success 201 {object} UserTechnology
-// @Failure 400 {object} Error
-// @Failure 500 {object} Error
-// @Router /user-technologies [post]
-func CreateUserTechnology(q Querier) http.HandlerFunc {
+func CreateUserTechnology(q Querier, rls RLSExecutor) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var params dto.CreateUserTechnologyRequest
 		if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
@@ -128,11 +101,19 @@ func CreateUserTechnology(q Querier) http.HandlerFunc {
 
 		params.ID = uuidutil.New()
 
-		ut, err := q.CreateUserTechnology(r.Context(), db.CreateUserTechnologyParams{
-			ID:           params.ID,
-			UserID:       params.UserID,
-			TechnologyID: params.TechnologyID,
-			RingID:       params.RingID,
+		userID, _ := GetUserIDFromRequest(r)
+		role, _ := GetRoleFromRequest(r)
+
+		var ut db.UserTechnology
+		var err error
+		err = rls.Execute(r.Context(), userID.String(), role, func(q Querier) error {
+			ut, err = q.CreateUserTechnology(r.Context(), db.CreateUserTechnologyParams{
+				ID:           params.ID,
+				UserID:       params.UserID,
+				TechnologyID: params.TechnologyID,
+				RingID:       params.RingID,
+			})
+			return err
 		})
 		if err != nil {
 			http.Error(w, "Failed to create user technology", http.StatusInternalServerError)
@@ -149,18 +130,7 @@ func CreateUserTechnology(q Querier) http.HandlerFunc {
 	}
 }
 
-// DeleteUserTechnology godoc
-// @Summary Delete a user technology
-// @Description Delete user technology by ID
-// @Tags user-technologies
-// @Accept json
-// @Produce json
-// @Param id path string true "UserTechnology ID"
-// @Success 204
-// @Failure 400 {object} Error
-// @Failure 500 {object} Error
-// @Router /user-technologies/{id} [delete]
-func DeleteUserTechnology(q Querier) http.HandlerFunc {
+func DeleteUserTechnology(q Querier, rls RLSExecutor) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		idStr := r.PathValue("id")
 		if idStr == "" {
@@ -174,20 +144,13 @@ func DeleteUserTechnology(q Querier) http.HandlerFunc {
 			return
 		}
 
-		existingUT, err := q.GetUserTechnologyID(r.Context(), id)
-		if err != nil {
-			http.Error(w, ErrNotFound, http.StatusNotFound)
-			return
-		}
-
-		userID, ok := GetUserIDFromRequest(r)
+		userID, _ := GetUserIDFromRequest(r)
 		role, _ := GetRoleFromRequest(r)
-		if !ok || (existingUT.UserID.Bytes != userID && role != "admin") {
-			http.Error(w, ErrOwnership, http.StatusForbidden)
-			return
-		}
 
-		if err := q.DeleteUserTechnology(r.Context(), id); err != nil {
+		err = rls.Execute(r.Context(), userID.String(), role, func(q Querier) error {
+			return q.DeleteUserTechnology(r.Context(), id)
+		})
+		if err != nil {
 			http.Error(w, "Failed to delete user technology", http.StatusInternalServerError)
 			return
 		}
@@ -196,19 +159,7 @@ func DeleteUserTechnology(q Querier) http.HandlerFunc {
 	}
 }
 
-// UpdateUserTechnology godoc
-// @Summary Update a user technology
-// @Description Update user technology ring
-// @Tags user-technologies
-// @Accept json
-// @Produce json
-// @Param id path string true "UserTechnology ID"
-// @Param UserTechnology body UpdateUserTechnologyRequest true "UserTechnology data"
-// @Success 200 {object} UserTechnology
-// @Failure 400 {object} Error
-// @Failure 500 {object} Error
-// @Router /user-technologies/{id} [put]
-func UpdateUserTechnology(q Querier) http.HandlerFunc {
+func UpdateUserTechnology(q Querier, rls RLSExecutor) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		idStr := r.PathValue("id")
 		if idStr == "" {
@@ -219,19 +170,6 @@ func UpdateUserTechnology(q Querier) http.HandlerFunc {
 		id, err := uuidutil.Parse(idStr)
 		if err != nil {
 			http.Error(w, "Invalid id", http.StatusBadRequest)
-			return
-		}
-
-		existingUT, err := q.GetUserTechnologyID(r.Context(), id)
-		if err != nil {
-			http.Error(w, ErrNotFound, http.StatusNotFound)
-			return
-		}
-
-		userID, ok := GetUserIDFromRequest(r)
-		role, _ := GetRoleFromRequest(r)
-		if !ok || (existingUT.UserID.Bytes != userID && role != "admin") {
-			http.Error(w, ErrOwnership, http.StatusForbidden)
 			return
 		}
 
@@ -241,11 +179,18 @@ func UpdateUserTechnology(q Querier) http.HandlerFunc {
 			return
 		}
 
-		ut, err := q.UpdateUserTechnology(r.Context(), db.UpdateUserTechnologyParams{
-			ID:           id,
-			UserID:       params.UserID,
-			TechnologyID: params.TechnologyID,
-			RingID:       params.RingID,
+		userID, _ := GetUserIDFromRequest(r)
+		role, _ := GetRoleFromRequest(r)
+
+		var ut db.UserTechnology
+		err = rls.Execute(r.Context(), userID.String(), role, func(q Querier) error {
+			ut, err = q.UpdateUserTechnology(r.Context(), db.UpdateUserTechnologyParams{
+				ID:           id,
+				UserID:       params.UserID,
+				TechnologyID: params.TechnologyID,
+				RingID:       params.RingID,
+			})
+			return err
 		})
 		if err != nil {
 			http.Error(w, "Failed to update user technology", http.StatusInternalServerError)

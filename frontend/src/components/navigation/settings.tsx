@@ -1,23 +1,28 @@
+"use client";
+
 import { ChevronsUpDown } from "lucide-react";
-// import { ThemeToggle } from "../light-dark-button";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import {
     DropdownMenu,
-    // DropdownMenuContent,
-    // DropdownMenuGroup,
-    // DropdownMenuItem,
-    // DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-// import { Separator } from "../ui/separator";
 import {
     SidebarGroup,
     SidebarMenuButton,
     SidebarMenuItem,
 } from "../ui/sidebar";
+import { type User } from "@/lib/actions";
 import DropdownSettings from "./dropdown-settings";
 
-export default function Settings() {
+interface SettingsProps {
+    user: User | null;
+}
+
+export default function Settings({ user }: SettingsProps) {
+    if (!user) {
+        return
+    }
+
     return (
         <SidebarGroup className="group-data-[collapsible=icon]:hidden">
             <SidebarMenuItem className="list-none">
@@ -30,31 +35,20 @@ export default function Settings() {
                             <div className="flex w-full items-center gap-2">
                                 <Avatar>
                                     <AvatarImage src="https://github.com/shadcn.png" />
-                                    <AvatarFallback>CN</AvatarFallback>
+                                    <AvatarFallback>
+                                        {user.name?.slice(0, 2).toUpperCase() || "U"}
+                                    </AvatarFallback>
                                 </Avatar>
                                 <div className="flex flex-col items-start justify-center">
-                                    {/* TODO: Replace with auth data */}
-                                    <p>John Doe</p>
-                                    <p>{"example@example.com".slice(0, 12) + "..."}</p>
+                                    <p>{user.name || user.username}</p>
+                                    <p className="text-xs text-muted-foreground">
+                                        {user.email}
+                                    </p>
                                 </div>
                                 <ChevronsUpDown className="ml-auto" />
                             </div>
                         </SidebarMenuButton>
                     </DropdownMenuTrigger>
-                    {/* <DropdownMenuContent side="right" align="end">
-						<DropdownMenuGroup>
-							<DropdownMenuLabel>My Account</DropdownMenuLabel>
-							<DropdownMenuItem>Profile</DropdownMenuItem>
-							<DropdownMenuItem>Settings</DropdownMenuItem>
-							<DropdownMenuItem>Logout</DropdownMenuItem>
-						</DropdownMenuGroup>
-						<Separator />
-						<DropdownMenuGroup>
-							<div className="flex w-full p-2">
-								<ThemeToggle className="cursor-pointer bg-accent" />
-							</div>
-						</DropdownMenuGroup>
-					</DropdownMenuContent> */}
                     <DropdownSettings />
                 </DropdownMenu>
             </SidebarMenuItem>

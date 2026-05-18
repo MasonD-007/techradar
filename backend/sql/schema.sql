@@ -53,3 +53,26 @@ CREATE INDEX idx_quadrants_name ON quadrants(name);
 CREATE INDEX idx_user_technologies_user_id ON user_technologies(user_id);
 CREATE INDEX idx_user_technologies_technology_id ON user_technologies(technology_id);
 CREATE INDEX idx_user_technologies_ring_id ON user_technologies(ring_id);
+
+ALTER TABLE user_technologies ENABLE ROW LEVEL SECURITY;
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY ut_own ON user_technologies
+  FOR ALL USING (user_id = current_setting('app.current_user_id', true)::uuid)
+  WITH CHECK (user_id = current_setting('app.current_user_id', true)::uuid);
+
+CREATE POLICY ut_admin ON user_technologies
+  FOR ALL USING (current_setting('app.current_role', true) = 'admin');
+
+CREATE POLICY users_signup ON users
+  FOR INSERT WITH CHECK (
+    current_setting('app.current_user_id', true) IS NULL
+    OR current_setting('app.current_user_id', true) = ''
+  );
+
+CREATE POLICY users_own ON users
+  FOR ALL USING (id = current_setting('app.current_user_id', true)::uuid)
+  WITH CHECK (id = current_setting('app.current_user_id', true)::uuid);
+
+CREATE POLICY users_admin ON users
+  FOR ALL USING (current_setting('app.current_role', true) = 'admin');

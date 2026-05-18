@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import {
 	DialogContent,
 	DialogDescription,
@@ -11,20 +13,27 @@ import {
 	getTechnologies,
 	getTechnologiesByUser,
 	type Technology,
+	type UserTechnology,
 } from "@/lib/actions";
-import { useEffect, useState } from "react";
 import AddTechnologyButton from "./add-technology-button";
 
-export default function SearchTechnologiesDialogContent() {
+interface SearchTechnologiesDialogContentProps {
+	userId: string | null;
+}
+
+export default function SearchTechnologiesDialogContent({
+	userId,
+}: SearchTechnologiesDialogContentProps) {
 	const [search, setSearch] = useState("");
 	const [technologies, setTechnologies] = useState<Technology[]>([]);
 	const [selectedTechnologyIds, setSelectedTechnologyIds] = useState<string[]>(
 		[],
 	);
+	const [userTechnologies, setUserTechnologies] = useState<UserTechnology[]>(
+		[],
+	);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
-
-	const userId = "demo-user"; // TODO: get from auth context
 
 	useEffect(() => {
 		const fetchTechnologies = async () => {
@@ -41,6 +50,7 @@ export default function SearchTechnologiesDialogContent() {
 			}
 
 			setTechnologies(technologiesResult.data || []);
+			// console.log("Fetched technologies:", technologiesResult.data);
 			setIsLoading(false);
 		};
 
@@ -48,26 +58,26 @@ export default function SearchTechnologiesDialogContent() {
 	}, []);
 
 	useEffect(() => {
+		// console.log("User ID changed:", userId);
 		const fetchUserTechnologies = async () => {
-			const userTechnologiesResult = await getTechnologiesByUser(userId);
-
-			if (!userTechnologiesResult.success) {
-				setError(
-					userTechnologiesResult.error || "Failed to load user technologies",
-				);
+			if (!userId) {
 				setSelectedTechnologyIds([]);
 				return;
 			}
-
-			const selectedIds = (userTechnologiesResult.data || [])
-				.map((item) => item.id)
-				.filter((id): id is string => Boolean(id));
-
-			setSelectedTechnologyIds(selectedIds);
+			const userTechResult = await getTechnologiesByUser(userId);
+			if (!userTechResult.success) {
+				setError(userTechResult.error || "Failed to load user technologies");
+				setSelectedTechnologyIds([]);
+				return;
+			}
+			const userTechs = userTechResult.data || [];
+			const userTechIds = userTechs.map((ut) => ut.technology_id ?? "");
+			setSelectedTechnologyIds(userTechIds);
+			setUserTechnologies(userTechResult.data || []);
+			// console.log("Fetched user technologies:", userTechIds);
 		};
-
 		void fetchUserTechnologies();
-	}, []);
+	}, [userId]);
 
 	const filtered = technologies.filter((tech) => {
 		const name = tech.name || "";
@@ -80,6 +90,14 @@ export default function SearchTechnologiesDialogContent() {
 				<DialogTitle>Search Technologies</DialogTitle>
 				<DialogDescription>
 					Find technologies available in the radar.
+					{!userId && (
+						<span className="mt-2 block">
+							<Link href="/login" className="underline">
+								Sign in
+							</Link>{" "}
+							to add technologies to your radar.
+						</span>
+					)}
 				</DialogDescription>
 			</DialogHeader>
 
@@ -101,7 +119,13 @@ export default function SearchTechnologiesDialogContent() {
 							<AddTechnologyButton
 								userId={userId}
 								tech={tech}
-								selected={selectedTechnologyIds.includes(tech.id ?? "")}
+								userTechnologyId={
+									userTechnologies.find((ut) => ut.technology_id === tech.id)
+										?.id ?? null
+								}
+								setUserTechnologies={setUserTechnologies}
+								setSelected={setSelectedTechnologyIds}
+								isSelected={selectedTechnologyIds.includes(tech.id ?? "")}
 								key={tech.id}
 							/>
 						))}
