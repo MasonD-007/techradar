@@ -216,7 +216,7 @@ func loadTechnologySeeds(csvPath string) ([]technologySeedRecord, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to open seed csv %q: %w", csvPath, err)
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	reader := csv.NewReader(file)
 	header, err := reader.Read()

@@ -8,8 +8,10 @@ export function ThemeToggle({ className }: { className?: string }) {
 	const [mounted, setMounted] = useState(false);
 	const [isDark, setIsDark] = useState(false);
 
+
 	useEffect(() => {
-		setMounted(true);
+		// eslint-disable-next-line react-hooks/set-state-in-effect
+			setMounted(true);
 
 		const saved = localStorage.getItem("theme");
 

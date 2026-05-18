@@ -24,10 +24,10 @@ export default function OverviewContent({
 	mockActivity,
 	getActionIcon,
 }: {
-	stats: any;
+	stats: { totalTechnologies: number; totalUsers: number; totalBlips: number; quadrants: Record<string, number>; };
 	users: UserType[];
 	technologies: Technology[];
-	mockActivity: any;
+	mockActivity: { id: string; action_type: string; description: string; user: string; created_at: string; }[];
 	getActionIcon: (actionType: string) => JSX.Element;
 }) {
 	return (
