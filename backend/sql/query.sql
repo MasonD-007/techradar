@@ -216,6 +216,12 @@ RETURNING id,
     created_at,
     last_logged_in;
 
+-- name: UpdateUserLastLogin :exec
+UPDATE users
+SET last_logged_in = $2
+WHERE
+    id = $1;
+
 -- name: DeleteUser :exec
 DELETE FROM users
 WHERE

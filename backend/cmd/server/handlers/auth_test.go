@@ -162,6 +162,7 @@ func TestLogin_ValidCredentials(t *testing.T) {
 			Username:       "testuser",
 			HashedPassword: hashedPassword,
 		}, nil)
+	mockQuerier.On("UpdateUserLastLogin", mock.Anything, mock.Anything).Return(nil)
 
 	handler := handlers.Login(mockQuerier)
 	body := `{"email":"test@example.com","password":"` + password + `"}`
@@ -482,6 +483,7 @@ func TestLogin_AdminUser(t *testing.T) {
 			HashedPassword: hashedPassword,
 			Role:           "admin",
 		}, nil)
+	mockQuerier.On("UpdateUserLastLogin", mock.Anything, mock.Anything).Return(nil)
 
 	handler := handlers.Login(mockQuerier)
 	body := `{"email":"admin@example.com","password":"` + password + `"}`
@@ -514,6 +516,7 @@ func TestLogin_NonAdminUser(t *testing.T) {
 			HashedPassword: hashedPassword,
 			Role:           "user",
 		}, nil)
+	mockQuerier.On("UpdateUserLastLogin", mock.Anything, mock.Anything).Return(nil)
 
 	handler := handlers.Login(mockQuerier)
 	body := `{"email":"user@example.com","password":"` + password + `"}`
@@ -547,6 +550,7 @@ func TestLogin_TokenContainsRole(t *testing.T) {
 			HashedPassword: hashedPassword,
 			Role:           testRole,
 		}, nil)
+	mockQuerier.On("UpdateUserLastLogin", mock.Anything, mock.Anything).Return(nil)
 
 	handler := handlers.Login(mockQuerier)
 	body := `{"email":"test@example.com","password":"` + password + `"}`

@@ -117,6 +117,11 @@ func (m *MockQuerier) UpdateUser(ctx context.Context, params db.UpdateUserParams
 	return user, args.Error(1)
 }
 
+func (m *MockQuerier) UpdateUserLastLogin(ctx context.Context, params db.UpdateUserLastLoginParams) error {
+	args := m.Called(ctx, params)
+	return args.Error(0)
+}
+
 func (m *MockQuerier) DeleteUser(ctx context.Context, id pgtype.UUID) error {
 	args := m.Called(ctx, id)
 	return args.Error(0)

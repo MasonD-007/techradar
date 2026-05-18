@@ -4,11 +4,13 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/MasonD-007/template/backend/cmd/server/handlers/dto"
 	"github.com/MasonD-007/template/backend/internal/auth"
 	"github.com/MasonD-007/template/backend/internal/db"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 // Register godoc
@@ -123,6 +125,17 @@ func Login(q Querier) http.HandlerFunc {
 		if err != nil {
 			http.Error(w, "Failed to generate token", http.StatusInternalServerError)
 			return
+		}
+
+		err = q.UpdateUserLastLogin(r.Context(), db.UpdateUserLastLoginParams{
+			ID: user.ID,
+			LastLoggedIn: pgtype.Timestamptz{
+				Time:  time.Now(),
+				Valid: true,
+			},
+		})
+		if err != nil {
+			log.Printf("Failed to update last_logged_in: %v", err)
 		}
 
 		w.Header().Set("Content-Type", "application/json")
