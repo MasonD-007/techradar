@@ -7,7 +7,7 @@ export default function DescriptionField({ label }: { label: string }) {
 	return (
 		<div className="space-y-1">
 			<label htmlFor={field.name} className="font-medium text-sm">
-				Description
+				{label}
 			</label>
 			<Input
 				id={field.name}

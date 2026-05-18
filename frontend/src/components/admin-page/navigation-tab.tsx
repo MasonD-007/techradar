@@ -169,8 +169,6 @@ export default function NavigationTab() {
 
 			<ImportContent
 				technologies={technologies}
-				blips={blips}
-				users={users}
 				setTechnologies={setTechnologies}
 			/>
 		</Tabs>

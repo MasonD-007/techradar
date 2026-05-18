@@ -1,5 +1,5 @@
 import { Download, Upload } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -29,26 +29,22 @@ import {
 } from "@/components/ui/table";
 import { TabsContent } from "@/components/ui/tabs";
 import {
-	type Blip,
-	getBlips,
-	getTechnologies,
-	getUsers,
+	
+	
+	
+	
 	type Technology,
-	type User as UserType,
+	
 } from "@/lib/actions";
 
 export default function ImportContent({
 	technologies,
-	blips,
-	users,
 	setTechnologies,
 }: {
 	technologies: Technology[];
-	blips: Blip[];
-	users: UserType[];
 	setTechnologies: (technologies: Technology[]) => void;
 }) {
-	const [importFile, setImportFile] = useState<File | null>(null);
+	
 	const [importPreview, setImportPreview] = useState<
 		{ name: string; quadrant_id: string }[] | null
 	>(null);
@@ -74,7 +70,7 @@ export default function ImportContent({
 	};
 
 	const handleImportFile = (file: File) => {
-		setImportFile(file);
+		
 		const reader = new FileReader();
 		reader.onload = (e) => {
 			try {
@@ -105,7 +101,7 @@ export default function ImportContent({
 			created_at: new Date().toISOString().split("T")[0],
 		}));
 		setTechnologies([...technologies, ...newTechs]);
-		setImportFile(null);
+		
 		setImportPreview(null);
 		setConflictDialogOpen(false);
 	};

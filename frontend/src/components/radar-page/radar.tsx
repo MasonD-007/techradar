@@ -1,4 +1,3 @@
-// @ts-nocheck
 "use client";
 
 import * as d3 from "d3";
@@ -328,10 +327,6 @@ const quadrantArc = d3
 function Radar() {
 	const svgRef = useRef<SVGSVGElement | null>(null);
 	const [activeItemId, setActiveItemId] = useState(radarItems[0]?.id ?? "");
-	const activeItem =
-		positionedItems.find((item) => item.id === activeItemId) ??
-		positionedItems[0] ??
-		null;
 
 	useEffect(() => {
 		const svgNode = svgRef.current;

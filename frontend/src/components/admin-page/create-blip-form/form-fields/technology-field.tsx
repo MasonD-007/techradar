@@ -14,7 +14,7 @@ export default function TechnologyField({ label }: { label: string }) {
 	return (
 		<div className="space-y-1">
 			<label htmlFor={field.name} className="font-medium text-sm">
-				Technology
+				{label}
 			</label>
 			<Select
 				value={field.state.value}
