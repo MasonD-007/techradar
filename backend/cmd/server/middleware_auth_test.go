@@ -2,8 +2,11 @@ package main
 
 import (
 	"context"
+	"encoding/base64"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 
@@ -354,3 +357,104 @@ func TestAuthMiddlewareThenAdminMiddleware_ValidUserFailsAdmin(t *testing.T) {
 	assert.Equal(t, http.StatusForbidden, recorder.Code)
 	assert.False(t, reachedHandler)
 }
+
+func TestVerifyToken_ValidToken_ReturnsValidTrue(t *testing.T) {
+	testUserID := uuid.New()
+	testUsername := "testuser"
+	testRole := "user"
+
+	token, err := auth.GenerateToken(testUserID, testUsername, testRole)
+	assert.NoError(t, err)
+
+	handler := AuthMiddleware(handlers.VerifyToken())
+
+	req := httptest.NewRequest(http.MethodGet, "/auth/verify", nil)
+	req.Header.Set("Authorization", "Bearer "+token)
+	recorder := httptest.NewRecorder()
+	handler(recorder, req)
+
+	assert.Equal(t, http.StatusOK, recorder.Code)
+	assert.Contains(t, recorder.Body.String(), `"valid":true`)
+}
+
+func TestVerifyToken_ValidAdminRole_ReturnsValidTrue(t *testing.T) {
+	token, err := auth.GenerateToken(uuid.New(), "adminuser", "admin")
+	assert.NoError(t, err)
+
+	handler := AuthMiddleware(handlers.VerifyToken())
+
+	req := httptest.NewRequest(http.MethodGet, "/auth/verify", nil)
+	req.Header.Set("Authorization", "Bearer "+token)
+	recorder := httptest.NewRecorder()
+	handler(recorder, req)
+
+	assert.Equal(t, http.StatusOK, recorder.Code)
+	assert.Contains(t, recorder.Body.String(), `"valid":true`)
+}
+
+func TestVerifyToken_InvalidSignature_Returns401(t *testing.T) {
+	token, err := auth.GenerateToken(uuid.New(), "testuser", "user")
+	assert.NoError(t, err)
+
+	tamperedToken := token + "tampered"
+
+	handler := AuthMiddleware(handlers.VerifyToken())
+
+	req := httptest.NewRequest(http.MethodGet, "/auth/verify", nil)
+	req.Header.Set("Authorization", "Bearer "+tamperedToken)
+	recorder := httptest.NewRecorder()
+	handler(recorder, req)
+
+	assert.Equal(t, http.StatusUnauthorized, recorder.Code)
+}
+
+func TestVerifyToken_MissingAuthHeader_Returns401(t *testing.T) {
+	handler := AuthMiddleware(handlers.VerifyToken())
+
+	req := httptest.NewRequest(http.MethodGet, "/auth/verify", nil)
+	recorder := httptest.NewRecorder()
+	handler(recorder, req)
+
+	assert.Equal(t, http.StatusUnauthorized, recorder.Code)
+	assert.Contains(t, recorder.Body.String(), "Missing authorization header")
+}
+
+func TestVerifyToken_TamperedPayload_Returns401(t *testing.T) {
+	testUserID := uuid.New()
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, auth.Claims{
+		UserID:   testUserID.String(),
+		Username: "testuser",
+		Role:     "admin",
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+		},
+	})
+	tokenString, err := token.SignedString([]byte("test-secret-key"))
+	assert.NoError(t, err)
+
+	parts := strings.Split(tokenString, ".")
+	payload := parts[1]
+	decodedPayload, _ := base64.RawURLEncoding.DecodeString(payload)
+	var payloadMap map[string]interface{}
+	var modifiedPayload []byte
+	err = json.Unmarshal(decodedPayload, &payloadMap)
+	assert.NoError(t, err)
+	payloadMap["role"] = "admin"
+	modifiedPayload, err = json.Marshal(payloadMap)
+	assert.NoError(t, err)
+	modifiedPayloadEncoded := base64.RawURLEncoding.EncodeToString(modifiedPayload)
+
+	tamperedToken := parts[0] + "." + modifiedPayloadEncoded + "." + parts[2]
+
+	handler := AuthMiddleware(handlers.VerifyToken())
+
+	req := httptest.NewRequest(http.MethodGet, "/auth/verify", nil)
+	req.Header.Set("Authorization", "Bearer "+tamperedToken)
+	recorder := httptest.NewRecorder()
+	handler(recorder, req)
+
+	assert.Equal(t, http.StatusUnauthorized, recorder.Code)
+}
+

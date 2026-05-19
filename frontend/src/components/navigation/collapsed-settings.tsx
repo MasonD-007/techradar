@@ -29,7 +29,7 @@ export default function CollapsedSettings({ user }: CollapsedSettingsProps) {
 							</Avatar>
 						)}
 					</DropdownMenuTrigger>
-					<DropdownSettings />
+					<DropdownSettings user={user} />
 				</DropdownMenu>
 			</SidebarMenuItem>
 		</SidebarGroup>

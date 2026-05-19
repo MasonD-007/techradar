@@ -49,7 +49,7 @@ export default function Settings({ user }: SettingsProps) {
                             </div>
                         </SidebarMenuButton>
                     </DropdownMenuTrigger>
-                    <DropdownSettings />
+                    <DropdownSettings user={user} />
                 </DropdownMenu>
             </SidebarMenuItem>
         </SidebarGroup>

@@ -31,6 +31,7 @@ type Querier interface {
 	GetAllUsers(ctx context.Context) ([]db.User, error)
 	CreateUser(ctx context.Context, params db.CreateUserParams) (db.User, error)
 	UpdateUser(ctx context.Context, params db.UpdateUserParams) (db.User, error)
+	UpdateUserLastLogin(ctx context.Context, params db.UpdateUserLastLoginParams) error
 	DeleteUser(ctx context.Context, id pgtype.UUID) error
 
 	// User Technologies

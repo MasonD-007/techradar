@@ -31,6 +31,7 @@ CREATE TABLE users (
     username TEXT NOT NULL UNIQUE,
     hashed_password TEXT NOT NULL,
     role TEXT NOT NULL DEFAULT 'user',
+    is_admin BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     last_logged_in TIMESTAMPTZ
 );

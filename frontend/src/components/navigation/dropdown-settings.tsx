@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { logout } from "@/lib/actions";
+import { logout, type User } from "@/lib/actions";
 import { toast } from "sonner";
 import {
 	DropdownMenuContent,
@@ -11,7 +11,11 @@ import {
 	DropdownMenuLabel,
 } from "../ui/dropdown-menu";
 
-export default function DropdownSettings() {
+interface DropdownSettingsProps {
+	user: User | null;
+}
+
+export default function DropdownSettings({ user }: DropdownSettingsProps) {
 	const router = useRouter();
 	const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -34,6 +38,11 @@ export default function DropdownSettings() {
 		<DropdownMenuContent side="right" align="end">
 			<DropdownMenuGroup>
 				<DropdownMenuLabel>My Account</DropdownMenuLabel>
+				{user?.is_admin && (
+					<DropdownMenuItem onClick={() => router.push("/admin")}>
+						Admin
+					</DropdownMenuItem>
+				)}
 				<DropdownMenuItem>Profile</DropdownMenuItem>
 				<DropdownMenuItem>Settings</DropdownMenuItem>
 				<DropdownMenuItem onClick={handleLogout} disabled={isLoggingOut}>

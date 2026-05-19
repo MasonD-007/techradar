@@ -23,10 +23,24 @@ type CreateTechnologyRequest =
     components["schemas"]["handlers.CreateTechnologyRequest"];
 type UpdateTechnologyRequest =
     components["schemas"]["handlers.UpdateTechnologyRequest"];
-type CreateUserRequest = components["schemas"]["handlers.CreateUserRequest"];
-type UpdateUserRequest = components["schemas"]["handlers.UpdateUserRequest"];
-type CreateUserTechnologyRequest =
-    components["schemas"]["handlers.CreateUserTechnologyRequest"];
+type CreateUserRequest = {
+    name: string;
+    email: string;
+    username: string;
+    hashed_password: string;
+};
+type UpdateUserRequest = {
+    name?: string;
+    email?: string;
+    username?: string;
+    hashed_password?: string;
+    role?: string;
+};
+type CreateUserTechnologyRequest = {
+    user_id: string;
+    technology_id: string;
+    ring_id: number;
+};
 type ApiError = components["schemas"]["handlers.Error"];
 type LoginRequest = components["schemas"]["dto.LoginRequest"];
 type RegisterRequest = components["schemas"]["dto.RegisterRequest"];
@@ -49,7 +63,7 @@ export async function getBlips(): Promise<Blip[]> {
     logInfo("getBlips", "START", {});
 
     try {
-        const result = await api.GET("/blips");
+        const result = await api.GET("/blips" as any, {});
         const { data, response } = result as any;
 
         if (!response.ok) {
@@ -70,7 +84,7 @@ export async function getBlip(id: number): Promise<ActionResult<Blip>> {
     logInfo("getBlip", "START", { id });
 
     try {
-        const result = await api.GET("/blips/{id}", {
+        const result = await api.GET("/blips/{id}" as any, {
             params: { path: { id } },
         });
         const { data, response } = result as GetResponse<Blip>;
@@ -102,7 +116,7 @@ export async function createBlip(
 
     try {
         const body: CreateBlipRequest = { context: JSON.parse(context) };
-        const result = (await api.POST("/blips", { body })) as any as {
+        const result = (await api.POST("/blips" as any, { body })) as any as {
             data?: Blip;
             response: Response;
         };
@@ -137,7 +151,7 @@ export async function updateBlip(
 
     try {
         const body: UpdateBlipRequest = { context: JSON.parse(context) };
-        const result = (await api.PUT("/blips/{id}", {
+        const result = (await api.PUT("/blips/{id}" as any, {
             body,
             params: { path: { id } },
         })) as any as {
@@ -164,7 +178,7 @@ export async function deleteBlip(id: number): Promise<ActionResult> {
     logInfo("deleteBlip", "START", { id });
 
     try {
-        const result = (await api.DELETE("/blips/{id}", {
+        const result = (await api.DELETE("/blips/{id}" as any, {
             params: { path: { id } },
         })) as any as {
             response: Response;
@@ -190,7 +204,7 @@ export async function getTechnologies(): Promise<ActionResult<Technology[]>> {
     logInfo("getTechnologies", "START", {});
 
     try {
-        const result = (await api.GET("/technologies", {})) as any as {
+        const result = (await api.GET("/technologies" as any, {})) as any as {
             data?: Technology[];
             response: Response;
         };
@@ -216,7 +230,7 @@ export async function getTechnology(
     logInfo("getTechnology", "START", { id });
 
     try {
-        const result = (await api.GET("/technologies/{id}", {
+        const result = (await api.GET("/technologies/{id}" as any, {
             params: { path: { id } },
         })) as any as {
             data?: Technology;
@@ -244,7 +258,7 @@ export async function getTechnologiesByQuadrant(
     logInfo("getTechnologiesByQuadrant", "START", { quadrantId });
 
     try {
-        const result = (await api.GET("/technologies/by-quadrant/{quadrant_id}", {
+        const result = (await api.GET("/technologies/by-quadrant/{quadrant_id}" as any, {
             params: { path: { quadrant_id: quadrantId } },
         })) as any as { data?: Technology[]; response: Response };
         const { data, response } = result;
@@ -277,7 +291,7 @@ export async function getTechnologiesByUser(
     logInfo("getTechnologiesByUser", "START", { userId });
 
     try {
-        const result = (await api.GET("/user-technologies/user/{user_id}", {
+        const result = (await api.GET("/user-technologies/user/{user_id}" as any, {
             params: { path: { user_id: userId } },
         })) as any as { data?: UserTechnology[]; response: Response };
         const { data, response } = result;
@@ -321,7 +335,7 @@ export async function createTechnology(
             name,
             quadrant_id: parseInt(quadrantId, 10),
         };
-        const result = (await api.POST("/technologies", { body })) as any as {
+        const result = (await api.POST("/technologies" as any, { body })) as any as {
             data?: Technology;
             response: Response;
         };
@@ -358,7 +372,7 @@ export async function updateTechnology(
             quadrant_id: quadrantId ? parseInt(quadrantId, 10) : undefined,
             blip_id: blipId ? parseInt(blipId, 10) : undefined,
         };
-        const result = (await api.PUT("/technologies/{id}", {
+        const result = (await api.PUT("/technologies/{id}" as any, {
             body,
             params: { path: { id } },
         })) as any as { data?: Technology; response: Response };
@@ -385,7 +399,7 @@ export async function deleteTechnology(id: string): Promise<ActionResult> {
     logInfo("deleteTechnology", "START", { id });
 
     try {
-        const result = (await api.DELETE("/technologies/{id}", {
+        const result = (await api.DELETE("/technologies/{id}" as any, {
             params: { path: { id } },
         })) as any as {
             response: Response;
@@ -414,7 +428,7 @@ export async function getUsers(): Promise<User[]> {
     logInfo("getUsers", "START", {});
 
     try {
-        const result = (await api.GET("/users", {})) as any as {
+        const result = (await api.GET("/users" as any, {})) as any as {
             data?: User[];
             response: Response;
         };
@@ -438,7 +452,7 @@ export async function getUser(id: string): Promise<ActionResult<User>> {
     logInfo("getUser", "START", { id });
 
     try {
-        const result = (await api.GET("/users/{id}", {
+        const result = (await api.GET("/users/{id}" as any, {
             params: { path: { id } },
         })) as any as {
             data?: User;
@@ -481,7 +495,7 @@ export async function createUser(
             username,
             hashed_password: password,
         };
-        const result = (await api.POST("/users", { body })) as any as {
+        const result = (await api.POST("/users" as any, { body })) as any as {
             data?: User;
             response: Response;
         };
@@ -520,7 +534,7 @@ export async function updateUser(
             username,
             hashed_password: password || undefined,
         };
-        const result = (await api.PUT("/users/{id}", {
+        const result = (await api.PUT("/users/{id}" as any, {
             body,
             params: { path: { id } },
         })) as any as {
@@ -547,7 +561,7 @@ export async function deleteUser(id: string): Promise<ActionResult> {
     logInfo("deleteUser", "START", { id });
 
     try {
-        const result = (await api.DELETE("/users/{id}", {
+        const result = (await api.DELETE("/users/{id}" as any, {
             params: { path: { id } },
         })) as any as {
             response: Response;
@@ -586,7 +600,7 @@ export async function addTechnologyToUser(
             technology_id: technologyId,
             ring_id: ringId,
         };
-        const result = (await api.POST("/user-technologies", {
+        const result = (await api.POST("/user-technologies" as any, {
             body,
         })) as any as {
             data?: UserTechnology;
@@ -629,7 +643,7 @@ export async function deleteTechnologyFromUser(
     }
 
     try {
-        const result = (await api.DELETE("/user-technologies/{id}", {
+        const result = (await api.DELETE("/user-technologies/{id}" as any, {
             params: { path: { id: userTechnologyId } },
         })) as any as {
             response: Response;
@@ -687,7 +701,7 @@ export async function login(
 
     try {
         const body: LoginRequest = { email, password };
-        const result = (await api.POST("/auth/login", { body })) as any as {
+        const result = (await api.POST("/auth/login" as any, { body })) as any as {
             data?: AuthResponse;
             response: Response;
         };
@@ -728,7 +742,7 @@ export async function register(
 
     try {
         const body: RegisterRequest = { name, email, username, password };
-        const result = (await api.POST("/auth/register", { body })) as any as {
+        const result = (await api.POST("/auth/register" as any, { body })) as any as {
             data?: AuthResponse;
             response: Response;
         };
@@ -757,7 +771,7 @@ export async function logout(): Promise<ActionResult> {
     logInfo("logout", "START", {});
 
     try {
-        const result = (await api.POST("/auth/logout", {})) as any as {
+        const result = (await api.POST("/auth/logout" as any, {})) as any as {
             response: Response;
         };
         const { response } = result;
@@ -792,7 +806,7 @@ export async function getCurrentUser(): Promise<User | null> {
     if (!userId) return null;
 
     try {
-        const result = (await api.GET("/users/{id}", {
+        const result = (await api.GET("/users/{id}" as any, {
             params: { path: { id: userId } },
         })) as any as {
             data?: User;
@@ -805,5 +819,29 @@ export async function getCurrentUser(): Promise<User | null> {
         return data || null;
     } catch {
         return null;
+    }
+}
+
+export async function verifyToken(): Promise<boolean> {
+    logInfo("verifyToken", "START", {});
+
+    try {
+        const result = (await api.GET("/auth/verify" as any, {})) as any as {
+            response: Response;
+        };
+        const { response } = result;
+
+        if (!response.ok) {
+            logError("verifyToken", "ERROR", "Token verification failed", {
+                status: response.status,
+            });
+            return false;
+        }
+
+        logInfo("verifyToken", "SUCCESS", {});
+        return true;
+    } catch (error) {
+        logError("verifyToken", "ERROR", getErrorMessage(error), {});
+        return false;
     }
 }
