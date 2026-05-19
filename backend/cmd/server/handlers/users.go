@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/MasonD-007/template/backend/cmd/server/handlers/dto"
 	"github.com/MasonD-007/template/backend/internal/db"
@@ -45,7 +46,16 @@ func GetUser(q Querier, rls RLSExecutor) http.HandlerFunc {
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		err = json.NewEncoder(w).Encode(user)
+		err = json.NewEncoder(w).Encode(User{
+			ID:             user.ID,
+			Name:           user.Name,
+			Email:          user.Email,
+			Username:       user.Username,
+			HashedPassword: user.HashedPassword,
+			IsAdmin:        user.IsAdmin,
+			CreatedAt:      user.CreatedAt.Time.Format(time.RFC3339),
+			LastLoggedIn:   user.LastLoggedIn,
+		})
 		if err != nil {
 			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 			return
@@ -103,8 +113,22 @@ func GetAllUsers(q Querier, rls RLSExecutor) http.HandlerFunc {
 			users = []db.User{}
 		}
 
+		response := make([]User, len(users))
+		for i, user := range users {
+			response[i] = User{
+				ID:             user.ID,
+				Name:           user.Name,
+				Email:          user.Email,
+				Username:       user.Username,
+				HashedPassword: user.HashedPassword,
+				IsAdmin:        user.IsAdmin,
+				CreatedAt:      user.CreatedAt.Time.Format(time.RFC3339),
+				LastLoggedIn:   user.LastLoggedIn,
+			}
+		}
+
 		w.Header().Set("Content-Type", "application/json")
-		err = json.NewEncoder(w).Encode(users)
+		err = json.NewEncoder(w).Encode(response)
 		if err != nil {
 			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 			return
@@ -242,6 +266,7 @@ type User struct {
 	Email          string             `json:"email" example:"john@example.com"`
 	Username       string             `json:"username" example:"johndoe"`
 	HashedPassword string             `json:"hashed_password" example:"hashed_password_value"`
+	IsAdmin        bool               `json:"is_admin" example:"false"`
 	CreatedAt      string             `json:"created_at" example:"2026-04-05T12:00:00Z"`
 	LastLoggedIn   pgtype.Timestamptz `json:"last_logged_in" swaggertype:"string" example:"2026-04-05T12:00:00Z"`
 }

@@ -91,15 +91,17 @@ INSERT INTO users (
     username,
     hashed_password,
     role,
+    is_admin,
     last_logged_in
 )
-VALUES ($1, $2, $3, $4, $5, $6, $7)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 RETURNING id,
     name,
     email,
     username,
     hashed_password,
     role,
+    is_admin,
     created_at,
     last_logged_in
 `
@@ -111,6 +113,7 @@ type CreateUserParams struct {
 	Username       string             `json:"username"`
 	HashedPassword string             `json:"hashed_password"`
 	Role           string             `json:"role"`
+	IsAdmin        bool               `json:"is_admin"`
 	LastLoggedIn   pgtype.Timestamptz `json:"last_logged_in"`
 }
 
@@ -122,6 +125,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		arg.Username,
 		arg.HashedPassword,
 		arg.Role,
+		arg.IsAdmin,
 		arg.LastLoggedIn,
 	)
 	var i User
@@ -132,6 +136,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.Username,
 		&i.HashedPassword,
 		&i.Role,
+		&i.IsAdmin,
 		&i.CreatedAt,
 		&i.LastLoggedIn,
 	)
@@ -315,6 +320,7 @@ SELECT
     username,
     hashed_password,
     role,
+    is_admin,
     created_at,
     last_logged_in
 FROM
@@ -338,6 +344,7 @@ func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
 			&i.Username,
 			&i.HashedPassword,
 			&i.Role,
+			&i.IsAdmin,
 			&i.CreatedAt,
 			&i.LastLoggedIn,
 		); err != nil {
@@ -487,6 +494,7 @@ SELECT
     username,
     hashed_password,
     role,
+    is_admin,
     created_at,
     last_logged_in
 FROM
@@ -505,6 +513,7 @@ func (q *Queries) GetUserEmail(ctx context.Context, email string) (User, error) 
 		&i.Username,
 		&i.HashedPassword,
 		&i.Role,
+		&i.IsAdmin,
 		&i.CreatedAt,
 		&i.LastLoggedIn,
 	)
@@ -519,6 +528,7 @@ SELECT
     username,
     hashed_password,
     role,
+    is_admin,
     created_at,
     last_logged_in
 FROM
@@ -537,6 +547,7 @@ func (q *Queries) GetUserID(ctx context.Context, id pgtype.UUID) (User, error) {
 		&i.Username,
 		&i.HashedPassword,
 		&i.Role,
+		&i.IsAdmin,
 		&i.CreatedAt,
 		&i.LastLoggedIn,
 	)
@@ -697,7 +708,8 @@ SET name = $2,
     username = $4,
     hashed_password = $5,
     role = $6,
-    last_logged_in = $7
+    is_admin = $7,
+    last_logged_in = $8
 WHERE
     id = $1
 RETURNING id,
@@ -706,6 +718,7 @@ RETURNING id,
     username,
     hashed_password,
     role,
+    is_admin,
     created_at,
     last_logged_in
 `
@@ -717,6 +730,7 @@ type UpdateUserParams struct {
 	Username       string             `json:"username"`
 	HashedPassword string             `json:"hashed_password"`
 	Role           string             `json:"role"`
+	IsAdmin        bool               `json:"is_admin"`
 	LastLoggedIn   pgtype.Timestamptz `json:"last_logged_in"`
 }
 
@@ -728,6 +742,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		arg.Username,
 		arg.HashedPassword,
 		arg.Role,
+		arg.IsAdmin,
 		arg.LastLoggedIn,
 	)
 	var i User
@@ -738,6 +753,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.Username,
 		&i.HashedPassword,
 		&i.Role,
+		&i.IsAdmin,
 		&i.CreatedAt,
 		&i.LastLoggedIn,
 	)

@@ -121,7 +121,12 @@ func Login(q Querier) http.HandlerFunc {
 			return
 		}
 
-		token, err := auth.GenerateToken(user.ID.Bytes, user.Username, user.Role)
+		role := user.Role
+		if user.IsAdmin {
+			role = "admin"
+		}
+
+		token, err := auth.GenerateToken(user.ID.Bytes, user.Username, role)
 		if err != nil {
 			http.Error(w, "Failed to generate token", http.StatusInternalServerError)
 			return
@@ -168,6 +173,26 @@ func Logout(q Querier) http.HandlerFunc {
 		w.WriteHeader(http.StatusOK)
 		if err := json.NewEncoder(w).Encode(map[string]string{
 			"message": "Logged out successfully",
+		}); err != nil {
+			log.Printf("Failed to encode response: %v", err)
+		}
+	}
+}
+
+// VerifyToken godoc
+// @Summary Verify JWT token
+// @Description Verify that the JWT token is valid and has not been tampered with
+// @Tags auth
+// @Produce json
+// @Success 200 {object} map[string]bool
+// @Failure 401 {object} Error
+// @Router /auth/verify [get]
+func VerifyToken() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		if err := json.NewEncoder(w).Encode(map[string]bool{
+			"valid": true,
 		}); err != nil {
 			log.Printf("Failed to encode response: %v", err)
 		}

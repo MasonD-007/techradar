@@ -104,6 +104,54 @@ definitions:
       quadrant_id:
         type: integer
     type: object
+  handlers.User:
+    properties:
+      created_at:
+        example: "2026-04-05T12:00:00Z"
+        type: string
+      email:
+        example: john@example.com
+        type: string
+      hashed_password:
+        example: hashed_password_value
+        type: string
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      is_admin:
+        example: false
+        type: boolean
+      last_logged_in:
+        example: "2026-04-05T12:00:00Z"
+        type: string
+      name:
+        example: John Doe
+        type: string
+      username:
+        example: johndoe
+        type: string
+    type: object
+  handlers.UserTechnology:
+    properties:
+      created_at:
+        example: "2026-04-05T12:00:00Z"
+        type: string
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      ring_id:
+        example: 2
+        type: integer
+      technology_id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      updated_at:
+        example: "2026-04-05T12:00:00Z"
+        type: string
+      user_id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact: {}
@@ -190,25 +238,6 @@ paths:
           schema:
             $ref: '#/definitions/handlers.Error'
       summary: Register a new user
-      tags:
-      - auth
-  /auth/verify:
-    get:
-      description: Verify that the JWT token is valid and has not been tampered with
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties:
-              type: boolean
-            type: object
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/handlers.Error'
-      summary: Verify JWT token
       tags:
       - auth
   /blips:

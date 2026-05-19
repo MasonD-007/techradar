@@ -104,6 +104,7 @@ func registerAuthRoutes(r chi.Router, q *db.Queries) {
 	r.Post("/auth/register", loggingMiddleware(handlers.Register(q)))
 	r.Post("/auth/login", loggingMiddleware(handlers.Login(q)))
 	r.Post("/auth/logout", loggingMiddleware(AuthMiddleware(handlers.Logout(q))))
+	r.Get("/auth/verify", loggingMiddleware(AuthMiddleware(handlers.VerifyToken())))
 }
 
 func registerBlipsRoutes(r chi.Router, q *db.Queries) {

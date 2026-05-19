@@ -36,12 +36,25 @@ function isPublicRoute(pathname: string): boolean {
 	);
 }
 
-export function middleware(request: NextRequest) {
+async function verifyToken(request: NextRequest): Promise<boolean> {
+	try {
+		const baseUrl = request.nextUrl.origin;
+		const token = getAuthToken(request);
+		const response = await fetch(`${baseUrl}/api/auth/verify`, {
+			method: "GET",
+			headers: token ? { Cookie: `${COOKIE_NAME}=${token}` } : {},
+		});
+		return response.ok;
+	} catch {
+		return false;
+	}
+}
+
+export async function middleware(request: NextRequest) {
 	const { pathname } = request.nextUrl;
 	const token = getAuthToken(request);
 	const decoded = token ? decodeJwt(token) : null;
 	const isAuthenticated = !!decoded;
-	const isAdmin = decoded?.role === "admin";
 
 	if (pathname === LOGIN_REDIRECT && isAuthenticated) {
 		return NextResponse.redirect(new URL(AUTHENTICATED_REDIRECT, request.url));
@@ -51,6 +64,13 @@ export function middleware(request: NextRequest) {
 		if (!isAuthenticated) {
 			return NextResponse.redirect(new URL(LOGIN_REDIRECT, request.url));
 		}
+
+		const isValidToken = await verifyToken(request);
+		if (!isValidToken) {
+			return NextResponse.redirect(new URL(LOGIN_REDIRECT, request.url));
+		}
+
+		const isAdmin = decoded?.role === "admin";
 		if (!isAdmin) {
 			return NextResponse.redirect(
 				new URL(AUTHENTICATED_REDIRECT, request.url),

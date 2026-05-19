@@ -41,6 +41,7 @@ type User struct {
 	Username       string             `json:"username"`
 	HashedPassword string             `json:"hashed_password"`
 	Role           string             `json:"role"`
+	IsAdmin        bool               `json:"is_admin"`
 	CreatedAt      pgtype.Timestamptz `json:"created_at"`
 	LastLoggedIn   pgtype.Timestamptz `json:"last_logged_in"`
 }

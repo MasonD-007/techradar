@@ -141,15 +141,17 @@ INSERT INTO users (
     username,
     hashed_password,
     role,
+    is_admin,
     last_logged_in
 )
-VALUES ($1, $2, $3, $4, $5, $6, $7)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 RETURNING id,
     name,
     email,
     username,
     hashed_password,
     role,
+    is_admin,
     created_at,
     last_logged_in;
 
@@ -161,6 +163,7 @@ SELECT
     username,
     hashed_password,
     role,
+    is_admin,
     created_at,
     last_logged_in
 FROM
@@ -176,6 +179,7 @@ SELECT
     username,
     hashed_password,
     role,
+    is_admin,
     created_at,
     last_logged_in
 FROM
@@ -191,6 +195,7 @@ SELECT
     username,
     hashed_password,
     role,
+    is_admin,
     created_at,
     last_logged_in
 FROM
@@ -204,7 +209,8 @@ SET name = $2,
     username = $4,
     hashed_password = $5,
     role = $6,
-    last_logged_in = $7
+    is_admin = $7,
+    last_logged_in = $8
 WHERE
     id = $1
 RETURNING id,
@@ -213,6 +219,7 @@ RETURNING id,
     username,
     hashed_password,
     role,
+    is_admin,
     created_at,
     last_logged_in;
 
