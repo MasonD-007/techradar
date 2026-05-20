@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/MasonD-007/template/backend/cmd/server/handlers/dto"
-	"github.com/MasonD-007/template/backend/internal/db"
-	"github.com/MasonD-007/template/backend/internal/uuidutil"
+	"github.com/MasonD-007/techradar/backend/cmd/server/handlers/dto"
+	"github.com/MasonD-007/techradar/backend/internal/db"
+	"github.com/MasonD-007/techradar/backend/internal/uuidutil"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 

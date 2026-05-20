@@ -1,6 +1,6 @@
 package handlers
 
-import "github.com/MasonD-007/template/backend/cmd/server/handlers/dto"
+import "github.com/MasonD-007/techradar/backend/cmd/server/handlers/dto"
 
 type CreateBlipRequest = dto.CreateBlipRequest
 type UpdateBlipRequest = dto.UpdateBlipRequest

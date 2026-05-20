@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/MasonD-007/template/backend/cmd/server/handlers"
-	"github.com/MasonD-007/template/backend/internal/auth"
+	"github.com/MasonD-007/techradar/backend/cmd/server/handlers"
+	"github.com/MasonD-007/techradar/backend/internal/auth"
 	"github.com/google/uuid"
 )
 

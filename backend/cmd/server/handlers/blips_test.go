@@ -8,9 +8,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/MasonD-007/template/backend/cmd/server/handlers"
-	"github.com/MasonD-007/template/backend/cmd/server/handlers/mocks"
-	"github.com/MasonD-007/template/backend/internal/db"
+	"github.com/MasonD-007/techradar/backend/cmd/server/handlers"
+	"github.com/MasonD-007/techradar/backend/cmd/server/handlers/mocks"
+	"github.com/MasonD-007/techradar/backend/internal/db"
 	"github.com/jackc/pgx/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

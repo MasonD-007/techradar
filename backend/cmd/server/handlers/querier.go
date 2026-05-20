@@ -3,7 +3,7 @@ package handlers
 import (
 	"context"
 
-	"github.com/MasonD-007/template/backend/internal/db"
+	"github.com/MasonD-007/techradar/backend/internal/db"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
