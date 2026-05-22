@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/MasonD-007/template/backend/cmd/server/handlers"
-	"github.com/MasonD-007/template/backend/internal/auth"
+	"github.com/MasonD-007/techradar/backend/cmd/server/handlers"
+	"github.com/MasonD-007/techradar/backend/internal/auth"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"

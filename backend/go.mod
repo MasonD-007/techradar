@@ -1,4 +1,4 @@
-module github.com/MasonD-007/template/backend
+module github.com/MasonD-007/techradar/backend
 
 go 1.26.1
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/MasonD-007/template/backend/cmd/server/handlers"
+	"github.com/MasonD-007/techradar/backend/cmd/server/handlers"
 	"github.com/stretchr/testify/mock"
 )
 
