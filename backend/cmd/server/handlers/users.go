@@ -17,6 +17,18 @@ const (
 	ErrUserOwnership = "You can only access your own profile"
 )
 
+// GetUser godoc
+// @Summary Get a user
+// @Description Get user by ID
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param id path string true "User ID"
+// @Success 200 {object} User
+// @Failure 400 {object} Error
+// @Failure 404 {object} Error
+// @Failure 500 {object} Error
+// @Router /users/{id} [get]
 func GetUser(q Querier, rls RLSExecutor) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		idStr := r.PathValue("id")
@@ -63,6 +75,18 @@ func GetUser(q Querier, rls RLSExecutor) http.HandlerFunc {
 	}
 }
 
+// GetUserByEmail godoc
+// @Summary Get a user by email
+// @Description Get user by email
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param email path string true "User email"
+// @Success 200 {object} User
+// @Failure 400 {object} Error
+// @Failure 404 {object} Error
+// @Failure 500 {object} Error
+// @Router /users/by-email/{email} [get]
 func GetUserByEmail(q Querier, rls RLSExecutor) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		email := r.PathValue("email")
@@ -94,6 +118,15 @@ func GetUserByEmail(q Querier, rls RLSExecutor) http.HandlerFunc {
 	}
 }
 
+// GetAllUsers godoc
+// @Summary Get all users
+// @Description Get all users
+// @Tags users
+// @Accept json
+// @Produce json
+// @Success 200 {array} User
+// @Failure 500 {object} Error
+// @Router /users [get]
 func GetAllUsers(q Querier, rls RLSExecutor) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		role, _ := GetRoleFromRequest(r)
@@ -136,6 +169,17 @@ func GetAllUsers(q Querier, rls RLSExecutor) http.HandlerFunc {
 	}
 }
 
+// CreateUser godoc
+// @Summary Create a user
+// @Description Create a new user
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param User body CreateUserRequest true "User data"
+// @Success 201 {object} User
+// @Failure 400 {object} Error
+// @Failure 500 {object} Error
+// @Router /users [post]
 func CreateUser(q Querier, rls RLSExecutor) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var params dto.CreateUserRequest
@@ -176,6 +220,17 @@ func CreateUser(q Querier, rls RLSExecutor) http.HandlerFunc {
 	}
 }
 
+// DeleteUser godoc
+// @Summary Delete a user
+// @Description Delete user by ID
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param id path string true "User ID"
+// @Success 204
+// @Failure 400 {object} Error
+// @Failure 500 {object} Error
+// @Router /users/{id} [delete]
 func DeleteUser(q Querier, rls RLSExecutor) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		idStr := r.PathValue("id")
@@ -204,6 +259,18 @@ func DeleteUser(q Querier, rls RLSExecutor) http.HandlerFunc {
 	}
 }
 
+// UpdateUser godoc
+// @Summary Update a user
+// @Description Update user by ID
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param id path string true "User ID"
+// @Param User body UpdateUserRequest true "User data"
+// @Success 200 {object} User
+// @Failure 400 {object} Error
+// @Failure 500 {object} Error
+// @Router /users/{id} [put]
 func UpdateUser(q Querier, rls RLSExecutor) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		idStr := r.PathValue("id")
@@ -260,6 +327,7 @@ func UpdateUser(q Querier, rls RLSExecutor) http.HandlerFunc {
 }
 
 // User represents a user in the database
+// User godoc
 type User struct {
 	ID             pgtype.UUID        `json:"id" swaggertype:"string" example:"550e8400-e29b-41d4-a716-446655440000"`
 	Name           string             `json:"name" example:"John Doe"`

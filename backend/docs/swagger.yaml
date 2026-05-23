@@ -63,6 +63,32 @@ definitions:
       quadrant_id:
         type: integer
     type: object
+  handlers.CreateUserRequest:
+    properties:
+      email:
+        type: string
+      hashed_password:
+        type: string
+      id:
+        type: string
+      last_logged_in:
+        type: string
+      name:
+        type: string
+      username:
+        type: string
+    type: object
+  handlers.CreateUserTechnologyRequest:
+    properties:
+      id:
+        type: string
+      ring_id:
+        type: integer
+      technology_id:
+        type: string
+      user_id:
+        type: string
+    type: object
   handlers.Error:
     properties:
       message:
@@ -103,6 +129,78 @@ definitions:
         type: string
       quadrant_id:
         type: integer
+    type: object
+  handlers.UpdateUserRequest:
+    properties:
+      email:
+        type: string
+      hashed_password:
+        type: string
+      last_logged_in:
+        type: string
+      name:
+        type: string
+      role:
+        type: string
+      username:
+        type: string
+    type: object
+  handlers.UpdateUserTechnologyRequest:
+    properties:
+      ring_id:
+        type: integer
+      technology_id:
+        type: string
+      user_id:
+        type: string
+    type: object
+  handlers.User:
+    properties:
+      created_at:
+        example: "2026-04-05T12:00:00Z"
+        type: string
+      email:
+        example: john@example.com
+        type: string
+      hashed_password:
+        example: hashed_password_value
+        type: string
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      is_admin:
+        example: false
+        type: boolean
+      last_logged_in:
+        example: "2026-04-05T12:00:00Z"
+        type: string
+      name:
+        example: John Doe
+        type: string
+      username:
+        example: johndoe
+        type: string
+    type: object
+  handlers.UserTechnology:
+    properties:
+      created_at:
+        example: "2026-04-05T12:00:00Z"
+        type: string
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      ring_id:
+        example: 2
+        type: integer
+      technology_id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      updated_at:
+        example: "2026-04-05T12:00:00Z"
+        type: string
+      user_id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
     type: object
 host: localhost:8080
 info:
@@ -561,4 +659,334 @@ paths:
       summary: Get technologies by quadrant
       tags:
       - technologies
+  /user-technologies:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user technology assignment
+      parameters:
+      - description: User technology data
+        in: body
+        name: UserTechnology
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateUserTechnologyRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/handlers.UserTechnology'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      summary: Create a user technology assignment
+      tags:
+      - user-technologies
+  /user-technologies/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete user technology assignment by ID
+      parameters:
+      - description: User technology ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      summary: Delete a user technology assignment
+      tags:
+      - user-technologies
+    get:
+      consumes:
+      - application/json
+      description: Get user technology assignment by ID
+      parameters:
+      - description: User technology ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.UserTechnology'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      summary: Get a user technology assignment
+      tags:
+      - user-technologies
+    put:
+      consumes:
+      - application/json
+      description: Update user technology assignment by ID
+      parameters:
+      - description: User technology ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: User technology data
+        in: body
+        name: UserTechnology
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpdateUserTechnologyRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.UserTechnology'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      summary: Update a user technology assignment
+      tags:
+      - user-technologies
+  /user-technologies/user/{user_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get all user technology assignments for a user
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/handlers.UserTechnology'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      summary: Get user technologies by user
+      tags:
+      - user-technologies
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: Get all users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/handlers.User'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      summary: Get all users
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      description: Create a new user
+      parameters:
+      - description: User data
+        in: body
+        name: User
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/handlers.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      summary: Create a user
+      tags:
+      - users
+  /users/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      summary: Delete a user
+      tags:
+      - users
+    get:
+      consumes:
+      - application/json
+      description: Get user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      summary: Get a user
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      description: Update user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: User data
+        in: body
+        name: User
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpdateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      summary: Update a user
+      tags:
+      - users
+  /users/by-email/{email}:
+    get:
+      consumes:
+      - application/json
+      description: Get user by email
+      parameters:
+      - description: User email
+        in: path
+        name: email
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      summary: Get a user by email
+      tags:
+      - users
 swagger: "2.0"

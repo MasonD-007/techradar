@@ -15,6 +15,18 @@ const (
 	ErrNotFound = "User technology not found"
 )
 
+// GetUserTechnology godoc
+// @Summary Get a user technology assignment
+// @Description Get user technology assignment by ID
+// @Tags user-technologies
+// @Accept json
+// @Produce json
+// @Param id path string true "User technology ID"
+// @Success 200 {object} UserTechnology
+// @Failure 400 {object} Error
+// @Failure 404 {object} Error
+// @Failure 500 {object} Error
+// @Router /user-technologies/{id} [get]
 func GetUserTechnology(q Querier, rls RLSExecutor) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		idStr := r.PathValue("id")
@@ -51,6 +63,17 @@ func GetUserTechnology(q Querier, rls RLSExecutor) http.HandlerFunc {
 	}
 }
 
+// GetUserTechnologiesByUser godoc
+// @Summary Get user technologies by user
+// @Description Get all user technology assignments for a user
+// @Tags user-technologies
+// @Accept json
+// @Produce json
+// @Param user_id path string true "User ID"
+// @Success 200 {array} UserTechnology
+// @Failure 400 {object} Error
+// @Failure 500 {object} Error
+// @Router /user-technologies/user/{user_id} [get]
 func GetUserTechnologiesByUser(q Querier, rls RLSExecutor) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		userIDStr := r.PathValue("user_id")
@@ -91,6 +114,17 @@ func GetUserTechnologiesByUser(q Querier, rls RLSExecutor) http.HandlerFunc {
 	}
 }
 
+// CreateUserTechnology godoc
+// @Summary Create a user technology assignment
+// @Description Create a new user technology assignment
+// @Tags user-technologies
+// @Accept json
+// @Produce json
+// @Param UserTechnology body CreateUserTechnologyRequest true "User technology data"
+// @Success 201 {object} UserTechnology
+// @Failure 400 {object} Error
+// @Failure 500 {object} Error
+// @Router /user-technologies [post]
 func CreateUserTechnology(q Querier, rls RLSExecutor) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var params dto.CreateUserTechnologyRequest
@@ -130,6 +164,17 @@ func CreateUserTechnology(q Querier, rls RLSExecutor) http.HandlerFunc {
 	}
 }
 
+// DeleteUserTechnology godoc
+// @Summary Delete a user technology assignment
+// @Description Delete user technology assignment by ID
+// @Tags user-technologies
+// @Accept json
+// @Produce json
+// @Param id path string true "User technology ID"
+// @Success 204
+// @Failure 400 {object} Error
+// @Failure 500 {object} Error
+// @Router /user-technologies/{id} [delete]
 func DeleteUserTechnology(q Querier, rls RLSExecutor) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		idStr := r.PathValue("id")
@@ -159,6 +204,18 @@ func DeleteUserTechnology(q Querier, rls RLSExecutor) http.HandlerFunc {
 	}
 }
 
+// UpdateUserTechnology godoc
+// @Summary Update a user technology assignment
+// @Description Update user technology assignment by ID
+// @Tags user-technologies
+// @Accept json
+// @Produce json
+// @Param id path string true "User technology ID"
+// @Param UserTechnology body UpdateUserTechnologyRequest true "User technology data"
+// @Success 200 {object} UserTechnology
+// @Failure 400 {object} Error
+// @Failure 500 {object} Error
+// @Router /user-technologies/{id} [put]
 func UpdateUserTechnology(q Querier, rls RLSExecutor) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		idStr := r.PathValue("id")
@@ -207,6 +264,7 @@ func UpdateUserTechnology(q Querier, rls RLSExecutor) http.HandlerFunc {
 }
 
 // UserTechnology represents a user technology assignment in the database
+// UserTechnology godoc
 type UserTechnology struct {
 	ID           pgtype.UUID `json:"id" swaggertype:"string" example:"550e8400-e29b-41d4-a716-446655440000"`
 	UserID       pgtype.UUID `json:"user_id" swaggertype:"string" example:"550e8400-e29b-41d4-a716-446655440000"`
