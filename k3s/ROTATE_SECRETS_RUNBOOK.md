@@ -129,6 +129,8 @@ kubectl create secret generic backend-secrets \
 
 Because Postgres skips init on existing data dirs, update the user in-place:
 
+**Warning:** Backend authentication will fail until this password is updated to match the sealed `DATABASE_URL`/`POSTGRES_PASSWORD` values.
+
 ```bash
 kubectl exec -n techradar postgres-0 -- \
   psql -U techradar -d postgres \
