@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -28,10 +28,6 @@ export default function AddTechnologyButton({
 }) {
 	const [isAdding, setIsAdding] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
-
-	useEffect(() => {
-		console.log(userTechnologyId);
-	});
 
 	const addTechnology = async () => {
 		if (!userId || isSelected || isAdding || !tech.id) {

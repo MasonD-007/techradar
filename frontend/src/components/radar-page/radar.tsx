@@ -1,7 +1,5 @@
 "use client";
 
-import * as d3 from "d3";
-import { useEffect, useRef, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import {
 	Card,
@@ -12,19 +10,45 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import {
+	getCurrentUserId,
+	getTechnologies,
+	getTechnologiesByUser,
+	type Technology,
+} from "@/lib/actions";
+import * as d3 from "d3";
+import { useEffect, useRef, useState } from "react";
+import {
 	blipRadius,
 	CENTER,
 	outerRadius,
-	type PositionedRadarItem,
 	polarToRelative,
-	positionedItems,
 	type QuadrantKey,
 	type QuadrantLabel,
 	quadrantLabels,
 	RADAR_SIZE,
-	radarItems,
 	ringPaths,
 } from "./radar-data";
+import SearchTechnologiesDialog from "./search-technologies/search-technologies-dialog";
+
+type RadarTechnology = {
+	id: string;
+	title: string;
+};
+
+type PositionedRadarTechnology = RadarTechnology & {
+	x: number;
+	y: number;
+	angle: number;
+	radius: number;
+	colorKey: QuadrantKey;
+};
+
+const blipColorKeys: QuadrantKey[] = [
+	"tools",
+	"techniques",
+	"platforms",
+	"languages",
+];
 
 // D3 Color scales
 const quadrantColor = d3
@@ -52,9 +76,156 @@ const quadrantArc = d3
 	.innerRadius(0)
 	.outerRadius(outerRadius);
 
+function buildRandomPositionedTechnologies(
+	technologies: RadarTechnology[],
+): PositionedRadarTechnology[] {
+	const minRadius = 72;
+	const maxRadius = outerRadius - 36;
+
+	return technologies.map((technology, index) => {
+		const angle = Math.random() * Math.PI * 2;
+		const radius = minRadius + Math.random() * (maxRadius - minRadius);
+		const point = {
+			x: CENTER + Math.sin(angle) * radius,
+			y: CENTER - Math.cos(angle) * radius,
+		};
+
+		return {
+			...technology,
+			x: point.x,
+			y: point.y,
+			angle,
+			radius,
+			colorKey: blipColorKeys[index % blipColorKeys.length],
+		};
+	});
+}
+
+function toRadarTechnology(technology: Technology): RadarTechnology | null {
+	if (!technology.id) {
+		return null;
+	}
+
+	return {
+		id: technology.id,
+		title: technology.name ?? "Untitled technology",
+	};
+}
+
 function Radar() {
 	const svgRef = useRef<SVGSVGElement | null>(null);
-	const [activeItemId, setActiveItemId] = useState(radarItems[0]?.id ?? "");
+	const [userId, setUserId] = useState<string | null>(null);
+	const [activeItemId, setActiveItemId] = useState("");
+	const [positionedTechnologies, setPositionedTechnologies] = useState<
+		PositionedRadarTechnology[]
+	>([]);
+	const [isLoading, setIsLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+
+	useEffect(() => {
+		let cancelled = false;
+
+		const loadTechnologies = async () => {
+			setIsLoading(true);
+			setError(null);
+
+			const currentUserId = await getCurrentUserId();
+
+			if (cancelled) {
+				return;
+			}
+
+			setUserId(currentUserId);
+
+			if (!currentUserId) {
+				setPositionedTechnologies([]);
+				setActiveItemId("");
+				setIsLoading(false);
+				return;
+			}
+
+			const [technologiesResult, userTechnologiesResult] = await Promise.all([
+				getTechnologies(),
+				getTechnologiesByUser(currentUserId),
+			]);
+
+			console.log("Technologies result:", technologiesResult);
+
+			if (cancelled) {
+				return;
+			}
+
+			if (!technologiesResult.success) {
+				setError(technologiesResult.error || "Failed to load technologies");
+				setPositionedTechnologies([]);
+				setActiveItemId("");
+				setIsLoading(false);
+				return;
+			}
+
+			if (!userTechnologiesResult.success) {
+				setError(
+					userTechnologiesResult.error || "Failed to load user technologies",
+				);
+				setPositionedTechnologies([]);
+				setActiveItemId("");
+				setIsLoading(false);
+				return;
+			}
+
+			const technologyMap = new Map(
+				(technologiesResult.data || [])
+					.map((technology) => toRadarTechnology(technology))
+					.filter(
+						(technology): technology is RadarTechnology => technology !== null,
+					)
+					.map((technology) => [technology.id, technology]),
+			);
+
+			const selectedTechnologies = (userTechnologiesResult.data || [])
+				.map((userTechnology) => userTechnology.technology_id)
+				.filter((technologyId): technologyId is string => Boolean(technologyId))
+				.map((technologyId) => technologyMap.get(technologyId))
+				.filter((technology): technology is RadarTechnology =>
+					Boolean(technology),
+				);
+
+			const positioned =
+				buildRandomPositionedTechnologies(selectedTechnologies);
+			setPositionedTechnologies(positioned);
+			setActiveItemId(positioned[0]?.id ?? "");
+			setIsLoading(false);
+		};
+
+		void loadTechnologies();
+
+		return () => {
+			cancelled = true;
+		};
+	}, []);
+
+	useEffect(() => {
+		if (positionedTechnologies.length === 0) {
+			if (activeItemId) {
+				setActiveItemId("");
+			}
+
+			return;
+		}
+
+		if (!activeItemId) {
+			setActiveItemId(positionedTechnologies[0]?.id ?? "");
+			return;
+		}
+
+		const hasActiveItem = positionedTechnologies.some(
+			(technology) => technology.id === activeItemId,
+		);
+
+		if (!hasActiveItem) {
+			setActiveItemId(positionedTechnologies[0]?.id ?? "");
+		}
+	}, [activeItemId, positionedTechnologies]);
 
 	useEffect(() => {
 		const svgNode = svgRef.current;
@@ -309,50 +480,58 @@ function Radar() {
 			.text((d) => d.blurb);
 
 		const blip = root
-			.selectAll<SVGGElement, PositionedRadarItem>("g.blip")
-			.data(positionedItems)
+			.selectAll<SVGGElement, PositionedRadarTechnology>("g.blip")
+			.data(positionedTechnologies)
 			.join("g")
 			.attr("class", "blip")
 			.attr("role", "button")
 			.attr("tabindex", 0)
-			.attr(
-				"aria-label",
-				(d: PositionedRadarItem) => `${d.title}, ${d.status}, ${d.description}`,
-			)
+			.attr("aria-label", (d: PositionedRadarTechnology) => d.title)
 			.attr(
 				"transform",
-				(d: PositionedRadarItem) =>
+				(d: PositionedRadarTechnology) =>
 					`translate(${d.x - CENTER},${d.y - CENTER})`,
 			)
 			.style("cursor", "pointer")
-			.on("mouseenter", (_event: MouseEvent, datum: PositionedRadarItem) => {
+			.on(
+				"mouseenter",
+				(_event: MouseEvent, datum: PositionedRadarTechnology) => {
+					console.log("Technology hovered:", datum.title);
+					setActiveItemId(datum.id);
+				},
+			)
+			.on("focus", (_event: FocusEvent, datum: PositionedRadarTechnology) => {
 				setActiveItemId(datum.id);
 			})
-			.on("focus", (_event: FocusEvent, datum: PositionedRadarItem) => {
-				setActiveItemId(datum.id);
-			})
-			.on("click", (_event: MouseEvent, datum: PositionedRadarItem) => {
+			.on("click", (_event: MouseEvent, datum: PositionedRadarTechnology) => {
+				console.log("Technology clicked:", datum.title);
 				setActiveItemId(datum.id);
 			});
 
 		blip
 			.append("circle")
-			.attr("r", (d: PositionedRadarItem) =>
+			.attr("r", (d: PositionedRadarTechnology) =>
 				d.id === activeItemId ? 11 : blipRadius,
 			)
-			.attr("fill", (d: PositionedRadarItem) => quadrantStroke(d.quadrant))
+			.attr("fill", (d: PositionedRadarTechnology) =>
+				quadrantStroke(d.colorKey),
+			)
 			.attr("stroke", "var(--background)")
 			.attr("stroke-width", 2);
 
 		blip
 			.append("circle")
-			.attr("r", (d: PositionedRadarItem) => (d.id === activeItemId ? 16 : 11))
+			.attr("r", (d: PositionedRadarTechnology) =>
+				d.id === activeItemId ? 16 : 11,
+			)
 			.attr("fill", "none")
-			.attr("stroke", (d: PositionedRadarItem) => quadrantStroke(d.quadrant))
-			.attr("stroke-opacity", (d: PositionedRadarItem) =>
+			.attr("stroke", (d: PositionedRadarTechnology) =>
+				quadrantStroke(d.colorKey),
+			)
+			.attr("stroke-opacity", (d: PositionedRadarTechnology) =>
 				d.id === activeItemId ? 0.9 : 0.48,
 			)
-			.attr("stroke-width", (d: PositionedRadarItem) =>
+			.attr("stroke-width", (d: PositionedRadarTechnology) =>
 				d.id === activeItemId ? 2.5 : 1.2,
 			);
 
@@ -363,31 +542,26 @@ function Radar() {
 			.attr("text-anchor", "middle")
 			.attr("dominant-baseline", "middle")
 			.attr("fill", "var(--foreground)")
-			.attr("font-size", (d: PositionedRadarItem) =>
+			.attr("font-size", (d: PositionedRadarTechnology) =>
 				d.id === activeItemId ? 10 : 8,
 			)
 			.attr("font-weight", 700)
 			.attr("paint-order", "stroke")
 			.attr("stroke", "var(--background)")
 			.attr("stroke-width", 2)
-			.text((_d: PositionedRadarItem, i: number) => `${i + 1}`);
+			.text((_d: PositionedRadarTechnology, i: number) => `${i + 1}`);
 
-		blip
-			.append("title")
-			.text(
-				(d: PositionedRadarItem) =>
-					`${d.title} • ${d.status} • ${d.description}`,
-			);
-	}, [activeItemId]);
+		blip.append("title").text((d: PositionedRadarTechnology) => d.title);
+	}, [activeItemId, positionedTechnologies]);
 
 	return (
-		<Card className="overflow-hidden border-border bg-card/80 shadow-2xl shadow-foreground/10 backdrop-blur">
+		<Card className="gap-0 overflow-hidden border-border bg-card/80 shadow-2xl shadow-foreground/10 backdrop-blur">
 			<CardHeader className="border-border border-b px-5 py-4">
 				<CardTitle className="font-semibold text-muted-foreground text-sm uppercase tracking-[0.3em]">
 					Radar canvas
 				</CardTitle>
 				<CardDescription className="text-muted-foreground text-sm">
-					Hover or tab a blip to inspect it.
+					Your selected technologies, placed on the radar.
 				</CardDescription>
 				<CardAction>
 					<Badge
@@ -397,10 +571,26 @@ function Radar() {
 						SVG + D3 geometry
 					</Badge>
 				</CardAction>
+				<div className="col-span-2 pt-2">
+					<SearchTechnologiesDialog />
+				</div>
 			</CardHeader>
 
-			<CardContent className="px-0 py-0">
-				<svg ref={svgRef} className="block aspect-square w-full" />
+			<CardContent className="relative m-0 px-0 py-0">
+				<svg ref={svgRef} className="mt-5 block aspect-square w-full" />
+				{(isLoading || error || positionedTechnologies.length === 0) && (
+					<div className="pointer-events-none absolute inset-0 flex items-center justify-center p-6 text-center">
+						<p className="text-muted-foreground text-sm">
+							{isLoading
+								? "Loading your selected technologies..."
+								: error
+									? error
+									: userId
+										? "Select technologies in your account to populate the radar."
+										: "Sign in to see your radar."}
+						</p>
+					</div>
+				)}
 			</CardContent>
 		</Card>
 	);
