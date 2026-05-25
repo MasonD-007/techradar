@@ -55,20 +55,20 @@ const quadrantColor = d3
 	.scaleOrdinal<QuadrantKey, string>()
 	.domain(["tools", "techniques", "platforms", "languages"])
 	.range([
-		"color-mix(in oklab, var(--chart-1) 18%, transparent)",
-		"color-mix(in oklab, var(--chart-2) 18%, transparent)",
-		"color-mix(in oklab, var(--chart-3) 18%, transparent)",
-		"color-mix(in oklab, var(--primary) 18%, transparent)",
+		"color-mix(in oklab, #38bdf8 26%, transparent)",
+		"color-mix(in oklab, #a78bfa 26%, transparent)",
+		"color-mix(in oklab, #34d399 24%, transparent)",
+		"color-mix(in oklab, #f59e0b 26%, transparent)",
 	]);
 
 const quadrantStroke = d3
 	.scaleOrdinal<QuadrantKey, string>()
 	.domain(["tools", "techniques", "platforms", "languages"])
 	.range([
-		"color-mix(in oklab, var(--chart-1) 40%, transparent)",
-		"color-mix(in oklab, var(--chart-2) 40%, transparent)",
-		"color-mix(in oklab, var(--chart-3) 40%, transparent)",
-		"color-mix(in oklab, var(--primary) 40%, transparent)",
+		"color-mix(in oklab, #38bdf8 62%, transparent)",
+		"color-mix(in oklab, #a78bfa 62%, transparent)",
+		"color-mix(in oklab, #34d399 58%, transparent)",
+		"color-mix(in oklab, #f59e0b 62%, transparent)",
 	]);
 
 const quadrantArc = d3
@@ -257,15 +257,24 @@ function Radar() {
 		backgroundGradient
 			.append("stop")
 			.attr("offset", "0%")
-			.attr("stop-color", "var(--background-900)");
+			.attr(
+				"stop-color",
+				"color-mix(in oklab, #0f172a 74%, var(--background))",
+			);
 		backgroundGradient
 			.append("stop")
 			.attr("offset", "55%")
-			.attr("stop-color", "var(--background-950)");
+			.attr(
+				"stop-color",
+				"color-mix(in oklab, #111827 82%, var(--background))",
+			);
 		backgroundGradient
 			.append("stop")
 			.attr("offset", "100%")
-			.attr("stop-color", "var(--background)");
+			.attr(
+				"stop-color",
+				"color-mix(in oklab, #020617 92%, var(--background))",
+			);
 
 		const glowGradient = defs
 			.append("radialGradient")
@@ -277,10 +286,7 @@ function Radar() {
 		glowGradient
 			.append("stop")
 			.attr("offset", "0%")
-			.attr(
-				"stop-color",
-				"color-mix(in oklab, var(--primary) 18%, transparent)",
-			);
+			.attr("stop-color", "color-mix(in oklab, #38bdf8 24%, transparent)");
 		glowGradient
 			.append("stop")
 			.attr("offset", "100%")
@@ -295,7 +301,7 @@ function Radar() {
 			.append("path")
 			.attr("d", "M56 0H0V56")
 			.attr("fill", "none")
-			.attr("stroke", "color-mix(in oklab, var(--border) 15%, transparent)")
+			.attr("stroke", "color-mix(in oklab, #94a3b8 12%, transparent)")
 			.attr("stroke-width", 1);
 
 		defs
@@ -312,7 +318,13 @@ function Radar() {
 			.append("rect")
 			.attr("width", RADAR_SIZE)
 			.attr("height", RADAR_SIZE)
-			.attr("fill", "var(--background)");
+			.attr("fill", "url(#radar-background-gradient)");
+		svg
+			.append("rect")
+			.attr("width", RADAR_SIZE)
+			.attr("height", RADAR_SIZE)
+			.attr("fill", "url(#radar-glow)")
+			.attr("opacity", 0.9);
 		svg
 			.append("rect")
 			.attr("width", RADAR_SIZE)
@@ -333,8 +345,8 @@ function Radar() {
 		root
 			.append("circle")
 			.attr("r", 24)
-			.attr("fill", "var(--background)")
-			.attr("stroke", "color-mix(in oklab, var(--border) 35%, transparent)")
+			.attr("fill", "color-mix(in oklab, var(--card) 70%, var(--background))")
+			.attr("stroke", "color-mix(in oklab, #38bdf8 38%, transparent)")
 			.attr("stroke-width", 1.2)
 			.attr("filter", "url(#radar-soft-glow)");
 
@@ -372,7 +384,7 @@ function Radar() {
 					quadrantArc({ startAngle: d.startAngle, endAngle: d.endAngle }) ?? "",
 			)
 			.attr("fill", "none")
-			.attr("stroke", "color-mix(in oklab, var(--foreground) 4%, transparent)")
+			.attr("stroke", "color-mix(in oklab, #cbd5e1 5%, transparent)")
 			.attr("stroke-width", 1);
 
 		root
@@ -387,8 +399,8 @@ function Radar() {
 			.attr("fill", "none")
 			.attr("stroke", (_radius, index) =>
 				index === ringPaths.length - 1
-					? "color-mix(in oklab, var(--foreground) 24%, transparent)"
-					: "color-mix(in oklab, var(--foreground) 16%, transparent)",
+					? "color-mix(in oklab, #cbd5e1 26%, transparent)"
+					: "color-mix(in oklab, #94a3b8 16%, transparent)",
 			)
 			.attr("stroke-width", (_radius, index) =>
 				index === ringPaths.length - 1 ? 2 : 1,
@@ -403,7 +415,7 @@ function Radar() {
 			.attr("y1", 0)
 			.attr("x2", (angle) => Math.sin(angle) * outerRadius)
 			.attr("y2", (angle) => -Math.cos(angle) * outerRadius)
-			.attr("stroke", "color-mix(in oklab, var(--foreground) 18%, transparent)")
+			.attr("stroke", "color-mix(in oklab, #60a5fa 18%, transparent)")
 			.attr("stroke-width", 1.3);
 
 		root
@@ -411,7 +423,7 @@ function Radar() {
 			.data(quadrantLabels)
 			.join("text")
 			.attr("class", "quadrant-label")
-			.attr("fill", "var(--foreground)")
+			.attr("fill", "#e2e8f0")
 			.attr("font-size", 22)
 			.attr("font-weight", 800)
 			.attr("dominant-baseline", "middle")
@@ -469,10 +481,7 @@ function Radar() {
 			.attr("class", "ring-blurb")
 			.attr("x", 0)
 			.attr("y", (d) => -d.radius + 30)
-			.attr(
-				"fill",
-				"color-mix(in oklab, var(--muted-foreground) 68%, transparent)",
-			)
+			.attr("fill", "color-mix(in oklab, #94a3b8 72%, transparent)")
 			.attr("font-size", 8)
 			.attr("font-weight", 500)
 			.attr("text-anchor", "middle")
@@ -516,7 +525,7 @@ function Radar() {
 			.attr("fill", (d: PositionedRadarTechnology) =>
 				quadrantStroke(d.colorKey),
 			)
-			.attr("stroke", "var(--background)")
+			.attr("stroke", "color-mix(in oklab, var(--background) 82%, transparent)")
 			.attr("stroke-width", 2);
 
 		blip
@@ -541,13 +550,13 @@ function Radar() {
 			.attr("y", 1)
 			.attr("text-anchor", "middle")
 			.attr("dominant-baseline", "middle")
-			.attr("fill", "var(--foreground)")
+			.attr("fill", "#f8fafc")
 			.attr("font-size", (d: PositionedRadarTechnology) =>
 				d.id === activeItemId ? 10 : 8,
 			)
 			.attr("font-weight", 700)
 			.attr("paint-order", "stroke")
-			.attr("stroke", "var(--background)")
+			.attr("stroke", "color-mix(in oklab, var(--background) 88%, transparent)")
 			.attr("stroke-width", 2)
 			.text((_d: PositionedRadarTechnology, i: number) => `${i + 1}`);
 
