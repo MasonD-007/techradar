@@ -564,7 +564,7 @@ function Radar() {
 	}, [activeItemId, positionedTechnologies]);
 
 	return (
-		<Card className="gap-0 overflow-hidden border-border bg-card/80 shadow-2xl shadow-foreground/10 backdrop-blur">
+		<Card className="gap-0 overflow-hidden border-border bg-card/80 py-0 shadow-2xl shadow-foreground/10 backdrop-blur">
 			<CardHeader className="border-border border-b px-5 py-4">
 				<CardTitle className="font-semibold text-muted-foreground text-sm uppercase tracking-[0.3em]">
 					Radar canvas
@@ -585,8 +585,8 @@ function Radar() {
 				</div>
 			</CardHeader>
 
-			<CardContent className="relative m-0 px-0 py-0">
-				<svg ref={svgRef} className="mt-5 block aspect-square w-full" />
+			<CardContent className="relative m-0 px-0! py-0!">
+				<svg ref={svgRef} className="block aspect-square w-full" />
 				{(isLoading || error || positionedTechnologies.length === 0) && (
 					<div className="pointer-events-none absolute inset-0 flex items-center justify-center p-6 text-center">
 						<p className="text-muted-foreground text-sm">
