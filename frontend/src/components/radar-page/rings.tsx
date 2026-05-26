@@ -10,12 +10,116 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { positionedItems, ringLabels } from "./radar-data";
+import {
+	getCurrentUserId,
+	getTechnologies,
+	getTechnologiesByUser,
+	type Technology,
+} from "@/lib/actions";
+import { useEffect, useState } from "react";
+import { type RingKey, ringLabels } from "./radar-data";
+
+function createEmptyRingCounts(): Record<RingKey, number> {
+	return ringLabels.reduce(
+		(counts, ring) => {
+			counts[ring.key] = 0;
+			return counts;
+		},
+		{} as Record<RingKey, number>,
+	);
+}
+
+function mapRingIdToKey(ringId: number): RingKey | null {
+	switch (ringId) {
+		case 1:
+			return "adopt";
+		case 2:
+			return "trial";
+		case 3:
+			return "assess";
+		case 4:
+			return "hold";
+		default:
+			return null;
+	}
+}
 
 export default function RingData() {
+	const [ringCounts, setRingCounts] = useState<Record<RingKey, number>>(
+		createEmptyRingCounts,
+	);
+	const [isLoading, setIsLoading] = useState(true);
+
+	useEffect(() => {
+		let cancelled = false;
+
+		const loadRingCounts = async () => {
+			setIsLoading(true);
+
+			const currentUserId = await getCurrentUserId();
+			if (cancelled) {
+				return;
+			}
+
+			if (!currentUserId) {
+				setRingCounts(createEmptyRingCounts());
+				setIsLoading(false);
+				return;
+			}
+
+			const [technologiesResult, userTechnologiesResult] = await Promise.all([
+				getTechnologies(),
+				getTechnologiesByUser(currentUserId),
+			]);
+
+			if (cancelled) {
+				return;
+			}
+
+			if (!technologiesResult.success || !userTechnologiesResult.success) {
+				setRingCounts(createEmptyRingCounts());
+				setIsLoading(false);
+				return;
+			}
+
+			const technologyMap = new Map<string, Technology>(
+				(technologiesResult.data || [])
+					.filter((technology): technology is Technology =>
+						Boolean(technology.id),
+					)
+					.map((technology) => [technology.id as string, technology]),
+			);
+
+			const nextCounts = createEmptyRingCounts();
+			for (const userTechnology of userTechnologiesResult.data || []) {
+				const technologyId = userTechnology.technology_id;
+				const technology = technologyId
+					? technologyMap.get(technologyId)
+					: null;
+				if (!technology || !userTechnology.ring_id) {
+					continue;
+				}
+
+				const ringKey = mapRingIdToKey(userTechnology.ring_id);
+				if (ringKey) {
+					nextCounts[ringKey] += 1;
+				}
+			}
+
+			setRingCounts(nextCounts);
+			setIsLoading(false);
+		};
+
+		void loadRingCounts();
+
+		return () => {
+			cancelled = true;
+		};
+	}, []);
+
 	const ringStats = ringLabels.map((ring) => ({
 		...ring,
-		count: positionedItems.filter((item) => item.ring === ring.key).length,
+		count: ringCounts[ring.key],
 	}));
 
 	return (
@@ -49,7 +153,7 @@ export default function RingData() {
 									variant="secondary"
 									className="border-border bg-background/60 text-foreground"
 								>
-									{ring.count}
+									{isLoading ? "..." : ring.count}
 								</Badge>
 							</CardAction>
 						</CardHeader>

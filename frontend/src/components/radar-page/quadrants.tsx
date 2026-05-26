@@ -10,13 +10,116 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { positionedItems, quadrantLabels } from "./radar-data";
+import {
+	getCurrentUserId,
+	getTechnologies,
+	getTechnologiesByUser,
+	type Technology,
+} from "@/lib/actions";
+import { useEffect, useState } from "react";
+import { type QuadrantKey, quadrantLabels } from "./radar-data";
+
+function createEmptyQuadrantCounts(): Record<QuadrantKey, number> {
+	return quadrantLabels.reduce(
+		(counts, quadrant) => {
+			counts[quadrant.key] = 0;
+			return counts;
+		},
+		{} as Record<QuadrantKey, number>,
+	);
+}
+
+function mapQuadrantIdToKey(quadrantId: number): QuadrantKey | null {
+	switch (quadrantId) {
+		case 1:
+			return "techniques";
+		case 2:
+			return "tools";
+		case 3:
+			return "platforms";
+		case 4:
+			return "languages";
+		default:
+			return null;
+	}
+}
 
 export default function QuadrantData() {
+	const [quadrantCounts, setQuadrantCounts] = useState<
+		Record<QuadrantKey, number>
+	>(createEmptyQuadrantCounts);
+	const [isLoading, setIsLoading] = useState(true);
+
+	useEffect(() => {
+		let cancelled = false;
+
+		const loadQuadrantCounts = async () => {
+			setIsLoading(true);
+
+			const currentUserId = await getCurrentUserId();
+			if (cancelled) {
+				return;
+			}
+
+			if (!currentUserId) {
+				setQuadrantCounts(createEmptyQuadrantCounts());
+				setIsLoading(false);
+				return;
+			}
+
+			const [technologiesResult, userTechnologiesResult] = await Promise.all([
+				getTechnologies(),
+				getTechnologiesByUser(currentUserId),
+			]);
+
+			if (cancelled) {
+				return;
+			}
+
+			if (!technologiesResult.success || !userTechnologiesResult.success) {
+				setQuadrantCounts(createEmptyQuadrantCounts());
+				setIsLoading(false);
+				return;
+			}
+
+			const technologyMap = new Map<string, Technology>(
+				(technologiesResult.data || [])
+					.filter((technology): technology is Technology =>
+						Boolean(technology.id),
+					)
+					.map((technology) => [technology.id as string, technology]),
+			);
+
+			const nextCounts = createEmptyQuadrantCounts();
+			for (const userTechnology of userTechnologiesResult.data || []) {
+				const technologyId = userTechnology.technology_id;
+				const technology = technologyId
+					? technologyMap.get(technologyId)
+					: null;
+				if (!technology?.quadrant_id) {
+					continue;
+				}
+
+				const quadrantKey = mapQuadrantIdToKey(technology.quadrant_id);
+				if (quadrantKey) {
+					nextCounts[quadrantKey] += 1;
+				}
+			}
+
+			setQuadrantCounts(nextCounts);
+			setIsLoading(false);
+		};
+
+		void loadQuadrantCounts();
+
+		return () => {
+			cancelled = true;
+		};
+	}, []);
+
 	const quadrantStats = quadrantLabels.map((quadrant) => ({
 		...quadrant,
-		count: positionedItems.filter((item) => item.quadrant === quadrant.key)
-			.length,
+		count: quadrantCounts[quadrant.key],
 	}));
 
 	return (
@@ -49,7 +152,7 @@ export default function QuadrantData() {
 									variant="secondary"
 									className="border-border bg-background/60 text-foreground"
 								>
-									{quadrant.count}
+									{isLoading ? "..." : quadrant.count}
 								</Badge>
 							</CardAction>
 						</CardHeader>
