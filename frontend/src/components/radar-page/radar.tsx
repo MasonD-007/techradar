@@ -21,18 +21,23 @@ import {
 	blipRadius,
 	CENTER,
 	outerRadius,
+	polarToCartesian,
 	polarToRelative,
 	type QuadrantKey,
 	type QuadrantLabel,
 	quadrantLabels,
 	RADAR_SIZE,
+	type RingKey,
 	ringPaths,
+	ringRatios,
 } from "./radar-data";
 import SearchTechnologiesDialog from "./search-technologies/search-technologies-dialog";
 
 type RadarTechnology = {
 	id: string;
 	title: string;
+	quadrant: QuadrantKey;
+	ring: RingKey;
 };
 
 type PositionedRadarTechnology = RadarTechnology & {
@@ -43,12 +48,56 @@ type PositionedRadarTechnology = RadarTechnology & {
 	colorKey: QuadrantKey;
 };
 
-const blipColorKeys: QuadrantKey[] = [
-	"tools",
-	"techniques",
-	"platforms",
-	"languages",
-];
+const quadrantBoundsByKey: Record<
+	QuadrantKey,
+	{ startAngle: number; endAngle: number }
+> = quadrantLabels.reduce(
+	(bounds, quadrant) => {
+		bounds[quadrant.key] = {
+			startAngle: quadrant.startAngle,
+			endAngle: quadrant.endAngle,
+		};
+		return bounds;
+	},
+	{} as Record<QuadrantKey, { startAngle: number; endAngle: number }>,
+);
+
+const ringIndexByKey: Record<RingKey, number> = {
+	adopt: 0,
+	trial: 1,
+	assess: 2,
+	hold: 3,
+};
+
+function mapQuadrantIdToKey(quadrantId: number): QuadrantKey | null {
+	switch (quadrantId) {
+		case 1:
+			return "techniques";
+		case 2:
+			return "tools";
+		case 3:
+			return "platforms";
+		case 4:
+			return "languages";
+		default:
+			return null;
+	}
+}
+
+function mapRingIdToKey(ringId: number): RingKey | null {
+	switch (ringId) {
+		case 1:
+			return "adopt";
+		case 2:
+			return "trial";
+		case 3:
+			return "assess";
+		case 4:
+			return "hold";
+		default:
+			return null;
+	}
+}
 
 // D3 Color scales
 const quadrantColor = d3
@@ -79,16 +128,18 @@ const quadrantArc = d3
 function buildRandomPositionedTechnologies(
 	technologies: RadarTechnology[],
 ): PositionedRadarTechnology[] {
-	const minRadius = 72;
-	const maxRadius = outerRadius - 36;
-
-	return technologies.map((technology, index) => {
-		const angle = Math.random() * Math.PI * 2;
+	return technologies.map((technology) => {
+		const quadrantBounds = quadrantBoundsByKey[technology.quadrant];
+		const ringIndex = ringIndexByKey[technology.ring];
+		const anglePadding = 0.16;
+		const minRadius =
+			ringIndex === 0 ? 22 : ringRatios[ringIndex - 1] * outerRadius;
+		const maxRadius = ringRatios[ringIndex] * outerRadius - 18;
+		const angleStart = quadrantBounds.startAngle + anglePadding;
+		const angleEnd = quadrantBounds.endAngle - anglePadding;
+		const angle = angleStart + Math.random() * (angleEnd - angleStart);
 		const radius = minRadius + Math.random() * (maxRadius - minRadius);
-		const point = {
-			x: CENTER + Math.sin(angle) * radius,
-			y: CENTER - Math.cos(angle) * radius,
-		};
+		const point = polarToCartesian(angle, radius);
 
 		return {
 			...technology,
@@ -96,19 +147,31 @@ function buildRandomPositionedTechnologies(
 			y: point.y,
 			angle,
 			radius,
-			colorKey: blipColorKeys[index % blipColorKeys.length],
+			colorKey: technology.quadrant,
 		};
 	});
 }
 
-function toRadarTechnology(technology: Technology): RadarTechnology | null {
-	if (!technology.id) {
+function toRadarTechnology(
+	technology: Technology,
+	ringId: number | undefined,
+): RadarTechnology | null {
+	if (!technology.id || !technology.quadrant_id || !ringId) {
+		return null;
+	}
+
+	const quadrant = mapQuadrantIdToKey(technology.quadrant_id);
+	const ring = mapRingIdToKey(ringId);
+
+	if (!quadrant || !ring) {
 		return null;
 	}
 
 	return {
 		id: technology.id,
 		title: technology.name ?? "Untitled technology",
+		quadrant,
+		ring,
 	};
 }
 
@@ -174,20 +237,29 @@ function Radar() {
 			}
 
 			const technologyMap = new Map(
-				(technologiesResult.data || [])
-					.map((technology) => toRadarTechnology(technology))
-					.filter(
-						(technology): technology is RadarTechnology => technology !== null,
-					)
-					.map((technology) => [technology.id, technology]),
+				(technologiesResult.data || []).map((technology) => [
+					technology.id,
+					technology,
+				]),
 			);
 
 			const selectedTechnologies = (userTechnologiesResult.data || [])
-				.map((userTechnology) => userTechnology.technology_id)
-				.filter((technologyId): technologyId is string => Boolean(technologyId))
-				.map((technologyId) => technologyMap.get(technologyId))
-				.filter((technology): technology is RadarTechnology =>
-					Boolean(technology),
+				.map((userTechnology) => {
+					const technologyId = userTechnology.technology_id;
+					const ringId = userTechnology.ring_id;
+					if (!technologyId || !ringId) {
+						return null;
+					}
+
+					const technology = technologyMap.get(technologyId);
+					if (!technology) {
+						return null;
+					}
+
+					return toRadarTechnology(technology, ringId);
+				})
+				.filter(
+					(technology): technology is RadarTechnology => technology !== null,
 				);
 
 			const positioned =
