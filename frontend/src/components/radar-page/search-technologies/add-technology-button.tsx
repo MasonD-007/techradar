@@ -12,6 +12,7 @@ import {
 import {
 	addTechnologyToUser,
 	deleteTechnologyFromUser,
+	updateTechnologyInUser,
 	type Technology,
 	type UserTechnology,
 } from "@/lib/actions";
@@ -38,6 +39,7 @@ export default function AddTechnologyButton({
 }) {
 	const [isAdding, setIsAdding] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
+	const [isUpdating, setIsUpdating] = useState(false);
 	const [ringId, setRingId] = useState("");
 
 	useEffect(() => {
@@ -53,6 +55,65 @@ export default function AddTechnologyButton({
 		label: ring.title,
 		value: String(index + 1),
 	}));
+
+	const updateSelectedTechnologyRing = (
+		nextRingId: number,
+		updatedRingId: number,
+	) => {
+		if (!userTechnologyId) {
+			return;
+		}
+
+		setUserTechnologies((prev) =>
+			prev.map((userTechnology) =>
+				userTechnology.id === userTechnologyId
+					? { ...userTechnology, ring_id: updatedRingId }
+					: userTechnology,
+			),
+		);
+
+		setRingId(String(nextRingId));
+	};
+
+	const handleRingChange = async (nextRingValue: string) => {
+		setRingId(nextRingValue);
+
+		if (!isSelected || !userId || !userTechnologyId || !tech.id) {
+			return;
+		}
+
+		const nextRingId = Number.parseInt(nextRingValue, 10);
+		if (Number.isNaN(nextRingId)) {
+			return;
+		}
+
+		const currentRingValue = currentRingId ? String(currentRingId) : "";
+		if (currentRingValue === nextRingValue) {
+			return;
+		}
+
+		setIsUpdating(true);
+		try {
+			const result = await updateTechnologyInUser(
+				userTechnologyId,
+				userId,
+				tech.id,
+				nextRingId,
+			);
+
+			if (result.success) {
+				updateSelectedTechnologyRing(
+					nextRingId,
+					result.data?.ring_id ?? nextRingId,
+				);
+			} else {
+				setRingId(currentRingValue);
+				console.log("Failed to update technology ring:", result.error);
+			}
+		} finally {
+			setIsUpdating(false);
+		}
+	};
 
 	const addTechnology = async () => {
 		if (!userId || isSelected || isAdding || !tech.id || !ringId) {
@@ -127,7 +188,11 @@ export default function AddTechnologyButton({
 			</div>
 
 			<div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-				<Select value={ringId} onValueChange={setRingId} disabled={!isLoggedIn}>
+				<Select
+					value={ringId}
+					onValueChange={(value) => void handleRingChange(value)}
+					disabled={!isLoggedIn || isAdding || isDeleting || isUpdating}
+				>
 					<SelectTrigger className="w-full sm:w-40">
 						<SelectValue placeholder="Select ring" />
 					</SelectTrigger>
@@ -150,6 +215,7 @@ export default function AddTechnologyButton({
 					disabled={
 						isAdding ||
 						isDeleting ||
+						isUpdating ||
 						!tech.id ||
 						!isLoggedIn ||
 						(!isSelected && !ringId)
@@ -159,6 +225,7 @@ export default function AddTechnologyButton({
 						<p className="text-muted-foreground">
 							{isAdding && "Adding..."}
 							{isDeleting && "Deleting..."}
+							{isUpdating && "Updating..."}
 						</p>
 					) : isSelected ? (
 						<p>Remove</p>
