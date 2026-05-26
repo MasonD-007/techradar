@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect, useState } from "react";
 import {
 	DialogContent,
 	DialogDescription,
@@ -15,6 +13,8 @@ import {
 	type Technology,
 	type UserTechnology,
 } from "@/lib/actions";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import AddTechnologyButton from "./add-technology-button";
 
 interface SearchTechnologiesDialogContentProps {
@@ -62,6 +62,7 @@ export default function SearchTechnologiesDialogContent({
 		const fetchUserTechnologies = async () => {
 			if (!userId) {
 				setSelectedTechnologyIds([]);
+				setUserTechnologies([]);
 				return;
 			}
 			const userTechResult = await getTechnologiesByUser(userId);
@@ -122,6 +123,10 @@ export default function SearchTechnologiesDialogContent({
 								userTechnologyId={
 									userTechnologies.find((ut) => ut.technology_id === tech.id)
 										?.id ?? null
+								}
+								currentRingId={
+									userTechnologies.find((ut) => ut.technology_id === tech.id)
+										?.ring_id ?? null
 								}
 								setUserTechnologies={setUserTechnologies}
 								setSelected={setSelectedTechnologyIds}
