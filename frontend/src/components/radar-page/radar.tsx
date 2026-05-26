@@ -15,7 +15,7 @@ import {
 	HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import {
-	getBlips,
+	getBlip,
 	getCurrentUserId,
 	getTechnologies,
 	getTechnologiesByUser,
@@ -493,12 +493,10 @@ function Radar() {
 				return;
 			}
 
-			const [technologiesResult, userTechnologiesResult, blips] =
-				await Promise.all([
-					getTechnologies(),
-					getTechnologiesByUser(currentUserId),
-					getBlips(),
-				]);
+			const [technologiesResult, userTechnologiesResult] = await Promise.all([
+				getTechnologies(),
+				getTechnologiesByUser(currentUserId),
+			]);
 
 			if (cancelled) {
 				return;
@@ -529,14 +527,7 @@ function Radar() {
 				]),
 			);
 
-			const blipIntroById = new Map<number, string | null>();
-			for (const blip of blips || []) {
-				if (typeof blip.id === "number") {
-					blipIntroById.set(blip.id, extractBlipIntro(blip.context));
-				}
-			}
-
-			const selectedTechnologies = (userTechnologiesResult.data || [])
+			const selectedTechnologySources = (userTechnologiesResult.data || [])
 				.map((userTechnology) => {
 					const technologyId = userTechnology.technology_id;
 					const ringId = userTechnology.ring_id;
@@ -549,6 +540,41 @@ function Radar() {
 						return null;
 					}
 
+					return { technology, ringId };
+				})
+				.filter(
+					(source): source is { technology: Technology; ringId: number } =>
+						source !== null,
+				);
+
+			const uniqueBlipIds = [
+				...new Set(
+					selectedTechnologySources
+						.map(({ technology }) => technology.blip_id)
+						.filter((blipId): blipId is number => typeof blipId === "number"),
+				),
+			];
+
+			const blipIntroById = new Map<number, string | null>();
+			const blipResults = await Promise.all(
+				uniqueBlipIds.map(async (blipId) => ({
+					blipId,
+					result: await getBlip(blipId),
+				})),
+			);
+
+			for (const { blipId, result } of blipResults) {
+				if (result.success) {
+					const blipIntro = extractBlipIntro(result.data?.context);
+					console.log("Downloaded blip intro:", blipId, blipIntro);
+					blipIntroById.set(blipId, blipIntro);
+				} else {
+					console.log("Failed to download blip intro:", blipId, result.error);
+				}
+			}
+
+			const selectedTechnologies = selectedTechnologySources
+				.map(({ technology, ringId }) => {
 					return toRadarTechnology(technology, ringId, blipIntroById);
 				})
 				.filter(
