@@ -1,0 +1,112 @@
+[
+  {
+    "name": "rest",
+    "description": "Standard architectural style for web APIs using HTTP semantics",
+    "category": "technique"
+  },
+  {
+    "name": "feature flags",
+    "description": "Technique for decoupling deployment from feature release",
+    "category": "technique"
+  },
+  {
+    "name": "trunk-based development",
+    "description": "Version control strategy minimizing long-lived branches",
+    "category": "technique"
+  },
+  {
+    "name": "microservices",
+    "description": "Architectural style structuring systems as independent services",
+    "category": "technique"
+  },
+  {
+    "name": "monolith",
+    "description": "Single-deployment architecture often simpler for smaller systems",
+    "category": "technique"
+  },
+  {
+    "name": "event-driven architecture",
+    "description": "System design based on asynchronous event flows",
+    "category": "technique"
+  },
+  {
+    "name": "domain-driven design",
+    "description": "Approach focusing on modeling software around business domains",
+    "category": "technique"
+  },
+  {
+    "name": "platform engineering",
+    "description": "Practice of building internal developer platforms for productivity",
+    "category": "technique"
+  },
+  {
+    "name": "finops",
+    "description": "Discipline focused on managing and optimizing cloud costs",
+    "category": "technique"
+  },
+  {
+    "name": "chaos engineering",
+    "description": "Practice of injecting failures to test system resilience",
+    "category": "technique"
+  },
+  {
+    "name": "prompt engineering",
+    "description": "Technique for structuring inputs to guide AI model outputs",
+    "category": "technique"
+  },
+  {
+    "name": "ai-assisted coding",
+    "description": "Use of AI tools to augment developer productivity",
+    "category": "technique"
+  },
+  {
+    "name": "oauth 2.0",
+    "description": "Authorization framework for secure API access",
+    "category": "technique"
+  },
+  {
+    "name": "openid connect",
+    "description": "Identity layer built on top of OAuth 2.0",
+    "category": "technique"
+  },
+  {
+    "name": "jwt",
+    "description": "Compact token format for securely transmitting information",
+    "category": "technique"
+  },
+  {
+    "name": "websockets",
+    "description": "Protocol enabling real-time bidirectional communication",
+    "category": "technique"
+  },
+  {
+    "name": "server-sent events",
+    "description": "Server push technology for streaming updates over HTTP",
+    "category": "technique"
+  },
+  {
+    "name": "edge computing",
+    "description": "Distributed computing paradigm bringing computation closer to users",
+    "category": "technique"
+  },
+  {
+    "name": "jamstack",
+    "description": "Architecture emphasizing static sites with decoupled services",
+    "category": "technique"
+  },
+  {
+    "name": "cqrs",
+    "description": "Pattern separating read and write models for scalability",
+    "category": "technique"
+  },
+  {
+    "name": "event sourcing",
+    "description": "Pattern storing state changes as a sequence of events",
+    "category": "technique"
+  },
+  {
+    "name": "zero trust architecture",
+    "description": "Security model assuming no implicit trust in systems",
+    "category": "technique"
+  }
+]

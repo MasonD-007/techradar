@@ -1,0 +1,172 @@
+[
+  {
+    "name": "bun",
+    "description": "Fast JavaScript runtime aiming to replace Node.js tooling stack",
+    "category": "platform"
+  },
+  {
+    "name": "node.js",
+    "description": "JavaScript runtime widely used for backend and tooling ecosystems",
+    "category": "platform"
+  },
+  {
+    "name": "deno",
+    "description": "Secure JavaScript runtime with modern defaults and built-in tooling",
+    "category": "platform"
+  },
+  {
+    "name": "docker",
+    "description": "Containerization platform standardizing application deployment environments",
+    "category": "platform"
+  },
+  {
+    "name": "kubernetes",
+    "description": "Container orchestration platform for scaling distributed systems",
+    "category": "platform"
+  },
+  {
+    "name": "gitlab ci",
+    "description": "End-to-end DevOps platform with built-in CI/CD pipelines",
+    "category": "platform"
+  },
+  {
+    "name": "datadog",
+    "description": "Commercial observability platform integrating logs, metrics, and traces",
+    "category": "platform"
+  },
+  {
+    "name": "postgresql",
+    "description": "Advanced open-source relational database with strong consistency guarantees",
+    "category": "platform"
+  },
+  {
+    "name": "mongodb",
+    "description": "NoSQL document database optimized for flexible schema applications",
+    "category": "platform"
+  },
+  {
+    "name": "redis",
+    "description": "In-memory data store used for caching and real-time systems",
+    "category": "platform"
+  },
+  {
+    "name": "snowflake",
+    "description": "Cloud-native data warehouse optimized for analytics workloads",
+    "category": "platform"
+  },
+  {
+    "name": "kafka",
+    "description": "Distributed event streaming platform for real-time data pipelines",
+    "category": "platform"
+  },
+  {
+    "name": "rabbitmq",
+    "description": "Message broker supporting reliable asynchronous communication",
+    "category": "platform"
+  },
+  {
+    "name": "webassembly",
+    "description": "Portable binary format enabling near-native execution in browsers and servers",
+    "category": "platform"
+  },
+  {
+    "name": "cloudflare workers",
+    "description": "Edge computing platform for running serverless code globally",
+    "category": "platform"
+  },
+  {
+    "name": "aws lambda",
+    "description": "Serverless compute service for event-driven applications",
+    "category": "platform"
+  },
+  {
+    "name": "azure functions",
+    "description": "Microsoft's serverless offering integrated with Azure ecosystem",
+    "category": "platform"
+  },
+  {
+    "name": "google cloud run",
+    "description": "Serverless container platform for scalable applications",
+    "category": "platform"
+  },
+  {
+    "name": "electron",
+    "description": "Framework for building cross-platform desktop apps with web technologies",
+    "category": "platform"
+  },
+  {
+    "name": "unity",
+    "description": "Game engine supporting cross-platform 2D and 3D development",
+    "category": "platform"
+  },
+  {
+    "name": "unreal engine",
+    "description": "High-fidelity game engine with advanced rendering capabilities",
+    "category": "platform"
+  },
+  {
+    "name": "godot",
+    "description": "Open-source game engine gaining popularity for indie development",
+    "category": "platform"
+  },
+  {
+    "name": "vector databases",
+    "description": "Databases optimized for similarity search in AI applications",
+    "category": "platform"
+  },
+  {
+    "name": "elasticsearch",
+    "description": "Distributed search and analytics engine for log and text data",
+    "category": "platform"
+  },
+  {
+    "name": "supabase",
+    "description": "Open-source backend-as-a-service built on PostgreSQL",
+    "category": "platform"
+  },
+  {
+    "name": "firebase",
+    "description": "Backend-as-a-service providing auth, database, and hosting",
+    "category": "platform"
+  },
+  {
+    "name": "planetscale",
+    "description": "Serverless MySQL platform with branching and scaling",
+    "category": "platform"
+  },
+  {
+    "name": "cockroachdb",
+    "description": "Distributed SQL database designed for resilience and scale",
+    "category": "platform"
+  },
+  {
+    "name": "airflow",
+    "description": "Workflow orchestration platform for scheduling data pipelines",
+    "category": "platform"
+  },
+  {
+    "name": "vllm",
+    "description": "High-performance inference engine for large language models",
+    "category": "platform"
+  },
+  {
+    "name": "nginx",
+    "description": "High-performance web server and reverse proxy widely used in production systems",
+    "category": "platform"
+  },
+  {
+    "name": "istio",
+    "description": "Service mesh providing traffic management and observability",
+    "category": "platform"
+  },
+  {
+    "name": "linkerd",
+    "description": "Lightweight service mesh for Kubernetes",
+    "category": "platform"
+  },
+  {
+    "name": "consul",
+    "description": "Service networking platform for service discovery and configuration",
+    "category": "platform"
+  }
+]

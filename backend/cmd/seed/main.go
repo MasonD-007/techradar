@@ -2,14 +2,13 @@ package main
 
 import (
 	"context"
-	"encoding/csv"
+	"embed"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"log"
 	"os"
-	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -27,6 +26,9 @@ type technologySeedRecord struct {
 	Description string
 	Category    string
 }
+
+//go:embed data/*.json
+var seedDataFS embed.FS
 
 func main() {
 	_ = godotenv.Load("../.env")
@@ -88,12 +90,7 @@ func main() {
 		log.Fatalf("Failed to seed admin user: %v", err)
 	}
 
-	csvPath := os.Getenv("SEED_DATA_CSV")
-	if csvPath == "" {
-		csvPath = filepath.Clean("./data.csv")
-	}
-
-	seededCount, err := seedTechnologies(context.Background(), tx, q, csvPath)
+	seededCount, err := seedTechnologies(context.Background(), tx, q)
 	if err != nil {
 		log.Fatalf("Failed to seed technologies: %v", err)
 	}
@@ -152,8 +149,8 @@ func seedAdminUser(ctx context.Context, q *db.Queries, adminUsername, adminEmail
 	return nil
 }
 
-func seedTechnologies(ctx context.Context, tx pgx.Tx, q *db.Queries, csvPath string) (int, error) {
-	records, err := loadTechnologySeeds(csvPath)
+func seedTechnologies(ctx context.Context, tx pgx.Tx, q *db.Queries) (int, error) {
+	records, err := loadTechnologySeeds()
 	if err != nil {
 		return 0, err
 	}
@@ -211,40 +208,44 @@ func seedTechnologies(ctx context.Context, tx pgx.Tx, q *db.Queries, csvPath str
 	return seededCount, nil
 }
 
-func loadTechnologySeeds(csvPath string) ([]technologySeedRecord, error) {
-	file, err := os.Open(csvPath)
+func loadTechnologySeeds() ([]technologySeedRecord, error) {
+	entries, err := seedDataFS.ReadDir("data")
 	if err != nil {
-		return nil, fmt.Errorf("failed to open seed csv %q: %w", csvPath, err)
+		return nil, fmt.Errorf("failed to read embedded seed data directory: %w", err)
 	}
-	defer func() { _ = file.Close() }()
 
-	reader := csv.NewReader(file)
-	header, err := reader.Read()
-	if err != nil {
-		return nil, fmt.Errorf("failed to read csv header: %w", err)
+	fileNames := make([]string, 0, len(entries))
+	for _, entry := range entries {
+		if !entry.IsDir() && strings.HasSuffix(entry.Name(), ".json") {
+			fileNames = append(fileNames, entry.Name())
+		}
 	}
-	if len(header) != 3 || strings.ToLower(strings.TrimSpace(header[0])) != "name" || strings.ToLower(strings.TrimSpace(header[1])) != "description" || strings.ToLower(strings.TrimSpace(header[2])) != "category" {
-		return nil, fmt.Errorf("unexpected csv header %v; expected name,description,category", header)
-	}
+	sort.Strings(fileNames)
 
 	var records []technologySeedRecord
-	for {
-		record, err := reader.Read()
+	for _, fileName := range fileNames {
+		path := "data/" + fileName
+		content, err := seedDataFS.ReadFile(path)
 		if err != nil {
-			if errors.Is(err, io.EOF) {
-				break
-			}
-			return nil, fmt.Errorf("failed to read csv row: %w", err)
-		}
-		if len(record) != 3 {
-			return nil, fmt.Errorf("invalid csv row %v: expected 3 columns", record)
+			return nil, fmt.Errorf("failed to read embedded seed data %q: %w", path, err)
 		}
 
-		records = append(records, technologySeedRecord{
-			Name:        strings.TrimSpace(record[0]),
-			Description: strings.TrimSpace(record[1]),
-			Category:    strings.ToLower(strings.TrimSpace(record[2])),
-		})
+		var fileRecords []technologySeedRecord
+		if err := json.Unmarshal(content, &fileRecords); err != nil {
+			return nil, fmt.Errorf("failed to parse seed data %q: %w", path, err)
+		}
+
+		for _, record := range fileRecords {
+			record.Name = strings.TrimSpace(record.Name)
+			record.Description = strings.TrimSpace(record.Description)
+			record.Category = strings.ToLower(strings.TrimSpace(record.Category))
+
+			if record.Name == "" || record.Description == "" || record.Category == "" {
+				return nil, fmt.Errorf("seed data %q contains an incomplete technology record", path)
+			}
+
+			records = append(records, record)
+		}
 	}
 
 	return records, nil
@@ -281,4 +282,3 @@ func jsonFromSeed(record technologySeedRecord) ([]byte, error) {
 		"category":    record.Category,
 	})
 }
-
