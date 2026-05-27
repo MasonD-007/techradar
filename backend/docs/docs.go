@@ -1284,6 +1284,9 @@ const docTemplate = `{
         "handlers.CreateTechnologyRequest": {
             "type": "object",
             "properties": {
+                "description": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },

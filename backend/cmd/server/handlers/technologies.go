@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -181,11 +182,18 @@ func CreateTechnology(q Querier) http.HandlerFunc {
 		}
 
 		params.ID = uuidutil.New()
+		category, err := mapQuadrantIDToCategory(params.QuadrantID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
 
 		initialContext, _ := json.Marshal(map[string]interface{}{
-			"status":   "new",
-			"ring":     "adopt",
-			"category": params.Name,
+			"name":        params.Name,
+			"description": params.Description,
+			"category":    category,
+			"status":      "new",
+			"ring":        "adopt",
 		})
 
 		blip, err := q.CreateBlip(r.Context(), initialContext)
@@ -212,6 +220,21 @@ func CreateTechnology(q Querier) http.HandlerFunc {
 			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 			return
 		}
+	}
+}
+
+func mapQuadrantIDToCategory(quadrantID int32) (string, error) {
+	switch quadrantID {
+	case 1:
+		return "technique", nil
+	case 2:
+		return "tool", nil
+	case 3:
+		return "platform", nil
+	case 4:
+		return "language/framework", nil
+	default:
+		return "", fmt.Errorf("invalid quadrant_id %d", quadrantID)
 	}
 }
 

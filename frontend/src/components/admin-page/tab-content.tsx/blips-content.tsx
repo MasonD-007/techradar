@@ -22,7 +22,6 @@ import { TabsContent } from "@/components/ui/tabs";
 import { type Blip, deleteBlip } from "@/lib/actions";
 import { Search, Trash2 } from "lucide-react";
 import { useState } from "react";
-import CreateBlipDialog from "../create-blip-form/create-blip-dialog";
 
 export default function BlipsContent({
 	blips,
@@ -71,7 +70,9 @@ export default function BlipsContent({
 								<Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
 								<Input placeholder="Search blips..." className="pl-10" />
 							</div>
-							<CreateBlipDialog />
+							<p className="text-muted-foreground text-sm">
+								Blips are created automatically when technologies are added.
+							</p>
 						</div>
 
 						<Table>

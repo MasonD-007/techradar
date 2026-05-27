@@ -39,8 +39,7 @@ backend-docs:
 
 .PHONY: backend-seed
 backend-seed:
-	cd backend && \
-	SEED_DATA_CSV="cmd/seed/data.csv" go run ./cmd/seed
+	cd backend && go run ./cmd/seed
 
 .PHONY: backend-dev
 backend-dev: backend-seed

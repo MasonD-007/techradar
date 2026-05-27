@@ -1507,6 +1507,7 @@ export interface components {
             };
         };
         "handlers.CreateTechnologyRequest": {
+            description?: string;
             id?: string;
             name?: string;
             quadrant_id?: number;

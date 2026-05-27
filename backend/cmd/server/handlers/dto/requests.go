@@ -13,9 +13,10 @@ type UpdateBlipRequest struct {
 }
 
 type CreateTechnologyRequest struct {
-	ID         pgtype.UUID `json:"id"`
-	Name       string      `json:"name"`
-	QuadrantID int32       `json:"quadrant_id"`
+	ID          pgtype.UUID `json:"id"`
+	Name        string      `json:"name"`
+	Description string      `json:"description"`
+	QuadrantID  int32       `json:"quadrant_id"`
 }
 
 type UpdateTechnologyRequest struct {

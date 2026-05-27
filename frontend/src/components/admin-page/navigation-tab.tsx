@@ -132,8 +132,8 @@ export default function NavigationTab() {
 		totalUsers: users.length,
 		totalBlips: blips.length,
 		quadrants: {
-			tools: technologies.filter((t) => t.quadrant_id === 1).length,
-			techniques: technologies.filter((t) => t.quadrant_id === 2).length,
+			tools: technologies.filter((t) => t.quadrant_id === 2).length,
+			techniques: technologies.filter((t) => t.quadrant_id === 1).length,
 			platforms: technologies.filter((t) => t.quadrant_id === 3).length,
 			languages: technologies.filter((t) => t.quadrant_id === 4).length,
 		},
@@ -158,7 +158,6 @@ export default function NavigationTab() {
 			/>
 
 			<TechnologiesContent
-				blips={blips}
 				technologies={technologies}
 				setTechnologies={setTechnologies}
 			/>

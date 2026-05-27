@@ -28,14 +28,13 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { TabsContent } from "@/components/ui/tabs";
-import {
-	
-	
-	
-	
-	type Technology,
-	
-} from "@/lib/actions";
+import { createTechnology, type Technology } from "@/lib/actions";
+
+type ImportTechnology = {
+	name: string;
+	description: string;
+	quadrant_id: string | number;
+};
 
 export default function ImportContent({
 	technologies,
@@ -46,7 +45,7 @@ export default function ImportContent({
 }) {
 	
 	const [importPreview, setImportPreview] = useState<
-		{ name: string; quadrant_id: string }[] | null
+		ImportTechnology[] | null
 	>(null);
 	const [conflictDialogOpen, setConflictDialogOpen] = useState(false);
 
@@ -54,8 +53,8 @@ export default function ImportContent({
 		const data = {
 			technologies: technologies.map((t) => ({
 				name: t.name,
+				description: "",
 				quadrant_id: t.quadrant_id,
-				blip_id: t.blip_id,
 			})),
 		};
 		const blob = new Blob([JSON.stringify(data, null, 2)], {
@@ -76,8 +75,9 @@ export default function ImportContent({
 			try {
 				const data = JSON.parse(e.target?.result as string);
 				if (data.technologies) {
-					setImportPreview(data.technologies);
-					const hasConflicts = data.technologies.some((t: { name: string }) =>
+					const technologiesToImport = data.technologies as ImportTechnology[];
+					setImportPreview(technologiesToImport);
+					const hasConflicts = technologiesToImport.some((t: { name: string }) =>
 						technologies.some((existing) => existing.name === t.name),
 					);
 					if (hasConflicts) {
@@ -91,16 +91,27 @@ export default function ImportContent({
 		reader.readAsText(file);
 	};
 
-	const handleConfirmImport = () => {
+	const handleConfirmImport = async () => {
 		if (!importPreview) return;
-		const newTechs = importPreview.map((t, idx) => ({
-			id: String(technologies.length + idx + 1),
-			name: t.name,
-			quadrant_id: Number(t.quadrant_id),
-			blip_id: undefined,
-			created_at: new Date().toISOString().split("T")[0],
-		}));
-		setTechnologies([...technologies, ...newTechs]);
+		const importedTechnologies: Technology[] = [];
+
+		for (const technology of importPreview) {
+			if (technologies.some((existing) => existing.name === technology.name)) {
+				continue;
+			}
+
+			const formData = new FormData();
+			formData.set("name", technology.name);
+			formData.set("description", technology.description);
+			formData.set("quadrant_id", String(technology.quadrant_id));
+
+			const result = await createTechnology(formData);
+			if (result.success && result.data) {
+				importedTechnologies.push(result.data);
+			}
+		}
+
+		setTechnologies([...technologies, ...importedTechnologies]);
 		
 		setImportPreview(null);
 		setConflictDialogOpen(false);
@@ -145,7 +156,7 @@ export default function ImportContent({
 						<CardHeader>
 							<CardTitle>Import</CardTitle>
 							<CardDescription>
-								Import technologies from JSON file
+								Import technologies from JSON file with name, description, and quadrant_id
 							</CardDescription>
 						</CardHeader>
 						<CardContent>
@@ -179,17 +190,19 @@ export default function ImportContent({
 										</h3>
 										<Table>
 											<TableHeader>
-												<TableRow>
-													<TableHead>Name</TableHead>
-													<TableHead>Quadrant</TableHead>
-												</TableRow>
+											<TableRow>
+												<TableHead>Name</TableHead>
+												<TableHead>Description</TableHead>
+												<TableHead>Quadrant</TableHead>
+											</TableRow>
 											</TableHeader>
 											<TableBody>
 												{importPreview.map((tech, idx) => (
-													<TableRow key={idx}>
-														<TableCell>{tech.name}</TableCell>
-														<TableCell>{tech.quadrant_id}</TableCell>
-													</TableRow>
+											<TableRow key={idx}>
+												<TableCell>{tech.name}</TableCell>
+												<TableCell>{tech.description}</TableCell>
+												<TableCell>{tech.quadrant_id}</TableCell>
+											</TableRow>
 												))}
 											</TableBody>
 										</Table>

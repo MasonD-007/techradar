@@ -198,20 +198,45 @@ func TestCreateTechnology(t *testing.T) {
 			wantCode: http.StatusBadRequest,
 		},
 		{
-			name: "database error returns 500",
-			body: `{"id":"` + validUUIDStr + `", "name":"NewTech", "blip_id":1, "quadrant_id":2}`,
+			name: "invalid quadrant_id returns bad request",
+			body: `{"name":"BadTech","description":"Bad","quadrant_id":99}`,
 			mockExpect: func(m *mocks.MockQuerier) {
-				m.On("CreateBlip", mock.Anything, mock.Anything).Return(db.Blip{ID: 1}, nil)
-				m.On("CreateTechnology", mock.Anything, mock.AnythingOfType("db.CreateTechnologyParams")).Return(db.Technology{}, errors.New("db error"))
+			},
+			wantCode: http.StatusBadRequest,
+		},
+		{
+			name: "database error returns 500",
+			body: `{"name":"NewTech","description":"A test tech","quadrant_id":2}`,
+			mockExpect: func(m *mocks.MockQuerier) {
+				m.On("CreateBlip", mock.Anything, mock.MatchedBy(func(ctx []byte) bool {
+					var data map[string]any
+					if err := json.Unmarshal(ctx, &data); err != nil {
+						return false
+					}
+					return data["name"] == "NewTech" && data["description"] == "A test tech" &&
+						data["category"] == "tool" && data["status"] == "new" && data["ring"] == "adopt"
+				})).Return(db.CreateBlipRow{ID: 1}, nil)
+				m.On("CreateTechnology", mock.Anything, mock.MatchedBy(func(params db.CreateTechnologyParams) bool {
+					return params.Name == "NewTech" && params.BlipID == 1 && params.QuadrantID == 2
+				})).Return(db.Technology{}, errors.New("db error"))
 			},
 			wantCode: http.StatusInternalServerError,
 		},
 		{
 			name: "successful create returns 201",
-			body: `{"id":"` + validUUIDStr + `", "name":"NewTech", "blip_id":1, "quadrant_id":2}`,
+			body: `{"name":"NewTech","description":"A test tech","quadrant_id":2}`,
 			mockExpect: func(m *mocks.MockQuerier) {
-				m.On("CreateBlip", mock.Anything, mock.Anything).Return(db.Blip{ID: 1}, nil)
-				m.On("CreateTechnology", mock.Anything, mock.AnythingOfType("db.CreateTechnologyParams")).Return(db.Technology{ID: validUUID, Name: "NewTech"}, nil)
+				m.On("CreateBlip", mock.Anything, mock.MatchedBy(func(ctx []byte) bool {
+					var data map[string]any
+					if err := json.Unmarshal(ctx, &data); err != nil {
+						return false
+					}
+					return data["name"] == "NewTech" && data["description"] == "A test tech" &&
+						data["category"] == "tool" && data["status"] == "new" && data["ring"] == "adopt"
+				})).Return(db.CreateBlipRow{ID: 1}, nil)
+				m.On("CreateTechnology", mock.Anything, mock.MatchedBy(func(params db.CreateTechnologyParams) bool {
+					return params.Name == "NewTech" && params.BlipID == 1 && params.QuadrantID == 2
+				})).Return(db.Technology{ID: validUUID, Name: "NewTech"}, nil)
 			},
 			wantCode: http.StatusCreated,
 		},

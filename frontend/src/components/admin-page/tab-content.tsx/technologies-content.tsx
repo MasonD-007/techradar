@@ -42,18 +42,16 @@ import { Plus, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 const quadrantOptions = [
-	{ value: "1", label: "Tools" },
-	{ value: "2", label: "Techniques" },
+	{ value: "1", label: "Techniques" },
+	{ value: "2", label: "Tools" },
 	{ value: "3", label: "Platforms" },
-	{ value: "4", label: "Languages" },
+	{ value: "4", label: "Languages & Frameworks" },
 ];
 
 export default function TechnologiesContent({
-	blips,
 	technologies,
 	setTechnologies,
 }: {
-	blips: Record<string, unknown>[];
 	technologies: Technology[];
 	setTechnologies: (technologies: Technology[]) => void;
 }) {
@@ -67,18 +65,22 @@ export default function TechnologiesContent({
 	} | null>(null);
 	const [newTechnology, setNewTechnology] = useState({
 		name: "",
+		description: "",
 		quadrant_id: "",
-		blip_id: "",
 	});
 	const [techFormErrors, setTechFormErrors] = useState<{
 		name?: string;
+		description?: string;
 		quadrant_id?: string;
 	}>({});
 
 	const handleAddTechnology = async () => {
-		const errors: { name?: string; quadrant_id?: string } = {};
+		const errors: { name?: string; description?: string; quadrant_id?: string } = {};
 		if (!newTechnology.name.trim()) {
 			errors.name = "Name is required";
+		}
+		if (!newTechnology.description.trim()) {
+			errors.description = "Description is required";
 		}
 		if (!newTechnology.quadrant_id) {
 			errors.quadrant_id = "Quadrant is required";
@@ -90,15 +92,13 @@ export default function TechnologiesContent({
 
 		const formData = new FormData();
 		formData.set("name", newTechnology.name);
+		formData.set("description", newTechnology.description);
 		formData.set("quadrant_id", newTechnology.quadrant_id);
-		if (newTechnology.blip_id) {
-			formData.set("blip_id", newTechnology.blip_id);
-		}
 		const result = await createTechnology(formData);
 		if (result.success && result.data) {
 			setTechnologies([...technologies, result.data]);
 			setIsAddTechnologyOpen(false);
-			setNewTechnology({ name: "", quadrant_id: "", blip_id: "" });
+			setNewTechnology({ name: "", description: "", quadrant_id: "" });
 			setTechFormErrors({});
 		}
 	};
@@ -209,6 +209,32 @@ export default function TechnologiesContent({
 										)}
 									</div>
 									<div className="grid gap-2">
+										<Label htmlFor="description">Description *</Label>
+										<textarea
+											id="description"
+											value={newTechnology.description}
+											onChange={(e) => {
+												setNewTechnology({
+													...newTechnology,
+													description: e.target.value,
+												});
+												if (techFormErrors.description) {
+													setTechFormErrors({
+														...techFormErrors,
+														description: undefined,
+													});
+												}
+											}}
+											placeholder="Short description"
+											className="min-h-24 rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50"
+										/>
+										{techFormErrors.description && (
+											<p className="text-red-500 text-sm">
+												{techFormErrors.description}
+											</p>
+										)}
+									</div>
+									<div className="grid gap-2">
 										<Label htmlFor="quadrant">Quadrant *</Label>
 										<Select
 											value={newTechnology.quadrant_id}
@@ -241,29 +267,6 @@ export default function TechnologiesContent({
 												{techFormErrors.quadrant_id}
 											</p>
 										)}
-									</div>
-									<div className="grid gap-2">
-										<Label htmlFor="blip">Blip (Optional)</Label>
-										<Select
-											value={newTechnology.blip_id}
-											onValueChange={(v) =>
-												setNewTechnology({
-													...newTechnology,
-													blip_id: v,
-												})
-											}
-										>
-											<SelectTrigger>
-												<SelectValue placeholder="Select blip" />
-											</SelectTrigger>
-											<SelectContent>
-												{blips.map((b: Record<string, unknown>) => (
-													<SelectItem key={String(b.id)} value={String(b.id)}>
-														Blip {String(b.id)}
-													</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
 									</div>
 								</div>
 								<DialogFooter>

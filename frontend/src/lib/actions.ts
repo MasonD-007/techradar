@@ -322,17 +322,19 @@ export async function createTechnology(
     formData: FormData,
 ): Promise<ActionResult<Technology>> {
     const name = formData.get("name") as string;
+    const description = formData.get("description") as string;
     const quadrantId = formData.get("quadrant_id") as string;
 
     logInfo("createTechnology", "START", { name, quadrantId });
 
-    if (!name || !quadrantId) {
-        return { success: false, error: "Name and quadrant_id are required" };
+    if (!name || !description || !quadrantId) {
+        return { success: false, error: "Name, description, and quadrant_id are required" };
     }
 
     try {
         const body: CreateTechnologyRequest = {
             name,
+            description,
             quadrant_id: parseInt(quadrantId, 10),
         };
         const result = (await api.POST("/technologies" as any, { body })) as any as {
