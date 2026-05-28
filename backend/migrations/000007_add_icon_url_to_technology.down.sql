@@ -1,0 +1,1 @@
+ALTER TABLE technology DROP COLUMN IF EXISTS icon_url;

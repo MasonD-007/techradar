@@ -1,19 +1,78 @@
 "use client";
 
-import { positionedItems } from "./radar-data";
+import { Badge } from "@/components/ui/badge";
+import {
+	Card,
+	CardAction,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import { getCurrentUserId, getTechnologiesByUser } from "@/lib/actions";
+import { useEffect, useState } from "react";
 
 export default function RadarTitle() {
+	const [blipCount, setBlipCount] = useState(0);
+	const [isLoading, setIsLoading] = useState(true);
+
+	useEffect(() => {
+		let cancelled = false;
+
+		const loadBlipCount = async () => {
+			setIsLoading(true);
+
+			const currentUserId = await getCurrentUserId();
+			if (cancelled) {
+				return;
+			}
+
+			if (!currentUserId) {
+				setBlipCount(0);
+				setIsLoading(false);
+				return;
+			}
+
+			const userTechnologiesResult = await getTechnologiesByUser(currentUserId);
+			if (cancelled) {
+				return;
+			}
+
+			if (!userTechnologiesResult.success) {
+				setBlipCount(0);
+				setIsLoading(false);
+				return;
+			}
+
+			setBlipCount(userTechnologiesResult.data?.length || 0);
+			setIsLoading(false);
+		};
+
+		void loadBlipCount();
+
+		return () => {
+			cancelled = true;
+		};
+	}, []);
+
 	return (
-		<header className="flex flex-wrap items-end justify-between gap-4 rounded-[2rem] border border-white/10 bg-slate-950/60 px-6 py-5 shadow-2xl shadow-slate-950/40 backdrop-blur">
-			<div className="space-y-2">
-				<h1 className="font-black text-3xl text-white tracking-tight sm:text-4xl">
+		<Card className="border-border bg-card/80 shadow-2xl shadow-foreground/10 backdrop-blur">
+			<CardHeader className="border-border border-b px-6 py-5">
+				<CardTitle className="font-black text-3xl text-card-foreground tracking-tight sm:text-4xl">
 					Your Tech radar
-				</h1>
-			</div>
-			<div className="flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2 font-medium text-slate-300 text-xs">
-				<span className="h-2 w-2 rounded-full bg-cyan-300" />
-				{positionedItems.length} blips
-			</div>
-		</header>
+				</CardTitle>
+				<CardDescription className="max-w-2xl text-muted-foreground text-sm">
+					A curated snapshot of the stack, delivery practices, and supporting
+					platforms.
+				</CardDescription>
+				<CardAction>
+					<Badge
+						variant="secondary"
+						className="border-primary/20 bg-primary/10 text-primary"
+					>
+						{isLoading ? "..." : `${blipCount} blips`}
+					</Badge>
+				</CardAction>
+			</CardHeader>
+		</Card>
 	);
 }

@@ -30,6 +30,7 @@ type Technology struct {
 	Name       string             `json:"name"`
 	BlipID     int32              `json:"blip_id"`
 	QuadrantID int32              `json:"quadrant_id"`
+	IconUrl    pgtype.Text        `json:"icon_url"`
 	CreatedAt  pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt  pgtype.Timestamptz `json:"updated_at"`
 }

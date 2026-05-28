@@ -58,6 +58,8 @@ definitions:
     properties:
       description:
         type: string
+      icon_url:
+        type: string
       id:
         type: string
       name:
@@ -104,6 +106,9 @@ definitions:
       created_at:
         example: "2026-04-05T12:00:00Z"
         type: string
+      icon_url:
+        example: https://example.com/icon.svg
+        type: string
       id:
         example: 550e8400-e29b-41d4-a716-446655440000
         type: string
@@ -127,6 +132,8 @@ definitions:
     properties:
       blip_id:
         type: integer
+      icon_url:
+        type: string
       name:
         type: string
       quadrant_id:

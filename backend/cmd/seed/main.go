@@ -18,13 +18,15 @@ import (
 	"github.com/MasonD-007/techradar/backend/internal/db/postgres"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/joho/godotenv"
 )
 
 type technologySeedRecord struct {
-	Name        string
-	Description string
-	Category    string
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Category    string `json:"category"`
+	IconUrl     string `json:"icon_url"`
 }
 
 //go:embed data/*.json
@@ -168,7 +170,24 @@ func seedTechnologies(ctx context.Context, tx pgx.Tx, q *db.Queries) (int, error
 	for _, record := range records {
 		existingTechnology, err := q.GetTechnologyName(ctx, record.Name)
 		if err == nil && existingTechnology.ID.Valid {
-			log.Printf("Technology already exists, skipping: %s", record.Name)
+			if !existingTechnology.IconUrl.Valid || existingTechnology.IconUrl.String == "" {
+				if record.IconUrl != "" {
+					_, err := q.UpdateTechnology(ctx, db.UpdateTechnologyParams{
+						ID:         existingTechnology.ID,
+						Name:       existingTechnology.Name,
+						BlipID:     existingTechnology.BlipID,
+						QuadrantID: existingTechnology.QuadrantID,
+						IconUrl:    pgtype.Text{String: record.IconUrl, Valid: true},
+					})
+					if err != nil {
+						return seededCount, fmt.Errorf("failed to update icon_url for existing technology %q: %w", record.Name, err)
+					}
+					seededCount++
+					log.Printf("Updated icon_url for existing technology: %s", record.Name)
+				}
+			} else {
+				log.Printf("Technology already exists with icon_url, skipping: %s", record.Name)
+			}
 			continue
 		}
 		if err != nil && !errors.Is(err, pgx.ErrNoRows) {
@@ -196,6 +215,7 @@ func seedTechnologies(ctx context.Context, tx pgx.Tx, q *db.Queries) (int, error
 			Name:       record.Name,
 			BlipID:     blip.ID,
 			QuadrantID: quadrantIDs[quadrantName],
+			IconUrl:    pgtype.Text{String: record.IconUrl, Valid: record.IconUrl != ""},
 		})
 		if err != nil {
 			return seededCount, fmt.Errorf("failed to create technology %q: %w", record.Name, err)
@@ -239,6 +259,7 @@ func loadTechnologySeeds() ([]technologySeedRecord, error) {
 			record.Name = strings.TrimSpace(record.Name)
 			record.Description = strings.TrimSpace(record.Description)
 			record.Category = strings.ToLower(strings.TrimSpace(record.Category))
+			record.IconUrl = strings.TrimSpace(record.IconUrl)
 
 			if record.Name == "" || record.Description == "" || record.Category == "" {
 				return nil, fmt.Errorf("seed data %q contains an incomplete technology record", path)

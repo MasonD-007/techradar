@@ -1508,6 +1508,7 @@ export interface components {
         };
         "handlers.CreateTechnologyRequest": {
             description?: string;
+            icon_url?: string;
             id?: string;
             name?: string;
             quadrant_id?: number;
@@ -1534,6 +1535,8 @@ export interface components {
             blip_id?: number;
             /** @example 2026-04-05T12:00:00Z */
             created_at?: string;
+            /** @example https://example.com/icon.svg */
+            icon_url?: string;
             /** @example 550e8400-e29b-41d4-a716-446655440000 */
             id?: string;
             /** @example AI Platform Insights */
@@ -1550,6 +1553,7 @@ export interface components {
         };
         "handlers.UpdateTechnologyRequest": {
             blip_id?: number;
+            icon_url?: string;
             name?: string;
             quadrant_id?: number;
         };

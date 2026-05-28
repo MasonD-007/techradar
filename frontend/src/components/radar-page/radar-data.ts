@@ -8,6 +8,7 @@ export type RadarItem = {
 	ring: RingKey;
 	description: string;
 	status: string;
+	icon_url?: string;
 };
 
 export type PositionedRadarItem = RadarItem & {
@@ -17,6 +18,7 @@ export type PositionedRadarItem = RadarItem & {
 	ringIndex: number;
 	angle: number;
 	radius: number;
+	quadrantId: number;
 };
 
 export type QuadrantLabel = (typeof quadrantLabels)[number];
@@ -256,6 +258,7 @@ export function buildPositionedItems(
 		const quadrant = quadrantMap.get(item.quadrant);
 		const quadrantIndex = quadrantIndexMap.get(item.quadrant) ?? 0;
 		const ringIndex = ringIndexMap.get(item.ring) ?? 0;
+		const quadrantId = quadrantOrder.indexOf(item.quadrant) + 1;
 
 		if (!quadrant) {
 			return {
@@ -266,6 +269,7 @@ export function buildPositionedItems(
 				ringIndex,
 				angle: 0,
 				radius: 0,
+				quadrantId,
 			};
 		}
 
@@ -295,15 +299,18 @@ export function buildPositionedItems(
 			ringIndex,
 			angle: computedAngle,
 			radius: computedRadius,
+			quadrantId,
 		};
 	});
 }
 
 // Pre-computed positioned items and ring paths
-export const positionedItems = buildPositionedItems(radarItems);
+export const defaultPositionedItems = buildPositionedItems(radarItems);
 export const ringPaths = ringLabels.map((ring, index) => ({
 	key: ring.key,
 	title: ring.title,
 	blurb: ring.blurb,
 	radius: ringRatios[index] * outerRadius,
 }));
+
+export const positionedItems = defaultPositionedItems;

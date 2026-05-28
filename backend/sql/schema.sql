@@ -20,6 +20,7 @@ CREATE TABLE technology (
     name TEXT NOT NULL,
     blip_id INTEGER NOT NULL REFERENCES blips(id) ON DELETE CASCADE,
     quadrant_id INTEGER NOT NULL REFERENCES quadrants(id),
+    icon_url TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

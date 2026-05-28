@@ -207,6 +207,7 @@ func CreateTechnology(q Querier) http.HandlerFunc {
 			Name:       params.Name,
 			BlipID:     blip.ID,
 			QuadrantID: params.QuadrantID,
+			IconUrl:    pgtype.Text{String: params.IconUrl, Valid: params.IconUrl != ""},
 		})
 		if err != nil {
 			http.Error(w, "Failed to create technology", http.StatusInternalServerError)
@@ -309,6 +310,7 @@ func UpdateTechnology(q Querier) http.HandlerFunc {
 			Name:       params.Name,
 			BlipID:     params.BlipID,
 			QuadrantID: params.QuadrantID,
+			IconUrl:    pgtype.Text{String: params.IconUrl, Valid: params.IconUrl != ""},
 		})
 		if err != nil {
 			http.Error(w, "Failed to update technology", http.StatusInternalServerError)
@@ -330,6 +332,7 @@ type Technology struct {
 	Name       string      `json:"name" example:"AI Platform Insights"`
 	BlipID     int32       `json:"blip_id" example:"1"`
 	QuadrantID int32       `json:"quadrant_id" example:"2"`
+	IconUrl    *string     `json:"icon_url" example:"https://example.com/icon.svg"`
 	CreatedAt  string      `json:"created_at" example:"2026-04-05T12:00:00Z"`
 	UpdatedAt  string      `json:"updated_at" example:"2026-04-05T12:00:00Z"`
 }

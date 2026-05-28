@@ -1,34 +1,165 @@
 "use client";
 
-import { positionedItems, ringLabels } from "./radar-data";
+import { Badge } from "@/components/ui/badge";
+import {
+	Card,
+	CardAction,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import {
+	getCurrentUserId,
+	getTechnologies,
+	getTechnologiesByUser,
+	type Technology,
+} from "@/lib/actions";
+import { useEffect, useState } from "react";
+import { type RingKey, ringLabels } from "./radar-data";
+
+function createEmptyRingCounts(): Record<RingKey, number> {
+	return ringLabels.reduce(
+		(counts, ring) => {
+			counts[ring.key] = 0;
+			return counts;
+		},
+		{} as Record<RingKey, number>,
+	);
+}
+
+function mapRingIdToKey(ringId: number): RingKey | null {
+	switch (ringId) {
+		case 1:
+			return "adopt";
+		case 2:
+			return "trial";
+		case 3:
+			return "assess";
+		case 4:
+			return "hold";
+		default:
+			return null;
+	}
+}
 
 export default function RingData() {
+	const [ringCounts, setRingCounts] = useState<Record<RingKey, number>>(
+		createEmptyRingCounts,
+	);
+	const [isLoading, setIsLoading] = useState(true);
+
+	useEffect(() => {
+		let cancelled = false;
+
+		const loadRingCounts = async () => {
+			setIsLoading(true);
+
+			const currentUserId = await getCurrentUserId();
+			if (cancelled) {
+				return;
+			}
+
+			if (!currentUserId) {
+				setRingCounts(createEmptyRingCounts());
+				setIsLoading(false);
+				return;
+			}
+
+			const [technologiesResult, userTechnologiesResult] = await Promise.all([
+				getTechnologies(),
+				getTechnologiesByUser(currentUserId),
+			]);
+
+			if (cancelled) {
+				return;
+			}
+
+			if (!technologiesResult.success || !userTechnologiesResult.success) {
+				setRingCounts(createEmptyRingCounts());
+				setIsLoading(false);
+				return;
+			}
+
+			const technologyMap = new Map<string, Technology>(
+				(technologiesResult.data || [])
+					.filter((technology): technology is Technology =>
+						Boolean(technology.id),
+					)
+					.map((technology) => [technology.id as string, technology]),
+			);
+
+			const nextCounts = createEmptyRingCounts();
+			for (const userTechnology of userTechnologiesResult.data || []) {
+				const technologyId = userTechnology.technology_id;
+				const technology = technologyId
+					? technologyMap.get(technologyId)
+					: null;
+				if (!technology || !userTechnology.ring_id) {
+					continue;
+				}
+
+				const ringKey = mapRingIdToKey(userTechnology.ring_id);
+				if (ringKey) {
+					nextCounts[ringKey] += 1;
+				}
+			}
+
+			setRingCounts(nextCounts);
+			setIsLoading(false);
+		};
+
+		void loadRingCounts();
+
+		return () => {
+			cancelled = true;
+		};
+	}, []);
+
 	const ringStats = ringLabels.map((ring) => ({
 		...ring,
-		count: positionedItems.filter((item) => item.ring === ring.key).length,
+		count: ringCounts[ring.key],
 	}));
 
 	return (
-		<div className="rounded-[1.75rem] border border-white/10 bg-slate-950/55 p-5 shadow-slate-950/30 shadow-xl backdrop-blur">
-			<p className="font-semibold text-slate-400 text-xs uppercase tracking-[0.3em]">
-				Rings
-			</p>
-			<div className="mt-4 space-y-3">
+		<Card className="border-border bg-card/75 shadow-foreground/10 shadow-xl backdrop-blur">
+			<CardHeader className="px-5 py-5">
+				<CardTitle className="font-semibold text-muted-foreground text-xs uppercase tracking-[0.3em]">
+					Rings
+				</CardTitle>
+				<CardDescription className="text-muted-foreground text-sm">
+					Each ring reflects confidence and how close a technology is to
+					production use.
+				</CardDescription>
+			</CardHeader>
+			<Separator className="bg-border" />
+			<CardContent className="space-y-3 px-5 py-5">
 				{ringStats.map((ring) => (
-					<div
+					<Card
 						key={ring.key}
-						className="rounded-2xl border border-white/10 bg-white/5 p-3"
+						size="sm"
+						className="border-border bg-background/40 shadow-none"
 					>
-						<div className="flex items-center justify-between gap-3">
-							<p className="font-semibold text-white">{ring.title}</p>
-							<span className="rounded-full border border-white/10 bg-slate-900/60 px-2 py-1 text-slate-300 text-xs">
-								{ring.count}
-							</span>
-						</div>
-						<p className="mt-1 text-slate-400 text-sm">{ring.blurb}</p>
-					</div>
+						<CardHeader className="px-4 py-3">
+							<CardTitle className="font-semibold text-base text-card-foreground">
+								{ring.title}
+							</CardTitle>
+							<CardDescription className="text-muted-foreground text-sm">
+								{ring.blurb}
+							</CardDescription>
+							<CardAction>
+								<Badge
+									variant="secondary"
+									className="border-border bg-background/60 text-foreground"
+								>
+									{isLoading ? "..." : ring.count}
+								</Badge>
+							</CardAction>
+						</CardHeader>
+					</Card>
 				))}
-			</div>
-		</div>
+			</CardContent>
+		</Card>
 	);
 }

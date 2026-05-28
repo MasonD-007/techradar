@@ -4,13 +4,15 @@ INSERT INTO technology (
     id,
     name,
     blip_id,
-    quadrant_id
+    quadrant_id,
+    icon_url
 )
-VALUES ($1, $2, $3, $4)
+VALUES ($1, $2, $3, $4, $5)
 RETURNING id,
     name,
     blip_id,
     quadrant_id,
+    icon_url,
     created_at,
     updated_at;
 
@@ -20,6 +22,7 @@ SELECT
     name,
     blip_id,
     quadrant_id,
+    icon_url,
     created_at,
     updated_at
 FROM
@@ -34,6 +37,7 @@ SELECT
     name,
     blip_id,
     quadrant_id,
+    icon_url,
     created_at,
     updated_at
 FROM
@@ -47,6 +51,7 @@ SELECT
     name,
     blip_id,
     quadrant_id,
+    icon_url,
     created_at,
     updated_at
 FROM
@@ -60,6 +65,7 @@ SELECT
     name,
     blip_id,
     quadrant_id,
+    icon_url,
     created_at,
     updated_at
 FROM
@@ -71,6 +77,7 @@ UPDATE technology
 SET name = $2,
     blip_id = $3,
     quadrant_id = $4,
+    icon_url = $5,
     updated_at = NOW()
 WHERE
     id = $1
@@ -78,6 +85,7 @@ RETURNING id,
     name,
     blip_id,
     quadrant_id,
+    icon_url,
     created_at,
     updated_at;
 

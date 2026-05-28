@@ -217,7 +217,8 @@ func TestCreateTechnology(t *testing.T) {
 						data["category"] == "tool" && data["status"] == "new" && data["ring"] == "adopt"
 				})).Return(db.CreateBlipRow{ID: 1}, nil)
 				m.On("CreateTechnology", mock.Anything, mock.MatchedBy(func(params db.CreateTechnologyParams) bool {
-					return params.Name == "NewTech" && params.BlipID == 1 && params.QuadrantID == 2
+					return params.Name == "NewTech" && params.BlipID == 1 && params.QuadrantID == 2 &&
+						!params.IconUrl.Valid
 				})).Return(db.Technology{}, errors.New("db error"))
 			},
 			wantCode: http.StatusInternalServerError,
@@ -235,8 +236,28 @@ func TestCreateTechnology(t *testing.T) {
 						data["category"] == "tool" && data["status"] == "new" && data["ring"] == "adopt"
 				})).Return(db.CreateBlipRow{ID: 1}, nil)
 				m.On("CreateTechnology", mock.Anything, mock.MatchedBy(func(params db.CreateTechnologyParams) bool {
-					return params.Name == "NewTech" && params.BlipID == 1 && params.QuadrantID == 2
+					return params.Name == "NewTech" && params.BlipID == 1 && params.QuadrantID == 2 &&
+						!params.IconUrl.Valid
 				})).Return(db.Technology{ID: validUUID, Name: "NewTech"}, nil)
+			},
+			wantCode: http.StatusCreated,
+		},
+		{
+			name: "successful create with icon_url returns 201",
+			body: `{"name":"IconTech","description":"Has icon","quadrant_id":1,"icon_url":"https://example.com/icon.svg"}`,
+			mockExpect: func(m *mocks.MockQuerier) {
+				m.On("CreateBlip", mock.Anything, mock.MatchedBy(func(ctx []byte) bool {
+					var data map[string]any
+					if err := json.Unmarshal(ctx, &data); err != nil {
+						return false
+					}
+					return data["name"] == "IconTech" && data["description"] == "Has icon" &&
+						data["category"] == "technique" && data["status"] == "new" && data["ring"] == "adopt"
+				})).Return(db.CreateBlipRow{ID: 2}, nil)
+				m.On("CreateTechnology", mock.Anything, mock.MatchedBy(func(params db.CreateTechnologyParams) bool {
+					return params.Name == "IconTech" && params.BlipID == 2 && params.QuadrantID == 1 &&
+						params.IconUrl.Valid && params.IconUrl.String == "https://example.com/icon.svg"
+				})).Return(db.Technology{ID: validUUID, Name: "IconTech"}, nil)
 			},
 			wantCode: http.StatusCreated,
 		},
@@ -299,7 +320,21 @@ func TestUpdateTechnology(t *testing.T) {
 			pathID: validUUIDStr,
 			body:   `{"name":"UpdatedTech"}`,
 			mockExpect: func(m *mocks.MockQuerier) {
-				m.On("UpdateTechnology", mock.Anything, mock.AnythingOfType("db.UpdateTechnologyParams")).Return(db.Technology{ID: validUUID, Name: "UpdatedTech"}, nil)
+				m.On("UpdateTechnology", mock.Anything, mock.MatchedBy(func(params db.UpdateTechnologyParams) bool {
+					return params.Name == "UpdatedTech" && !params.IconUrl.Valid
+				})).Return(db.Technology{ID: validUUID, Name: "UpdatedTech"}, nil)
+			},
+			wantCode: http.StatusOK,
+		},
+		{
+			name:   "successful update with icon_url returns payload",
+			pathID: validUUIDStr,
+			body:   `{"name":"UpdatedTech","icon_url":"https://example.com/new-icon.svg"}`,
+			mockExpect: func(m *mocks.MockQuerier) {
+				m.On("UpdateTechnology", mock.Anything, mock.MatchedBy(func(params db.UpdateTechnologyParams) bool {
+					return params.Name == "UpdatedTech" && params.IconUrl.Valid &&
+						params.IconUrl.String == "https://example.com/new-icon.svg"
+				})).Return(db.Technology{ID: validUUID, Name: "UpdatedTech"}, nil)
 			},
 			wantCode: http.StatusOK,
 		},
