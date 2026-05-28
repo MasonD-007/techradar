@@ -21,6 +21,7 @@ import {
 	getTechnologiesByUser,
 	type Technology,
 } from "@/lib/actions";
+import Image from "next/image";
 import * as d3 from "d3";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -600,30 +601,6 @@ function Radar({ onTechnologySelect }: RadarProps) {
 		};
 	}, []);
 
-	const firstPositionedTechnologyId = positionedTechnologies[0]?.id ?? "";
-	const hasActiveTechnology = positionedTechnologies.some(
-		(technology) => technology.id === activeItemId,
-	);
-
-	useEffect(() => {
-		if (!firstPositionedTechnologyId) {
-			if (activeItemId) {
-				setActiveItemId("");
-			}
-
-			return;
-		}
-
-		if (!activeItemId) {
-			setActiveItemId(firstPositionedTechnologyId);
-			return;
-		}
-
-		if (!hasActiveTechnology) {
-			setActiveItemId(firstPositionedTechnologyId);
-		}
-	}, [activeItemId, firstPositionedTechnologyId, hasActiveTechnology]);
-
 	useEffect(() => {
 		const svgNode = svgRef.current;
 		if (!svgNode) {
@@ -677,9 +654,11 @@ function Radar({ onTechnologySelect }: RadarProps) {
 									}}
 								>
 									{technology.iconUrl ? (
-										<img
+										<Image
 											src={technology.iconUrl}
 											alt=""
+											width={32}
+											height={32}
 											className="pointer-events-none h-full w-full rounded-full object-contain p-0.5"
 										/>
 									) : (
