@@ -2,136 +2,163 @@
   {
     "name": "typescript",
     "description": "Strongly typed superset of JavaScript improving maintainability in large-scale applications",
-    "category": "language/framework"
+    "category": "language/framework",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/typescript.svg"
   },
   {
     "name": "go",
     "description": "Compiled language optimized for concurrency and cloud-native services",
-    "category": "language/framework"
+    "category": "language/framework",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/go.svg"
   },
   {
     "name": "rust",
     "description": "Systems programming language emphasizing memory safety and performance",
-    "category": "language/framework"
+    "category": "language/framework",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/rust.svg"
   },
   {
     "name": "python",
     "description": "High-level language dominant in AI, data science, and rapid prototyping",
-    "category": "language/framework"
+    "category": "language/framework",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/python.svg"
   },
   {
     "name": "kotlin",
     "description": "Modern JVM language improving developer ergonomics over Java",
-    "category": "language/framework"
+    "category": "language/framework",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/kotlin.svg"
   },
   {
     "name": "zig",
     "description": "Emerging low-level language focused on simplicity and control without hidden behavior",
-    "category": "language/framework"
+    "category": "language/framework",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/zig.svg"
   },
   {
     "name": "nextjs",
     "description": "Full-stack React framework enabling SSR and edge-rendered applications",
-    "category": "language/framework"
+    "category": "language/framework",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/nextdotjs.svg"
   },
   {
     "name": "svelte",
     "description": "Compiler-based frontend framework reducing runtime overhead",
-    "category": "language/framework"
+    "category": "language/framework",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/svelte.svg"
   },
   {
     "name": "spring boot",
     "description": "Java framework simplifying microservice and backend development",
-    "category": "language/framework"
+    "category": "language/framework",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/springboot.svg"
   },
   {
     "name": "graphql",
     "description": "Query language for APIs enabling flexible client-driven data fetching",
-    "category": "language/framework"
+    "category": "language/framework",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/graphql.svg"
   },
   {
     "name": "grpc",
     "description": "High-performance RPC framework using protocol buffers",
-    "category": "language/framework"
+    "category": "language/framework",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/grpc.svg"
   },
   {
     "name": "react",
     "description": "Component-based frontend library dominating modern web development",
-    "category": "language/framework"
+    "category": "language/framework",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/react.svg"
   },
   {
     "name": "vue",
     "description": "Progressive frontend framework with approachable learning curve",
-    "category": "language/framework"
+    "category": "language/framework",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/vuedotjs.svg"
   },
   {
     "name": "angular",
     "description": "Full-featured frontend framework for enterprise applications",
-    "category": "language/framework"
+    "category": "language/framework",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/angular.svg"
   },
   {
     "name": "tailwind css",
     "description": "Utility-first CSS framework for rapid UI development",
-    "category": "language/framework"
+    "category": "language/framework",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/tailwindcss.svg"
   },
   {
     "name": "bootstrap",
     "description": "Traditional CSS framework for responsive design systems",
-    "category": "language/framework"
+    "category": "language/framework",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/bootstrap.svg"
   },
   {
     "name": "pytorch",
     "description": "Deep learning framework widely used in research and production",
-    "category": "language/framework"
+    "category": "language/framework",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/pytorch.svg"
   },
   {
     "name": "tensorflow",
     "description": "Machine learning framework with strong ecosystem and tooling",
-    "category": "language/framework"
+    "category": "language/framework",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/tensorflow.svg"
   },
   {
     "name": "langchain",
     "description": "Framework for building applications with large language models",
-    "category": "language/framework"
+    "category": "language/framework",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/langchain.svg"
   },
   {
     "name": "hugging face transformers",
     "description": "Library for state-of-the-art natural language processing models",
-    "category": "language/framework"
+    "category": "language/framework",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/huggingface.svg"
   },
   {
     "name": "llamaindex",
     "description": "Framework for connecting LLMs with external data sources",
-    "category": "language/framework"
+    "category": "language/framework",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/llamaindex.svg"
   },
   {
     "name": "ray",
     "description": "Distributed computing framework for parallel and ML workloads",
-    "category": "language/framework"
+    "category": "language/framework",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/ray.svg"
   },
   {
     "name": "fastapi",
     "description": "Modern Python web framework for building APIs with performance",
-    "category": "language/framework"
+    "category": "language/framework",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/fastapi.svg"
   },
   {
     "name": "express",
     "description": "Minimal Node.js web framework for building APIs",
-    "category": "language/framework"
+    "category": "language/framework",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/express.svg"
   },
   {
     "name": "nestjs",
     "description": "Opinionated Node.js framework for scalable server-side applications",
-    "category": "language/framework"
+    "category": "language/framework",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/nestjs.svg"
   },
   {
     "name": "t3 stack",
     "description": "Opinionated full-stack TypeScript stack combining Next.js, tRPC, and Prisma",
-    "category": "language/framework"
+    "category": "language/framework",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/t3stack.svg"
   },
   {
     "name": "trpc",
     "description": "Type-safe RPC framework for TypeScript applications",
-    "category": "language/framework"
+    "category": "language/framework",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/trpc.svg"
   }
 ]

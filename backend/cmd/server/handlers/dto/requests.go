@@ -17,12 +17,14 @@ type CreateTechnologyRequest struct {
 	Name        string      `json:"name"`
 	Description string      `json:"description"`
 	QuadrantID  int32       `json:"quadrant_id"`
+	IconUrl     string      `json:"icon_url"`
 }
 
 type UpdateTechnologyRequest struct {
 	Name       string `json:"name"`
 	BlipID     int32  `json:"blip_id"`
 	QuadrantID int32  `json:"quadrant_id"`
+	IconUrl    string `json:"icon_url"`
 }
 
 type CreateUserRequest struct {

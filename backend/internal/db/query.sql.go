@@ -46,13 +46,15 @@ INSERT INTO technology (
     id,
     name,
     blip_id,
-    quadrant_id
+    quadrant_id,
+    icon_url
 )
-VALUES ($1, $2, $3, $4)
+VALUES ($1, $2, $3, $4, $5)
 RETURNING id,
     name,
     blip_id,
     quadrant_id,
+    icon_url,
     created_at,
     updated_at
 `
@@ -62,6 +64,7 @@ type CreateTechnologyParams struct {
 	Name       string      `json:"name"`
 	BlipID     int32       `json:"blip_id"`
 	QuadrantID int32       `json:"quadrant_id"`
+	IconUrl    pgtype.Text `json:"icon_url"`
 }
 
 func (q *Queries) CreateTechnology(ctx context.Context, arg CreateTechnologyParams) (Technology, error) {
@@ -70,6 +73,7 @@ func (q *Queries) CreateTechnology(ctx context.Context, arg CreateTechnologyPara
 		arg.Name,
 		arg.BlipID,
 		arg.QuadrantID,
+		arg.IconUrl,
 	)
 	var i Technology
 	err := row.Scan(
@@ -77,6 +81,7 @@ func (q *Queries) CreateTechnology(ctx context.Context, arg CreateTechnologyPara
 		&i.Name,
 		&i.BlipID,
 		&i.QuadrantID,
+		&i.IconUrl,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -278,6 +283,7 @@ SELECT
     name,
     blip_id,
     quadrant_id,
+    icon_url,
     created_at,
     updated_at
 FROM
@@ -299,6 +305,7 @@ func (q *Queries) GetAllTechnologies(ctx context.Context) ([]Technology, error) 
 			&i.Name,
 			&i.BlipID,
 			&i.QuadrantID,
+			&i.IconUrl,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -395,6 +402,7 @@ SELECT
     name,
     blip_id,
     quadrant_id,
+    icon_url,
     created_at,
     updated_at
 FROM
@@ -411,6 +419,7 @@ func (q *Queries) GetTechnologyID(ctx context.Context, id pgtype.UUID) (Technolo
 		&i.Name,
 		&i.BlipID,
 		&i.QuadrantID,
+		&i.IconUrl,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -423,6 +432,7 @@ SELECT
     name,
     blip_id,
     quadrant_id,
+    icon_url,
     created_at,
     updated_at
 FROM
@@ -439,6 +449,7 @@ func (q *Queries) GetTechnologyName(ctx context.Context, name string) (Technolog
 		&i.Name,
 		&i.BlipID,
 		&i.QuadrantID,
+		&i.IconUrl,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -451,6 +462,7 @@ SELECT
     name,
     blip_id,
     quadrant_id,
+    icon_url,
     created_at,
     updated_at
 FROM
@@ -473,6 +485,7 @@ func (q *Queries) GetTechnologyQuad(ctx context.Context, quadrantID int32) ([]Te
 			&i.Name,
 			&i.BlipID,
 			&i.QuadrantID,
+			&i.IconUrl,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -664,6 +677,7 @@ UPDATE technology
 SET name = $2,
     blip_id = $3,
     quadrant_id = $4,
+    icon_url = $5,
     updated_at = NOW()
 WHERE
     id = $1
@@ -671,6 +685,7 @@ RETURNING id,
     name,
     blip_id,
     quadrant_id,
+    icon_url,
     created_at,
     updated_at
 `
@@ -680,6 +695,7 @@ type UpdateTechnologyParams struct {
 	Name       string      `json:"name"`
 	BlipID     int32       `json:"blip_id"`
 	QuadrantID int32       `json:"quadrant_id"`
+	IconUrl    pgtype.Text `json:"icon_url"`
 }
 
 func (q *Queries) UpdateTechnology(ctx context.Context, arg UpdateTechnologyParams) (Technology, error) {
@@ -688,6 +704,7 @@ func (q *Queries) UpdateTechnology(ctx context.Context, arg UpdateTechnologyPara
 		arg.Name,
 		arg.BlipID,
 		arg.QuadrantID,
+		arg.IconUrl,
 	)
 	var i Technology
 	err := row.Scan(
@@ -695,6 +712,7 @@ func (q *Queries) UpdateTechnology(ctx context.Context, arg UpdateTechnologyPara
 		&i.Name,
 		&i.BlipID,
 		&i.QuadrantID,
+		&i.IconUrl,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

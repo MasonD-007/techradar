@@ -18,6 +18,7 @@ import (
 	"github.com/MasonD-007/techradar/backend/internal/db/postgres"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/joho/godotenv"
 )
 
@@ -25,6 +26,7 @@ type technologySeedRecord struct {
 	Name        string
 	Description string
 	Category    string
+	IconUrl     string
 }
 
 //go:embed data/*.json
@@ -196,6 +198,7 @@ func seedTechnologies(ctx context.Context, tx pgx.Tx, q *db.Queries) (int, error
 			Name:       record.Name,
 			BlipID:     blip.ID,
 			QuadrantID: quadrantIDs[quadrantName],
+			IconUrl:    pgtype.Text{String: record.IconUrl, Valid: record.IconUrl != ""},
 		})
 		if err != nil {
 			return seededCount, fmt.Errorf("failed to create technology %q: %w", record.Name, err)
@@ -239,6 +242,7 @@ func loadTechnologySeeds() ([]technologySeedRecord, error) {
 			record.Name = strings.TrimSpace(record.Name)
 			record.Description = strings.TrimSpace(record.Description)
 			record.Category = strings.ToLower(strings.TrimSpace(record.Category))
+			record.IconUrl = strings.TrimSpace(record.IconUrl)
 
 			if record.Name == "" || record.Description == "" || record.Category == "" {
 				return nil, fmt.Errorf("seed data %q contains an incomplete technology record", path)

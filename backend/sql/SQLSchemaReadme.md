@@ -5,6 +5,7 @@ Tables:
             name
             foreign key to blip
             foreign key to quadrant
+            icon_url
             updatedAt
             createdAt
     - rings

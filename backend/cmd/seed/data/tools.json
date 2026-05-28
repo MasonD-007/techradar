@@ -2,136 +2,163 @@
   {
     "name": "terraform",
     "description": "Infrastructure as Code tool for provisioning cloud resources declaratively",
-    "category": "tool"
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/terraform.svg"
   },
   {
     "name": "pulumi",
     "description": "IaC tool using general-purpose languages instead of declarative configs",
-    "category": "tool"
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/pulumi.svg"
   },
   {
     "name": "ansible",
     "description": "Configuration management and automation tool for infrastructure tasks",
-    "category": "tool"
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/ansible.svg"
   },
   {
     "name": "github actions",
     "description": "CI/CD automation tightly integrated with Git-based workflows",
-    "category": "tool"
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/githubactions.svg"
   },
   {
     "name": "jenkins",
     "description": "Legacy but widely used automation server for CI/CD pipelines",
-    "category": "tool"
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/jenkins.svg"
   },
   {
     "name": "prometheus",
     "description": "Monitoring system designed for metrics collection and alerting",
-    "category": "tool"
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/prometheus.svg"
   },
   {
     "name": "grafana",
     "description": "Visualization tool for observability dashboards and monitoring data",
-    "category": "tool"
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/grafana.svg"
   },
   {
     "name": "opentelemetry",
     "description": "Standard for distributed tracing and observability instrumentation",
-    "category": "tool"
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/opentelemetry.svg"
   },
   {
     "name": "apache kafka streams",
     "description": "Stream processing library for building real-time applications on Kafka",
-    "category": "tool"
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/apachekafkastreams.svg"
   },
   {
     "name": "logstash",
     "description": "Data processing pipeline for ingesting and transforming logs",
-    "category": "tool"
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/logstash.svg"
   },
   {
     "name": "kibana",
     "description": "Visualization layer for exploring Elasticsearch data",
-    "category": "tool"
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/kibana.svg"
   },
   {
     "name": "duckdb",
     "description": "In-process analytical database optimized for OLAP workloads",
-    "category": "tool"
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/duckdb.svg"
   },
   {
     "name": "dbt",
     "description": "Data transformation tool for analytics engineering",
-    "category": "tool"
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/dbt.svg"
   },
   {
     "name": "prisma",
     "description": "Next-generation ORM for Node.js and TypeScript",
-    "category": "tool"
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/prisma.svg"
   },
   {
     "name": "vite",
     "description": "Fast frontend build tool leveraging native ES modules",
-    "category": "tool"
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/vite.svg"
   },
   {
     "name": "webpack",
     "description": "Bundler for JavaScript applications with extensive ecosystem",
-    "category": "tool"
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/webpack.svg"
   },
   {
     "name": "rollup",
     "description": "Module bundler optimized for libraries and tree-shaking",
-    "category": "tool"
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/rollupdotjs.svg"
   },
   {
     "name": "esbuild",
     "description": "Extremely fast JavaScript bundler and minifier",
-    "category": "tool"
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/esbuild.svg"
   },
   {
     "name": "playwright",
     "description": "End-to-end testing framework for modern web apps",
-    "category": "tool"
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/playwright.svg"
   },
   {
     "name": "cypress",
     "description": "Frontend testing framework focused on developer experience",
-    "category": "tool"
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/cypress.svg"
   },
   {
     "name": "jest",
     "description": "JavaScript testing framework commonly used with React and Node",
-    "category": "tool"
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/jest.svg"
   },
   {
     "name": "vitest",
     "description": "Fast unit testing framework powered by Vite",
-    "category": "tool"
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/vitest.svg"
   },
   {
     "name": "storybook",
     "description": "UI component development and testing environment",
-    "category": "tool"
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/storybook.svg"
   },
   {
     "name": "helm",
     "description": "Kubernetes package manager for defining and installing applications",
-    "category": "tool"
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/helm.svg"
   },
   {
     "name": "argo cd",
     "description": "Declarative GitOps continuous delivery tool for Kubernetes",
-    "category": "tool"
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/argo.svg"
   },
   {
     "name": "flux",
     "description": "GitOps tool for continuous delivery on Kubernetes",
-    "category": "tool"
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/flux.svg"
   },
   {
     "name": "vault",
     "description": "Secrets management tool for protecting sensitive data",
-    "category": "tool"
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/vault.svg"
   }
 ]
