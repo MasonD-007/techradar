@@ -179,7 +179,16 @@ export default function AddTechnologyButton({
 			)}
 		>
 			<div className="flex items-center justify-between gap-3">
-				<p className="font-medium leading-none">{tech.name}</p>
+				<span className="flex items-center gap-2">
+					{tech.icon_url && (
+						<img
+							src={tech.icon_url}
+							alt=""
+							className="h-5 w-5 shrink-0"
+						/>
+					)}
+					<p className="font-medium leading-none">{tech.name}</p>
+				</span>
 				{isSelected && (
 					<Badge variant="outline" className="border-primary/20 text-primary">
 						Selected

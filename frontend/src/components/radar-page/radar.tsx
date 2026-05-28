@@ -45,6 +45,7 @@ export type RadarTechnology = {
 	ring: RingKey;
 	blipId: number | null;
 	intro: string | null;
+	iconUrl?: string;
 };
 
 export type PositionedRadarTechnology = RadarTechnology & {
@@ -167,6 +168,7 @@ function toRadarTechnology(
 		intro: technology.blip_id
 			? (blipIntroById.get(technology.blip_id) ?? null)
 			: null,
+		iconUrl: technology.icon_url ?? undefined,
 	};
 }
 
@@ -674,45 +676,53 @@ function Radar({ onTechnologySelect }: RadarProps) {
 										onTechnologySelect?.(technology);
 									}}
 								>
-									<svg
-										viewBox="0 0 24 24"
-										className="h-full w-full overflow-visible"
-										aria-hidden="true"
-									>
-										<circle
-											cx="12"
-											cy="12"
-											r={technology.id === activeItemId ? 7 : 5}
-											fill={quadrantStroke(technology.colorKey)}
-											stroke="color-mix(in oklab, var(--background) 82%, transparent)"
-											strokeWidth="1.5"
+									{technology.iconUrl ? (
+										<img
+											src={technology.iconUrl}
+											alt=""
+											className="pointer-events-none h-full w-full rounded-full object-contain p-0.5"
 										/>
-										<circle
-											cx="12"
-											cy="12"
-											r={technology.id === activeItemId ? 9 : 7}
-											fill="none"
-											stroke={quadrantStroke(technology.colorKey)}
-											strokeOpacity={
-												technology.id === activeItemId ? 0.9 : 0.48
-											}
-											strokeWidth={technology.id === activeItemId ? 2 : 1.25}
-										/>
-										<text
-											x="12"
-											y="13"
-											textAnchor="middle"
-											dominantBaseline="middle"
-											fill="#f8fafc"
-											fontSize={technology.id === activeItemId ? 8.5 : 7.25}
-											fontWeight={700}
-											paintOrder="stroke"
-											stroke="color-mix(in oklab, var(--background) 88%, transparent)"
-											strokeWidth="1.8"
+									) : (
+										<svg
+											viewBox="0 0 24 24"
+											className="h-full w-full overflow-visible"
+											aria-hidden="true"
 										>
-											{index + 1}
-										</text>
-									</svg>
+											<circle
+												cx="12"
+												cy="12"
+												r={technology.id === activeItemId ? 7 : 5}
+												fill={quadrantStroke(technology.colorKey)}
+												stroke="color-mix(in oklab, var(--background) 82%, transparent)"
+												strokeWidth="1.5"
+											/>
+											<circle
+												cx="12"
+												cy="12"
+												r={technology.id === activeItemId ? 9 : 7}
+												fill="none"
+												stroke={quadrantStroke(technology.colorKey)}
+												strokeOpacity={
+													technology.id === activeItemId ? 0.9 : 0.48
+												}
+												strokeWidth={technology.id === activeItemId ? 2 : 1.25}
+											/>
+											<text
+												x="12"
+												y="13"
+												textAnchor="middle"
+												dominantBaseline="middle"
+												fill="#f8fafc"
+												fontSize={technology.id === activeItemId ? 8.5 : 7.25}
+												fontWeight={700}
+												paintOrder="stroke"
+												stroke="color-mix(in oklab, var(--background) 88%, transparent)"
+												strokeWidth="1.8"
+											>
+												{index + 1}
+											</text>
+										</svg>
+									)}
 								</button>
 							</HoverCardTrigger>
 							<HoverCardContent

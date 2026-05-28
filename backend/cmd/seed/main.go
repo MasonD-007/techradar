@@ -23,10 +23,10 @@ import (
 )
 
 type technologySeedRecord struct {
-	Name        string
-	Description string
-	Category    string
-	IconUrl     string
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Category    string `json:"category"`
+	IconUrl     string `json:"icon_url"`
 }
 
 //go:embed data/*.json
@@ -170,7 +170,24 @@ func seedTechnologies(ctx context.Context, tx pgx.Tx, q *db.Queries) (int, error
 	for _, record := range records {
 		existingTechnology, err := q.GetTechnologyName(ctx, record.Name)
 		if err == nil && existingTechnology.ID.Valid {
-			log.Printf("Technology already exists, skipping: %s", record.Name)
+			if !existingTechnology.IconUrl.Valid || existingTechnology.IconUrl.String == "" {
+				if record.IconUrl != "" {
+					_, err := q.UpdateTechnology(ctx, db.UpdateTechnologyParams{
+						ID:         existingTechnology.ID,
+						Name:       existingTechnology.Name,
+						BlipID:     existingTechnology.BlipID,
+						QuadrantID: existingTechnology.QuadrantID,
+						IconUrl:    pgtype.Text{String: record.IconUrl, Valid: true},
+					})
+					if err != nil {
+						return seededCount, fmt.Errorf("failed to update icon_url for existing technology %q: %w", record.Name, err)
+					}
+					seededCount++
+					log.Printf("Updated icon_url for existing technology: %s", record.Name)
+				}
+			} else {
+				log.Printf("Technology already exists with icon_url, skipping: %s", record.Name)
+			}
 			continue
 		}
 		if err != nil && !errors.Is(err, pgx.ErrNoRows) {
