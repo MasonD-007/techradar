@@ -1,0 +1,5 @@
+.cert/
+backend/
+frontend/
+.env
+opencode.json
