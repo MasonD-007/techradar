@@ -38,20 +38,25 @@ import {
 } from "./radar-data";
 import SearchTechnologiesDialog from "./search-technologies/search-technologies-dialog";
 
-type RadarTechnology = {
+export type RadarTechnology = {
 	id: string;
 	title: string;
 	quadrant: QuadrantKey;
 	ring: RingKey;
+	blipId: number | null;
 	intro: string | null;
 };
 
-type PositionedRadarTechnology = RadarTechnology & {
+export type PositionedRadarTechnology = RadarTechnology & {
 	x: number;
 	y: number;
 	angle: number;
 	radius: number;
 	colorKey: QuadrantKey;
+};
+
+type RadarProps = {
+	onTechnologySelect?: (technology: RadarTechnology) => void;
 };
 
 const quadrantBoundsByKey: Record<
@@ -158,6 +163,7 @@ function toRadarTechnology(
 		title: technology.name ?? "Untitled technology",
 		quadrant,
 		ring,
+		blipId: technology.blip_id ?? null,
 		intro: technology.blip_id
 			? (blipIntroById.get(technology.blip_id) ?? null)
 			: null,
@@ -461,7 +467,7 @@ function drawRadarGeometry(svgNode: SVGSVGElement) {
 		.text((d) => d.blurb);
 }
 
-function Radar() {
+function Radar({ onTechnologySelect }: RadarProps) {
 	const svgRef = useRef<SVGSVGElement | null>(null);
 	const [userId, setUserId] = useState<string | null>(null);
 	const [activeItemId, setActiveItemId] = useState("");
@@ -566,10 +572,7 @@ function Radar() {
 			for (const { blipId, result } of blipResults) {
 				if (result.success) {
 					const blipIntro = extractBlipIntro(result.data?.context);
-					console.log("Downloaded blip intro:", blipId, blipIntro);
 					blipIntroById.set(blipId, blipIntro);
-				} else {
-					console.log("Failed to download blip intro:", blipId, result.error);
 				}
 			}
 
@@ -666,7 +669,10 @@ function Radar() {
 									}}
 									onMouseEnter={() => setActiveItemId(technology.id)}
 									onFocus={() => setActiveItemId(technology.id)}
-									onClick={() => setActiveItemId(technology.id)}
+									onClick={() => {
+										setActiveItemId(technology.id);
+										onTechnologySelect?.(technology);
+									}}
 								>
 									<svg
 										viewBox="0 0 24 24"
