@@ -44,7 +44,11 @@ function mapRingIdToKey(ringId: number): RingKey | null {
 	}
 }
 
-export default function RingData() {
+type RingDataProps = {
+	userId?: string | null;
+};
+
+export default function RingData({ userId }: RingDataProps) {
 	const [ringCounts, setRingCounts] = useState<Record<RingKey, number>>(
 		createEmptyRingCounts,
 	);
@@ -56,7 +60,7 @@ export default function RingData() {
 		const loadRingCounts = async () => {
 			setIsLoading(true);
 
-			const currentUserId = await getCurrentUserId();
+			const currentUserId = userId ?? (await getCurrentUserId());
 			if (cancelled) {
 				return;
 			}
@@ -115,7 +119,7 @@ export default function RingData() {
 		return () => {
 			cancelled = true;
 		};
-	}, []);
+	}, [userId]);
 
 	const ringStats = ringLabels.map((ring) => ({
 		...ring,

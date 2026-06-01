@@ -55,6 +55,7 @@ export type PositionedRadarTechnology = RadarTechnology & {
 
 type RadarProps = {
 	userId?: string | null;
+	currentUserId?: string | null;
 	onTechnologySelect?: (technology: RadarTechnology) => void;
 };
 
@@ -246,9 +247,12 @@ function buildRandomPositionedTechnologies(
 	return positionedTechnologies;
 }
 
-function Radar({ userId, onTechnologySelect }: RadarProps) {
+
+function Radar({ userId, currentUserId, onTechnologySelect }: RadarProps) {
 	const [viewedUserId, setViewedUserId] = useState<string | null>(null);
-	const [signedInUserId, setSignedInUserId] = useState<string | null>(null);
+	const [loadedCurrentUserId, setLoadedCurrentUserId] = useState<string | null>(
+		null,
+	);
 	const [activeItemId, setActiveItemId] = useState("");
 	const [positionedTechnologies, setPositionedTechnologies] = useState<
 		PositionedRadarTechnology[]
@@ -257,8 +261,8 @@ function Radar({ userId, onTechnologySelect }: RadarProps) {
 	const [error, setError] = useState<string | null>(null);
 	const isOwnRadar =
 		viewedUserId !== null &&
-		signedInUserId !== null &&
-		viewedUserId === signedInUserId;
+		loadedCurrentUserId !== null &&
+		viewedUserId === loadedCurrentUserId;
 
 	useEffect(() => {
 		let cancelled = false;
@@ -267,14 +271,14 @@ function Radar({ userId, onTechnologySelect }: RadarProps) {
 			setIsLoading(true);
 			setError(null);
 
-			const currentUserId = await getCurrentUserId();
-			const targetUserId = userId ?? currentUserId;
+			const resolvedUserId = currentUserId ?? (await getCurrentUserId());
+			const targetUserId = userId ?? resolvedUserId;
 
 			if (cancelled) {
 				return;
 			}
 
-			setSignedInUserId(currentUserId);
+			setLoadedCurrentUserId(resolvedUserId);
 			setViewedUserId(targetUserId);
 
 			if (!targetUserId) {
@@ -381,7 +385,7 @@ function Radar({ userId, onTechnologySelect }: RadarProps) {
 		return () => {
 			cancelled = true;
 		};
-	}, [userId]);
+	}, [currentUserId, userId]);
 
 	const firstPositionedTechnologyId = positionedTechnologies[0]?.id ?? "";
 	const hasActiveTechnology = positionedTechnologies.some(

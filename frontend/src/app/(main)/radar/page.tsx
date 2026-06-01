@@ -17,18 +17,21 @@ export default function RadarPage() {
 	const [selectedTechnology, setSelectedTechnology] =
 		useState<RadarTechnology | null>(null);
 	const [userId, setUserId] = useQueryState("user", parseAsString);
+	const [signedInUserId, setSignedInUserId] = useState<string | null>(null);
 
 	useEffect(() => {
 		let cancelled = false;
 
 		const loadCurrentUserId = async () => {
-			if (userId !== null) {
-				return;
-			}
-
 			const currentUserId = await getCurrentUserId();
 
 			if (cancelled || !currentUserId) {
+				return;
+			}
+
+			setSignedInUserId(currentUserId);
+
+			if (userId !== null) {
 				return;
 			}
 
@@ -49,6 +52,7 @@ export default function RadarPage() {
 				<div className="grid flex-1 gap-5 xl:grid-cols-[minmax(0,1.65fr)_minmax(320px,0.95fr)] xl:items-start">
 					<Radar
 						userId={userId}
+						currentUserId={signedInUserId}
 						onTechnologySelect={(technology) => {
 							setSelectedTechnology(technology);
 							setActiveTab("technology");
@@ -68,13 +72,20 @@ export default function RadarPage() {
 									<TabsTrigger value="technology">Technology</TabsTrigger>
 								</TabsList>
 								<TabsContent value="quadrants" className="mt-0">
-									<QuadrantData />
+									<QuadrantData userId={userId} />
 								</TabsContent>
 								<TabsContent value="rings" className="mt-0">
-									<RingData />
+									<RingData userId={userId} />
 								</TabsContent>
 								<TabsContent value="technology" className="mt-0">
-									<TechnologyData technology={selectedTechnology} />
+									<TechnologyData
+										technology={selectedTechnology}
+										isOwnRadar={
+											userId !== null &&
+											signedInUserId !== null &&
+											userId === signedInUserId
+										}
+									/>
 								</TabsContent>
 							</Tabs>
 						</CardContent>
