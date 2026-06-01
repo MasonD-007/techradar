@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import {
 	Card,
@@ -9,9 +10,12 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { getCurrentUserId, getTechnologiesByUser } from "@/lib/actions";
-import { useEffect, useState } from "react";
 
-export default function RadarTitle() {
+type RadarTitleProps = {
+	userId?: string | null;
+};
+
+export default function RadarTitle({ userId }: RadarTitleProps) {
 	const [blipCount, setBlipCount] = useState(0);
 	const [isLoading, setIsLoading] = useState(true);
 
@@ -21,7 +25,7 @@ export default function RadarTitle() {
 		const loadBlipCount = async () => {
 			setIsLoading(true);
 
-			const currentUserId = await getCurrentUserId();
+			const currentUserId = userId ?? (await getCurrentUserId());
 			if (cancelled) {
 				return;
 			}
@@ -52,13 +56,13 @@ export default function RadarTitle() {
 		return () => {
 			cancelled = true;
 		};
-	}, []);
+	}, [userId]);
 
 	return (
 		<Card className="border-border bg-card/80 shadow-2xl shadow-foreground/10 backdrop-blur">
 			<CardHeader className="border-border border-b px-6 py-5">
 				<CardTitle className="font-black text-3xl text-card-foreground tracking-tight sm:text-4xl">
-					Your Tech radar
+					Tech radar
 				</CardTitle>
 				<CardDescription className="max-w-2xl text-muted-foreground text-sm">
 					A curated snapshot of the stack, delivery practices, and supporting
