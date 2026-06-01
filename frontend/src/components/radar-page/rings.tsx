@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import {
 	Card,
@@ -16,7 +17,6 @@ import {
 	getTechnologiesByUser,
 	type Technology,
 } from "@/lib/actions";
-import { useEffect, useState } from "react";
 import { type RingKey, ringLabels } from "./radar-data";
 
 function createEmptyRingCounts(): Record<RingKey, number> {

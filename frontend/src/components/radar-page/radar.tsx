@@ -247,7 +247,6 @@ function buildRandomPositionedTechnologies(
 	return positionedTechnologies;
 }
 
-
 function Radar({ userId, currentUserId, onTechnologySelect }: RadarProps) {
 	const [viewedUserId, setViewedUserId] = useState<string | null>(null);
 	const [loadedCurrentUserId, setLoadedCurrentUserId] = useState<string | null>(
