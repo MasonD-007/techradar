@@ -20,6 +20,7 @@ import {
 	getCurrentUserId,
 	getTechnologies,
 	getTechnologiesByUser,
+	getUser,
 	type Technology,
 } from "@/lib/actions";
 import {
@@ -252,6 +253,7 @@ function Radar({ userId, currentUserId, onTechnologySelect }: RadarProps) {
 	const [loadedCurrentUserId, setLoadedCurrentUserId] = useState<string | null>(
 		null,
 	);
+	const [viewedUserName, setViewedUserName] = useState<string | null>(null);
 	const [activeItemId, setActiveItemId] = useState("");
 	const [positionedTechnologies, setPositionedTechnologies] = useState<
 		PositionedRadarTechnology[]
@@ -279,6 +281,18 @@ function Radar({ userId, currentUserId, onTechnologySelect }: RadarProps) {
 
 			setLoadedCurrentUserId(resolvedUserId);
 			setViewedUserId(targetUserId);
+
+			// load viewed user's name for display
+			if (targetUserId) {
+				const userResult = await getUser(targetUserId);
+				if (userResult.success && userResult.data) {
+					setViewedUserName(userResult.data.name ?? null);
+				} else {
+					setViewedUserName(null);
+				}
+			} else {
+				setViewedUserName(null);
+			}
 
 			if (!targetUserId) {
 				setPositionedTechnologies([]);
@@ -417,7 +431,9 @@ function Radar({ userId, currentUserId, onTechnologySelect }: RadarProps) {
 					Radar canvas
 				</CardTitle>
 				<CardDescription className="text-muted-foreground text-sm">
-					Your selected technologies, placed on the radar.
+					{viewedUserName
+						? `${viewedUserName}${viewedUserName.endsWith("s") ? "'" : "'s"} selected technologies, placed on the radar.`
+						: "Selected technologies, placed on the radar."}
 				</CardDescription>
 				<CardAction>
 					<Badge
@@ -552,9 +568,13 @@ function Radar({ userId, currentUserId, onTechnologySelect }: RadarProps) {
 								: error
 									? error
 									: viewedUserId
-										? isOwnRadar
-											? "Select technologies in your account to populate the radar."
-											: "This person has not populated their radar yet."
+										? viewedUserName
+											? isOwnRadar
+												? `Select technologies in ${viewedUserName}${viewedUserName.endsWith("s") ? "'" : "'s"} account to populate the radar.`
+												: `${viewedUserName} has not populated their radar yet.`
+											: isOwnRadar
+												? "Select technologies in your account to populate the radar."
+												: "This person has not populated their radar yet."
 										: "Sign in to see your radar."}
 						</p>
 					</div>
