@@ -1,5 +1,7 @@
 "use client";
 
+import * as d3 from "d3";
+import { useEffect, useRef, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import {
 	Card,
@@ -21,9 +23,6 @@ import {
 	getTechnologiesByUser,
 	type Technology,
 } from "@/lib/actions";
-import Image from "next/image";
-import * as d3 from "d3";
-import { useEffect, useRef, useState } from "react";
 import {
 	CENTER,
 	outerRadius,
@@ -173,31 +172,80 @@ function toRadarTechnology(
 	};
 }
 
+function sampleRadarPosition(technology: RadarTechnology) {
+	const quadrantBounds = quadrantBoundsByKey[technology.quadrant];
+	const ringIndex = ringIndexByKey[technology.ring];
+	const anglePadding = 0.16;
+	const minRadius =
+		ringIndex === 0 ? 22 : ringRatios[ringIndex - 1] * outerRadius;
+	const maxRadius = ringRatios[ringIndex] * outerRadius - 18;
+	const angleStart = quadrantBounds.startAngle + anglePadding;
+	const angleEnd = quadrantBounds.endAngle - anglePadding;
+	const angle = angleStart + Math.random() * (angleEnd - angleStart);
+	const radius = minRadius + Math.random() * (maxRadius - minRadius);
+	const point = polarToCartesian(angle, radius);
+
+	return {
+		...technology,
+		x: point.x,
+		y: point.y,
+		angle,
+		radius,
+		colorKey: technology.quadrant,
+	};
+}
+
+function isPositionFarEnough(
+	candidate: PositionedRadarTechnology,
+	existingTechnologies: PositionedRadarTechnology[],
+	minDistance: number,
+) {
+	const minDistanceSq = minDistance * minDistance;
+
+	return existingTechnologies.every((existingTechnology) => {
+		const dx = candidate.x - existingTechnology.x;
+		const dy = candidate.y - existingTechnology.y;
+		return dx * dx + dy * dy >= minDistanceSq;
+	});
+}
+
 function buildRandomPositionedTechnologies(
 	technologies: RadarTechnology[],
 ): PositionedRadarTechnology[] {
-	return technologies.map((technology) => {
-		const quadrantBounds = quadrantBoundsByKey[technology.quadrant];
-		const ringIndex = ringIndexByKey[technology.ring];
-		const anglePadding = 0.16;
-		const minRadius =
-			ringIndex === 0 ? 22 : ringRatios[ringIndex - 1] * outerRadius;
-		const maxRadius = ringRatios[ringIndex] * outerRadius - 18;
-		const angleStart = quadrantBounds.startAngle + anglePadding;
-		const angleEnd = quadrantBounds.endAngle - anglePadding;
-		const angle = angleStart + Math.random() * (angleEnd - angleStart);
-		const radius = minRadius + Math.random() * (maxRadius - minRadius);
-		const point = polarToCartesian(angle, radius);
+	const minSpacing = 46;
+	const maxAttemptsPerTechnology = 120;
+	const positionedTechnologies: PositionedRadarTechnology[] = [];
 
-		return {
-			...technology,
-			x: point.x,
-			y: point.y,
-			angle,
-			radius,
-			colorKey: technology.quadrant,
-		};
-	});
+	for (const technology of technologies) {
+		let bestCandidate: PositionedRadarTechnology | null = null;
+		let bestClearance = -Infinity;
+
+		for (let attempt = 0; attempt < maxAttemptsPerTechnology; attempt += 1) {
+			const candidate = sampleRadarPosition(technology);
+			const clearance = positionedTechnologies.reduce((smallest, existing) => {
+				const dx = candidate.x - existing.x;
+				const dy = candidate.y - existing.y;
+				return Math.min(smallest, Math.sqrt(dx * dx + dy * dy));
+			}, Number.POSITIVE_INFINITY);
+
+			if (clearance > bestClearance) {
+				bestCandidate = candidate;
+				bestClearance = clearance;
+			}
+
+			if (isPositionFarEnough(candidate, positionedTechnologies, minSpacing)) {
+				positionedTechnologies.push(candidate);
+				bestCandidate = null;
+				break;
+			}
+		}
+
+		if (bestCandidate) {
+			positionedTechnologies.push(bestCandidate);
+		}
+	}
+
+	return positionedTechnologies;
 }
 
 const quadrantColor = d3
