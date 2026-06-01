@@ -3,3 +3,4 @@ backend/
 frontend/
 .env
 opencode.json
+node_modules
