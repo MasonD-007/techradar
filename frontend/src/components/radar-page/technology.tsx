@@ -102,9 +102,8 @@ export default function TechnologyData({
 				) : (
 					<div className="rounded-2xl border border-border border-dashed bg-background/30 p-5 text-center">
 						<p className="text-muted-foreground text-sm">
-							{isOwnRadar
-								? "Click a technology node on the radar to inspect its quadrant, ring, and blip details here."
-								: "This radar is view-only until a technology is selected."}
+							Click a technology node on the radar to inspect its quadrant,
+							ring, and blip details here.
 						</p>
 					</div>
 				)}
