@@ -92,20 +92,22 @@ sync-openapi:
 # DATABASE COMMANDS
 # =============================================================================
 
+DB_COMPOSE := docker compose -f docker-compose.yml -f docker-compose.db-host.yml
+
 .PHONY: db-start
 db-start:
-	docker compose up -d postgres
+	$(DB_COMPOSE) up -d postgres
 	@echo "Waiting for postgres to be ready..."
 	@sleep 3
 
 .PHONY: db-stop
 db-stop:
-	docker compose stop postgres
+	$(DB_COMPOSE) stop postgres
 
 .PHONY: db-reset
 db-reset:
-	docker compose down -v postgres
-	docker compose up -d postgres
+	$(DB_COMPOSE) down -v postgres
+	$(DB_COMPOSE) up -d postgres
 	@echo "Database reset complete"
 
 .PHONY: db-migrate
@@ -119,7 +121,7 @@ db-migrate:
 
 .PHONY: db-console
 db-console:
-	docker compose exec postgres psql -U $${POSTGRES_USER:-app} -d $${POSTGRES_DB:-appdb}
+	$(DB_COMPOSE) exec postgres psql -U $${POSTGRES_USER:-app} -d $${POSTGRES_DB:-appdb}
 
 # =============================================================================
 # DOCKER COMPOSE
