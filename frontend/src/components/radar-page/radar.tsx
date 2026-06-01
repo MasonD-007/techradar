@@ -54,6 +54,7 @@ export type PositionedRadarTechnology = RadarTechnology & {
 };
 
 type RadarProps = {
+	userId?: string | null;
 	onTechnologySelect?: (technology: RadarTechnology) => void;
 };
 
@@ -245,14 +246,19 @@ function buildRandomPositionedTechnologies(
 	return positionedTechnologies;
 }
 
-function Radar({ onTechnologySelect }: RadarProps) {
-	const [userId, setUserId] = useState<string | null>(null);
+function Radar({ userId, onTechnologySelect }: RadarProps) {
+	const [viewedUserId, setViewedUserId] = useState<string | null>(null);
+	const [signedInUserId, setSignedInUserId] = useState<string | null>(null);
 	const [activeItemId, setActiveItemId] = useState("");
 	const [positionedTechnologies, setPositionedTechnologies] = useState<
 		PositionedRadarTechnology[]
 	>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
+	const isOwnRadar =
+		viewedUserId !== null &&
+		signedInUserId !== null &&
+		viewedUserId === signedInUserId;
 
 	useEffect(() => {
 		let cancelled = false;
@@ -262,14 +268,16 @@ function Radar({ onTechnologySelect }: RadarProps) {
 			setError(null);
 
 			const currentUserId = await getCurrentUserId();
+			const targetUserId = userId ?? currentUserId;
 
 			if (cancelled) {
 				return;
 			}
 
-			setUserId(currentUserId);
+			setSignedInUserId(currentUserId);
+			setViewedUserId(targetUserId);
 
-			if (!currentUserId) {
+			if (!targetUserId) {
 				setPositionedTechnologies([]);
 				setActiveItemId("");
 				setIsLoading(false);
@@ -278,7 +286,7 @@ function Radar({ onTechnologySelect }: RadarProps) {
 
 			const [technologiesResult, userTechnologiesResult] = await Promise.all([
 				getTechnologies(),
-				getTechnologiesByUser(currentUserId),
+				getTechnologiesByUser(targetUserId),
 			]);
 
 			if (cancelled) {
@@ -373,7 +381,7 @@ function Radar({ onTechnologySelect }: RadarProps) {
 		return () => {
 			cancelled = true;
 		};
-	}, []);
+	}, [userId]);
 
 	const firstPositionedTechnologyId = positionedTechnologies[0]?.id ?? "";
 	const hasActiveTechnology = positionedTechnologies.some(
@@ -417,7 +425,7 @@ function Radar({ onTechnologySelect }: RadarProps) {
 					</Badge>
 				</CardAction>
 				<div className="col-span-2 pt-2">
-					<SearchTechnologiesDialog />
+					{isOwnRadar && <SearchTechnologiesDialog />}
 				</div>
 			</CardHeader>
 
@@ -540,8 +548,10 @@ function Radar({ onTechnologySelect }: RadarProps) {
 								? "Loading your selected technologies..."
 								: error
 									? error
-									: userId
-										? "Select technologies in your account to populate the radar."
+									: viewedUserId
+										? isOwnRadar
+											? "Select technologies in your account to populate the radar."
+											: "This person has not populated their radar yet."
 										: "Sign in to see your radar."}
 						</p>
 					</div>
