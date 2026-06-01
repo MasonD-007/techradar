@@ -9,7 +9,11 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { getCurrentUserId, getTechnologiesByUser } from "@/lib/actions";
+import {
+	getCurrentUserId,
+	getTechnologiesByUser,
+	getUser,
+} from "@/lib/actions";
 
 type RadarTitleProps = {
 	userId?: string | null;
@@ -18,6 +22,7 @@ type RadarTitleProps = {
 export default function RadarTitle({ userId }: RadarTitleProps) {
 	const [blipCount, setBlipCount] = useState(0);
 	const [isLoading, setIsLoading] = useState(true);
+	const [userName, setUserName] = useState<string | null>(null);
 
 	useEffect(() => {
 		let cancelled = false;
@@ -34,6 +39,14 @@ export default function RadarTitle({ userId }: RadarTitleProps) {
 				setBlipCount(0);
 				setIsLoading(false);
 				return;
+			}
+
+			// fetch user name for display
+			const userResult = await getUser(currentUserId);
+			if (userResult.success && userResult.data) {
+				setUserName(userResult.data.name ?? null);
+			} else {
+				setUserName(null);
 			}
 
 			const userTechnologiesResult = await getTechnologiesByUser(currentUserId);
@@ -62,7 +75,9 @@ export default function RadarTitle({ userId }: RadarTitleProps) {
 		<Card className="border-border bg-card/80 shadow-2xl shadow-foreground/10 backdrop-blur">
 			<CardHeader className="border-border border-b px-6 py-5">
 				<CardTitle className="font-black text-3xl text-card-foreground tracking-tight sm:text-4xl">
-					Tech radar
+					{userName
+						? `${userName}${userName.endsWith("s") ? "'" : "'s"} Tech radar`
+						: "Tech radar"}
 				</CardTitle>
 				<CardDescription className="max-w-2xl text-muted-foreground text-sm">
 					A curated snapshot of the stack, delivery practices, and supporting
