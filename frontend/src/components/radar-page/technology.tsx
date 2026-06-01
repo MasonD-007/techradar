@@ -31,9 +31,13 @@ const ringLabelByKey = ringPaths.reduce(
 
 type TechnologyDataProps = {
 	technology: RadarTechnology | null;
+	isOwnRadar?: boolean;
 };
 
-export default function TechnologyData({ technology }: TechnologyDataProps) {
+export default function TechnologyData({
+	technology,
+	isOwnRadar = true,
+}: TechnologyDataProps) {
 	return (
 		<Card className="border-border bg-card/75 shadow-foreground/10 shadow-xl backdrop-blur">
 			<CardHeader className="px-5 py-5">
@@ -48,7 +52,7 @@ export default function TechnologyData({ technology }: TechnologyDataProps) {
 						variant="secondary"
 						className="border-border bg-background/60 text-foreground"
 					>
-						{technology ? "Selected" : "Waiting"}
+						{technology ? "Selected" : isOwnRadar ? "Waiting" : "View only"}
 					</Badge>
 				</CardAction>
 			</CardHeader>
@@ -98,8 +102,9 @@ export default function TechnologyData({ technology }: TechnologyDataProps) {
 				) : (
 					<div className="rounded-2xl border border-border border-dashed bg-background/30 p-5 text-center">
 						<p className="text-muted-foreground text-sm">
-							Click a technology node on the radar to inspect its quadrant,
-							ring, and blip details here.
+							{isOwnRadar
+								? "Click a technology node on the radar to inspect its quadrant, ring, and blip details here."
+								: "This radar is view-only until a technology is selected."}
 						</p>
 					</div>
 				)}

@@ -44,7 +44,11 @@ function mapQuadrantIdToKey(quadrantId: number): QuadrantKey | null {
 	}
 }
 
-export default function QuadrantData() {
+type QuadrantDataProps = {
+	userId?: string | null;
+};
+
+export default function QuadrantData({ userId }: QuadrantDataProps) {
 	const [quadrantCounts, setQuadrantCounts] = useState<
 		Record<QuadrantKey, number>
 	>(createEmptyQuadrantCounts);
@@ -56,7 +60,7 @@ export default function QuadrantData() {
 		const loadQuadrantCounts = async () => {
 			setIsLoading(true);
 
-			const currentUserId = await getCurrentUserId();
+			const currentUserId = userId ?? (await getCurrentUserId());
 			if (cancelled) {
 				return;
 			}
@@ -115,7 +119,7 @@ export default function QuadrantData() {
 		return () => {
 			cancelled = true;
 		};
-	}, []);
+	}, [userId]);
 
 	const quadrantStats = quadrantLabels.map((quadrant) => ({
 		...quadrant,
