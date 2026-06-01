@@ -1,5 +1,7 @@
 "use client";
 
+import { parseAsString, useQueryState } from "nuqs";
+import { useEffect, useState } from "react";
 import QuadrantData from "@/components/radar-page/quadrants";
 import type { RadarTechnology } from "@/components/radar-page/radar";
 import Radar from "@/components/radar-page/radar";
@@ -7,13 +9,38 @@ import RadarTitle from "@/components/radar-page/radar-title";
 import RingData from "@/components/radar-page/rings";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useState } from "react";
+import { getCurrentUserId } from "@/lib/actions";
 import TechnologyData from "../../../components/radar-page/technology";
 
 export default function RadarPage() {
 	const [activeTab, setActiveTab] = useState("quadrants");
 	const [selectedTechnology, setSelectedTechnology] =
 		useState<RadarTechnology | null>(null);
+	const [userId, setUserId] = useQueryState("user", parseAsString);
+
+	useEffect(() => {
+		let cancelled = false;
+
+		const loadCurrentUserId = async () => {
+			if (userId !== null) {
+				return;
+			}
+
+			const currentUserId = await getCurrentUserId();
+
+			if (cancelled || !currentUserId) {
+				return;
+			}
+
+			void setUserId(currentUserId);
+		};
+
+		void loadCurrentUserId();
+
+		return () => {
+			cancelled = true;
+		};
+	}, [setUserId, userId]);
 
 	return (
 		<Card className="min-h-screen bg-background px-4 py-6 text-card-foreground shadow-none ring-0 sm:px-6 lg:px-8">
@@ -21,6 +48,7 @@ export default function RadarPage() {
 				<RadarTitle />
 				<div className="grid flex-1 gap-5 xl:grid-cols-[minmax(0,1.65fr)_minmax(320px,0.95fr)] xl:items-start">
 					<Radar
+						userId={userId}
 						onTechnologySelect={(technology) => {
 							setSelectedTechnology(technology);
 							setActiveTab("technology");
