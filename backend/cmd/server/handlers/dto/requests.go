@@ -70,6 +70,26 @@ type LoginRequest struct {
 	Password string `json:"password"`
 }
 
+type ShareCodeResponse struct {
+	Code      string `json:"code"`
+	CreatedAt string `json:"created_at"`
+}
+
+type RadarGraphItem struct {
+	Name         string `json:"name"`
+	QuadrantID   int32  `json:"quadrant_id"`
+	QuadrantName string `json:"quadrant_name"`
+	RingID       int32  `json:"ring_id"`
+	RingName     string `json:"ring_name"`
+	IconURL      string `json:"icon_url,omitempty"`
+	Description  string `json:"description,omitempty"`
+}
+
+type RadarGraphResponse struct {
+	Username string           `json:"username"`
+	Radar    []RadarGraphItem `json:"radar"`
+}
+
 type AuthResponse struct {
 	Token string  `json:"token"`
 	User  UserDTO `json:"user"`

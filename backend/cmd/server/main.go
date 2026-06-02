@@ -77,6 +77,7 @@ func main() {
 	registerTechnologiesRoutes(r, q)
 	registerUsersRoutes(r, q, conn)
 	registerUserTechnologiesRoutes(r, q, conn)
+	registerShareCodesRoutes(r, q, conn)
 
 	r.HandleFunc("/swagger/doc.json", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "docs/swagger.json")
@@ -132,6 +133,14 @@ func registerUsersRoutes(r chi.Router, q *db.Queries, pool *pgxpool.Pool) {
 	r.Get("/users/by-email/{email}", loggingMiddleware(AuthMiddleware(AdminMiddleware(handlers.GetUserByEmail(q, rls)))))
 	r.Put("/users/{id}", loggingMiddleware(AuthMiddleware(handlers.UpdateUser(q, rls))))
 	r.Delete("/users/{id}", loggingMiddleware(AuthMiddleware(AdminMiddleware(handlers.DeleteUser(q, rls)))))
+}
+
+func registerShareCodesRoutes(r chi.Router, q *db.Queries, pool *pgxpool.Pool) {
+	rls := handlers.NewDBRLSExecutor(pool)
+	r.Post("/share-codes", loggingMiddleware(AuthMiddleware(handlers.CreateShareCode(q, rls))))
+	r.Get("/share-codes/my", loggingMiddleware(AuthMiddleware(handlers.GetMyShareCode(q, rls))))
+	r.Get("/share-codes/{code}", loggingMiddleware(handlers.GetShareCodeByCode(q)))
+	r.Delete("/share-codes/{code}", loggingMiddleware(AuthMiddleware(handlers.DeleteShareCode(q, rls))))
 }
 
 func registerUserTechnologiesRoutes(r chi.Router, q *db.Queries, pool *pgxpool.Pool) {

@@ -302,3 +302,59 @@ RETURNING id,
 DELETE FROM user_technologies
 WHERE
     id = $1;
+
+-- name: CreateShareCode :one
+INSERT INTO share_codes (
+    id,
+    user_id
+)
+VALUES ($1, $2)
+RETURNING id,
+    user_id,
+    created_at;
+
+-- name: GetShareCodeByCode :one
+SELECT
+    id,
+    user_id,
+    created_at
+FROM
+    share_codes
+WHERE
+    id = $1;
+
+-- name: GetShareCodeByUserId :one
+SELECT
+    id,
+    user_id,
+    created_at
+FROM
+    share_codes
+WHERE
+    user_id = $1;
+
+-- name: DeleteShareCode :exec
+DELETE FROM share_codes
+WHERE
+    id = $1;
+
+-- name: GetRadarGraphByShareCode :many
+SELECT
+    u.username,
+    t.name,
+    t.quadrant_id,
+    t.icon_url,
+    r.name as ring_name,
+    q.name as quadrant_name,
+    ut.ring_id,
+    b.context::text as blip_context
+FROM
+    share_codes sc
+    JOIN users u ON u.id = sc.user_id
+    JOIN user_technologies ut ON ut.user_id = sc.user_id
+    JOIN technology t ON t.id = ut.technology_id
+    JOIN rings r ON r.id = ut.ring_id
+    JOIN quadrants q ON q.id = t.quadrant_id
+    JOIN blips b ON b.id = t.blip_id
+WHERE
+    sc.id = $1;

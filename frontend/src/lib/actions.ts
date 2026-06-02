@@ -50,6 +50,8 @@ type ApiError = components["schemas"]["handlers.Error"];
 type LoginRequest = components["schemas"]["dto.LoginRequest"];
 type RegisterRequest = components["schemas"]["dto.RegisterRequest"];
 export type AuthResponse = components["schemas"]["dto.AuthResponse"];
+export type ShareCodeResponse = components["schemas"]["handlers.ShareCodeResponse"];
+export type RadarGraphResponse = components["schemas"]["handlers.RadarGraphResponse"];
 
 export interface ActionResult<T = unknown> {
 	success: boolean;
@@ -746,6 +748,127 @@ export async function deleteTechnologyFromUser(
 		return { success: false, error: "Failed to delete technology from user" };
 	}
 }
+export async function createShareCode(): Promise<ActionResult<ShareCodeResponse>> {
+	logInfo("createShareCode", "START", {});
+
+	try {
+		const result = (await api.POST("/share-codes" as any, {})) as any as {
+			data?: ShareCodeResponse;
+			response: Response;
+		};
+		const { data, response } = result;
+
+		if (!response.ok) {
+			const msg = getErrorMessage(data);
+			logError("createShareCode", "ERROR", msg, { status: response.status });
+			return { success: false, error: msg };
+		}
+
+		logInfo("createShareCode", "SUCCESS", { code: data?.code });
+		return { success: true, data };
+	} catch (error) {
+		logError("createShareCode", "ERROR", getErrorMessage(error), {});
+		return { success: false, error: "Failed to create share code" };
+	}
+}
+
+export async function getMyShareCode(): Promise<ActionResult<ShareCodeResponse>> {
+	logInfo("getMyShareCode", "START", {});
+
+	try {
+		const result = (await api.GET("/share-codes/my" as any, {})) as any as {
+			data?: ShareCodeResponse;
+			response: Response;
+		};
+		const { data, response } = result;
+
+		if (!response.ok) {
+			const msg = getErrorMessage(data);
+			logError("getMyShareCode", "ERROR", msg, { status: response.status });
+			return { success: false, error: msg };
+		}
+
+		logInfo("getMyShareCode", "SUCCESS", { code: data?.code });
+		return { success: true, data };
+	} catch (error) {
+		logError("getMyShareCode", "ERROR", getErrorMessage(error), {});
+		return { success: false, error: "Failed to get share code" };
+	}
+}
+
+export async function getRadarGraphByCode(
+	code: string,
+): Promise<ActionResult<RadarGraphResponse>> {
+	logInfo("getRadarGraphByCode", "START", { code });
+
+	if (!code) {
+		return { success: false, error: "Share code is required" };
+	}
+
+	try {
+		const result = (await api.GET("/share-codes/{code}" as any, {
+			params: { path: { code } },
+		})) as any as {
+			data?: RadarGraphResponse;
+			response: Response;
+		};
+		const { data, response } = result;
+
+		if (!response.ok) {
+			const msg = getErrorMessage(data);
+			logError("getRadarGraphByCode", "ERROR", msg, {
+				code,
+				status: response.status,
+			});
+			return { success: false, error: msg };
+		}
+
+		logInfo("getRadarGraphByCode", "SUCCESS", {
+			code,
+			username: data?.username,
+			itemCount: data?.radar?.length || 0,
+		});
+		return { success: true, data };
+	} catch (error) {
+		logError("getRadarGraphByCode", "ERROR", getErrorMessage(error), { code });
+		return { success: false, error: "Failed to fetch radar graph" };
+	}
+}
+
+export async function deleteShareCode(
+	code: string,
+): Promise<ActionResult> {
+	logInfo("deleteShareCode", "START", { code });
+
+	if (!code) {
+		return { success: false, error: "Share code is required" };
+	}
+
+	try {
+		const result = (await api.DELETE("/share-codes/{code}" as any, {
+			params: { path: { code } },
+		})) as any as {
+			response: Response;
+		};
+		const { response } = result;
+
+		if (!response.ok) {
+			const msg = getErrorMessage(null);
+			logError("deleteShareCode", "ERROR", msg, {
+				code,
+				status: response.status,
+			});
+			return { success: false, error: msg };
+		}
+
+		logInfo("deleteShareCode", "SUCCESS", { code });
+		return { success: true };
+	} catch (error) {
+		logError("deleteShareCode", "ERROR", getErrorMessage(error), { code });
+		return { success: false, error: "Failed to delete share code" };
+	}
+}
+
 const COOKIE_NAME = "auth_token";
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 
