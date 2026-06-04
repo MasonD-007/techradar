@@ -19,9 +19,12 @@ import {
 import {
 	getBlip,
 	getCurrentUserId,
+	getMyRadarGraph,
+	getRadarGraphByCode,
 	getTechnologies,
 	getTechnologiesByUser,
 	getUser,
+	type RadarGraphResponse,
 	type Technology,
 } from "@/lib/actions";
 import {
@@ -56,8 +59,9 @@ export type PositionedRadarTechnology = RadarTechnology & {
 };
 
 type RadarProps = {
-	userId?: string | null;
+	shareCode?: string | null;
 	currentUserId?: string | null;
+	isOwnRadar?: boolean;
 	onTechnologySelect?: (technology: RadarTechnology) => void;
 };
 
@@ -173,6 +177,32 @@ function toRadarTechnology(
 	};
 }
 
+function toSharedRadarTechnology(
+	item: NonNullable<RadarGraphResponse["radar"]>[number],
+	index: number,
+): RadarTechnology | null {
+	const quadrant = mapQuadrantIdToKey(item.quadrant_id ?? 0);
+	const ring = mapRingIdToKey(item.ring_id ?? 0);
+
+	if (!quadrant || !ring) {
+		return null;
+	}
+
+	const title = item.name?.trim() || "Untitled technology";
+	const intro = item.description?.trim() || null;
+	const iconUrl = item.icon_url?.trim();
+
+	return {
+		id: `shared-${index}-${item.quadrant_id}-${item.ring_id}-${title}`,
+		title,
+		quadrant,
+		ring,
+		blipId: null,
+		intro,
+		iconUrl: iconUrl || undefined,
+	};
+}
+
 function sampleRadarPosition(technology: RadarTechnology) {
 	const quadrantBounds = quadrantBoundsByKey[technology.quadrant];
 	const ringIndex = ringIndexByKey[technology.ring];
@@ -249,11 +279,12 @@ function buildRandomPositionedTechnologies(
 	return positionedTechnologies;
 }
 
-function Radar({ userId, currentUserId, onTechnologySelect }: RadarProps) {
-	const [viewedUserId, setViewedUserId] = useState<string | null>(null);
-	const [loadedCurrentUserId, setLoadedCurrentUserId] = useState<string | null>(
-		null,
-	);
+function Radar({
+	shareCode,
+	currentUserId,
+	isOwnRadar = false,
+	onTechnologySelect,
+}: RadarProps) {
 	const [viewedUserName, setViewedUserName] = useState<string | null>(null);
 	const [activeItemId, setActiveItemId] = useState("");
 	const [positionedTechnologies, setPositionedTechnologies] = useState<
@@ -261,10 +292,6 @@ function Radar({ userId, currentUserId, onTechnologySelect }: RadarProps) {
 	>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
-	const isOwnRadar =
-		viewedUserId !== null &&
-		loadedCurrentUserId !== null &&
-		viewedUserId === loadedCurrentUserId;
 
 	useEffect(() => {
 		let cancelled = false;
@@ -274,16 +301,45 @@ function Radar({ userId, currentUserId, onTechnologySelect }: RadarProps) {
 			setError(null);
 
 			const resolvedUserId = currentUserId ?? (await getCurrentUserId());
-			const targetUserId = userId ?? resolvedUserId;
+			const targetUserId = resolvedUserId;
 
 			if (cancelled) {
 				return;
 			}
 
-			setLoadedCurrentUserId(resolvedUserId);
-			setViewedUserId(targetUserId);
-
 			// load viewed user's name for display
+			if (shareCode) {
+				const radarGraphResult = await getRadarGraphByCode(shareCode);
+
+				if (cancelled) {
+					return;
+				}
+
+				if (!radarGraphResult.success) {
+					setError(radarGraphResult.error || "Failed to load radar graph");
+					setPositionedTechnologies([]);
+					setActiveItemId("");
+					setViewedUserName(null);
+					setIsLoading(false);
+					return;
+				}
+
+				setViewedUserName(radarGraphResult.data?.username ?? null);
+
+				const sharedTechnologies = (radarGraphResult.data?.radar || [])
+					.map((item, index) => toSharedRadarTechnology(item, index))
+					.filter(
+						(technology): technology is RadarTechnology => technology !== null,
+					);
+
+				const positioned =
+					buildRandomPositionedTechnologies(sharedTechnologies);
+				setPositionedTechnologies(positioned);
+				setActiveItemId(positioned[0]?.id ?? "");
+				setIsLoading(false);
+				return;
+			}
+
 			if (targetUserId) {
 				const userResult = await getUser(targetUserId);
 				if (userResult.success && userResult.data) {
@@ -298,6 +354,44 @@ function Radar({ userId, currentUserId, onTechnologySelect }: RadarProps) {
 			if (!targetUserId) {
 				setPositionedTechnologies([]);
 				setActiveItemId("");
+				setIsLoading(false);
+				return;
+			}
+
+			if (resolvedUserId && targetUserId === resolvedUserId && isOwnRadar) {
+				const [userResult, radarGraphResult] = await Promise.all([
+					getUser(targetUserId),
+					getMyRadarGraph(),
+				]);
+
+				if (cancelled) {
+					return;
+				}
+
+				if (userResult.success && userResult.data) {
+					setViewedUserName(userResult.data.name ?? null);
+				} else {
+					setViewedUserName(null);
+				}
+
+				if (!radarGraphResult.success) {
+					setError(radarGraphResult.error || "Failed to load radar graph");
+					setPositionedTechnologies([]);
+					setActiveItemId("");
+					setIsLoading(false);
+					return;
+				}
+
+				const sharedTechnologies = (radarGraphResult.data?.radar || [])
+					.map((item, index) => toSharedRadarTechnology(item, index))
+					.filter(
+						(technology): technology is RadarTechnology => technology !== null,
+					);
+
+				const positioned =
+					buildRandomPositionedTechnologies(sharedTechnologies);
+				setPositionedTechnologies(positioned);
+				setActiveItemId(positioned[0]?.id ?? "");
 				setIsLoading(false);
 				return;
 			}
@@ -399,7 +493,7 @@ function Radar({ userId, currentUserId, onTechnologySelect }: RadarProps) {
 		return () => {
 			cancelled = true;
 		};
-	}, [currentUserId, userId]);
+	}, [currentUserId, isOwnRadar, shareCode]);
 
 	const firstPositionedTechnologyId = positionedTechnologies[0]?.id ?? "";
 	const hasActiveTechnology = positionedTechnologies.some(
@@ -568,14 +662,14 @@ function Radar({ userId, currentUserId, onTechnologySelect }: RadarProps) {
 								? "Loading your selected technologies..."
 								: error
 									? error
-									: viewedUserId
+									: shareCode
 										? viewedUserName
 											? isOwnRadar
 												? `Select technologies in ${viewedUserName}${viewedUserName.endsWith("s") ? "'" : "'s"} account to populate the radar.`
 												: `${viewedUserName} has not populated their radar yet.`
 											: isOwnRadar
 												? "Select technologies in your account to populate the radar."
-												: "This person has not populated their radar yet."
+												: "This shared radar has not been populated yet."
 										: "Sign in to see your radar."}
 						</p>
 					</div>

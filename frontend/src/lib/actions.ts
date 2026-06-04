@@ -50,8 +50,10 @@ type ApiError = components["schemas"]["handlers.Error"];
 type LoginRequest = components["schemas"]["dto.LoginRequest"];
 type RegisterRequest = components["schemas"]["dto.RegisterRequest"];
 export type AuthResponse = components["schemas"]["dto.AuthResponse"];
-export type ShareCodeResponse = components["schemas"]["handlers.ShareCodeResponse"];
-export type RadarGraphResponse = components["schemas"]["handlers.RadarGraphResponse"];
+export type ShareCodeResponse =
+	components["schemas"]["handlers.ShareCodeResponse"];
+export type RadarGraphResponse =
+	components["schemas"]["handlers.RadarGraphResponse"];
 
 export interface ActionResult<T = unknown> {
 	success: boolean;
@@ -748,7 +750,9 @@ export async function deleteTechnologyFromUser(
 		return { success: false, error: "Failed to delete technology from user" };
 	}
 }
-export async function createShareCode(): Promise<ActionResult<ShareCodeResponse>> {
+export async function createShareCode(): Promise<
+	ActionResult<ShareCodeResponse>
+> {
 	logInfo("createShareCode", "START", {});
 
 	try {
@@ -772,7 +776,9 @@ export async function createShareCode(): Promise<ActionResult<ShareCodeResponse>
 	}
 }
 
-export async function getMyShareCode(): Promise<ActionResult<ShareCodeResponse>> {
+export async function getMyShareCode(): Promise<
+	ActionResult<ShareCodeResponse>
+> {
 	logInfo("getMyShareCode", "START", {});
 
 	try {
@@ -794,6 +800,41 @@ export async function getMyShareCode(): Promise<ActionResult<ShareCodeResponse>>
 		logError("getMyShareCode", "ERROR", getErrorMessage(error), {});
 		return { success: false, error: "Failed to get share code" };
 	}
+}
+
+export async function getMyRadarGraph(): Promise<
+	ActionResult<RadarGraphResponse>
+> {
+	logInfo("getMyRadarGraph", "START", {});
+
+	const shareCodeResult = await getMyShareCode();
+	if (!shareCodeResult.success || !shareCodeResult.data?.code) {
+		const error = shareCodeResult.error || "Failed to get share code";
+		logError("getMyRadarGraph", "ERROR", error, {});
+		return { success: false, error };
+	}
+
+	const radarGraphResult = await getRadarGraphByCode(shareCodeResult.data.code);
+	if (!radarGraphResult.success) {
+		logError(
+			"getMyRadarGraph",
+			"ERROR",
+			radarGraphResult.error || "Failed to fetch radar graph",
+			{
+				code: shareCodeResult.data.code,
+			},
+		);
+		return {
+			success: false,
+			error: radarGraphResult.error || "Failed to fetch radar graph",
+		};
+	}
+
+	logInfo("getMyRadarGraph", "SUCCESS", {
+		code: shareCodeResult.data.code,
+		itemCount: radarGraphResult.data?.radar?.length || 0,
+	});
+	return radarGraphResult;
 }
 
 export async function getRadarGraphByCode(
@@ -835,9 +876,7 @@ export async function getRadarGraphByCode(
 	}
 }
 
-export async function deleteShareCode(
-	code: string,
-): Promise<ActionResult> {
+export async function deleteShareCode(code: string): Promise<ActionResult> {
 	logInfo("deleteShareCode", "START", { code });
 
 	if (!code) {

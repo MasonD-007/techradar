@@ -11,15 +11,17 @@ import {
 } from "@/components/ui/card";
 import {
 	getCurrentUserId,
+	getRadarGraphByCode,
 	getTechnologiesByUser,
 	getUser,
 } from "@/lib/actions";
 
 type RadarTitleProps = {
 	userId?: string | null;
+	shareCode?: string | null;
 };
 
-export default function RadarTitle({ userId }: RadarTitleProps) {
+export default function RadarTitle({ userId, shareCode }: RadarTitleProps) {
 	const [blipCount, setBlipCount] = useState(0);
 	const [isLoading, setIsLoading] = useState(true);
 	const [userName, setUserName] = useState<string | null>(null);
@@ -29,6 +31,25 @@ export default function RadarTitle({ userId }: RadarTitleProps) {
 
 		const loadBlipCount = async () => {
 			setIsLoading(true);
+
+			if (shareCode && !userId) {
+				const shareGraphResult = await getRadarGraphByCode(shareCode);
+				if (cancelled) {
+					return;
+				}
+
+				if (shareGraphResult.success && shareGraphResult.data) {
+					setUserName(shareGraphResult.data.username ?? null);
+					setBlipCount(shareGraphResult.data.radar?.length || 0);
+					setIsLoading(false);
+					return;
+				}
+
+				setUserName(null);
+				setBlipCount(0);
+				setIsLoading(false);
+				return;
+			}
 
 			const currentUserId = userId ?? (await getCurrentUserId());
 			if (cancelled) {
@@ -69,7 +90,7 @@ export default function RadarTitle({ userId }: RadarTitleProps) {
 		return () => {
 			cancelled = true;
 		};
-	}, [userId]);
+	}, [shareCode, userId]);
 
 	return (
 		<Card className="border-border bg-card/80 shadow-2xl shadow-foreground/10 backdrop-blur">

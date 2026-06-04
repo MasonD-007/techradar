@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import {
 	Card,
@@ -12,11 +13,11 @@ import {
 import { Separator } from "@/components/ui/separator";
 import {
 	getCurrentUserId,
+	getRadarGraphByCode,
 	getTechnologies,
 	getTechnologiesByUser,
 	type Technology,
 } from "@/lib/actions";
-import { useEffect, useState } from "react";
 import { type QuadrantKey, quadrantLabels } from "./radar-data";
 
 function createEmptyQuadrantCounts(): Record<QuadrantKey, number> {
@@ -46,9 +47,10 @@ function mapQuadrantIdToKey(quadrantId: number): QuadrantKey | null {
 
 type QuadrantDataProps = {
 	userId?: string | null;
+	shareCode?: string | null;
 };
 
-export default function QuadrantData({ userId }: QuadrantDataProps) {
+export default function QuadrantData({ userId, shareCode }: QuadrantDataProps) {
 	const [quadrantCounts, setQuadrantCounts] = useState<
 		Record<QuadrantKey, number>
 	>(createEmptyQuadrantCounts);
@@ -59,6 +61,27 @@ export default function QuadrantData({ userId }: QuadrantDataProps) {
 
 		const loadQuadrantCounts = async () => {
 			setIsLoading(true);
+
+			if (shareCode) {
+				const radarGraphResult = await getRadarGraphByCode(shareCode);
+				if (!radarGraphResult.success) {
+					setQuadrantCounts(createEmptyQuadrantCounts());
+					setIsLoading(false);
+					return;
+				}
+
+				const nextCounts = createEmptyQuadrantCounts();
+				for (const item of radarGraphResult.data?.radar || []) {
+					const quadrantKey = mapQuadrantIdToKey(item.quadrant_id ?? 0);
+					if (quadrantKey) {
+						nextCounts[quadrantKey] += 1;
+					}
+				}
+
+				setQuadrantCounts(nextCounts);
+				setIsLoading(false);
+				return;
+			}
 
 			const currentUserId = userId ?? (await getCurrentUserId());
 			if (cancelled) {
@@ -119,7 +142,7 @@ export default function QuadrantData({ userId }: QuadrantDataProps) {
 		return () => {
 			cancelled = true;
 		};
-	}, [userId]);
+	}, [shareCode, userId]);
 
 	const quadrantStats = quadrantLabels.map((quadrant) => ({
 		...quadrant,

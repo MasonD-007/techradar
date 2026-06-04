@@ -13,6 +13,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import {
 	getCurrentUserId,
+	getRadarGraphByCode,
 	getTechnologies,
 	getTechnologiesByUser,
 	type Technology,
@@ -46,9 +47,10 @@ function mapRingIdToKey(ringId: number): RingKey | null {
 
 type RingDataProps = {
 	userId?: string | null;
+	shareCode?: string | null;
 };
 
-export default function RingData({ userId }: RingDataProps) {
+export default function RingData({ userId, shareCode }: RingDataProps) {
 	const [ringCounts, setRingCounts] = useState<Record<RingKey, number>>(
 		createEmptyRingCounts,
 	);
@@ -59,6 +61,27 @@ export default function RingData({ userId }: RingDataProps) {
 
 		const loadRingCounts = async () => {
 			setIsLoading(true);
+
+			if (shareCode) {
+				const radarGraphResult = await getRadarGraphByCode(shareCode);
+				if (!radarGraphResult.success) {
+					setRingCounts(createEmptyRingCounts());
+					setIsLoading(false);
+					return;
+				}
+
+				const nextCounts = createEmptyRingCounts();
+				for (const item of radarGraphResult.data?.radar || []) {
+					const ringKey = mapRingIdToKey(item.ring_id ?? 0);
+					if (ringKey) {
+						nextCounts[ringKey] += 1;
+					}
+				}
+
+				setRingCounts(nextCounts);
+				setIsLoading(false);
+				return;
+			}
 
 			const currentUserId = userId ?? (await getCurrentUserId());
 			if (cancelled) {
@@ -119,7 +142,7 @@ export default function RingData({ userId }: RingDataProps) {
 		return () => {
 			cancelled = true;
 		};
-	}, [userId]);
+	}, [shareCode, userId]);
 
 	const ringStats = ringLabels.map((ring) => ({
 		...ring,
