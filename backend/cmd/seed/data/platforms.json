@@ -3,204 +3,204 @@
     "name": "bun",
     "description": "Fast JavaScript runtime aiming to replace Node.js tooling stack",
     "category": "platform",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/bun.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Bun.svg"
   },
   {
     "name": "node.js",
     "description": "JavaScript runtime widely used for backend and tooling ecosystems",
     "category": "platform",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/nodedotjs.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Node.js.svg"
   },
   {
     "name": "deno",
     "description": "Secure JavaScript runtime with modern defaults and built-in tooling",
     "category": "platform",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/deno.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Deno.svg"
   },
   {
     "name": "docker",
     "description": "Containerization platform standardizing application deployment environments",
     "category": "platform",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/docker.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Docker.svg"
   },
   {
     "name": "kubernetes",
     "description": "Container orchestration platform for scaling distributed systems",
     "category": "platform",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/kubernetes.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Kubernetes.svg"
   },
   {
     "name": "gitlab ci",
     "description": "End-to-end DevOps platform with built-in CI/CD pipelines",
     "category": "platform",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/gitlab.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/GitLab.svg"
   },
   {
     "name": "datadog",
     "description": "Commercial observability platform integrating logs, metrics, and traces",
     "category": "platform",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/datadog.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/datadog.svg"
   },
   {
     "name": "postgresql",
     "description": "Advanced open-source relational database with strong consistency guarantees",
     "category": "platform",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/postgresql.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/PostgresSQL.svg"
   },
   {
     "name": "mongodb",
     "description": "NoSQL document database optimized for flexible schema applications",
     "category": "platform",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/mongodb.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/MongoDB.svg"
   },
   {
     "name": "redis",
     "description": "In-memory data store used for caching and real-time systems",
     "category": "platform",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/redis.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Redis.svg"
   },
   {
     "name": "snowflake",
     "description": "Cloud-native data warehouse optimized for analytics workloads",
     "category": "platform",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/snowflake.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/snowflake.svg"
   },
   {
     "name": "kafka",
     "description": "Distributed event streaming platform for real-time data pipelines",
     "category": "platform",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/apachekafka.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Apache-Kafka.svg"
   },
   {
     "name": "rabbitmq",
     "description": "Message broker supporting reliable asynchronous communication",
     "category": "platform",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/rabbitmq.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/RabbitMQ.svg"
   },
   {
     "name": "webassembly",
     "description": "Portable binary format enabling near-native execution in browsers and servers",
     "category": "platform",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/webassembly.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/WebAssembly.svg"
   },
   {
     "name": "cloudflare workers",
     "description": "Edge computing platform for running serverless code globally",
     "category": "platform",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/cloudflareworkers.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Cloudflare-Workers.svg"
   },
   {
     "name": "aws lambda",
     "description": "Serverless compute service for event-driven applications",
     "category": "platform",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/awslambda.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/AWS.svg"
   },
   {
     "name": "azure functions",
     "description": "Microsoft's serverless offering integrated with Azure ecosystem",
     "category": "platform",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/azurefunctions.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Azure-Functions.svg"
   },
   {
     "name": "google cloud run",
     "description": "Serverless container platform for scalable applications",
     "category": "platform",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/googlecloud.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Google-Cloud.svg"
   },
   {
     "name": "electron",
     "description": "Framework for building cross-platform desktop apps with web technologies",
     "category": "platform",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/electron.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Electron.svg"
   },
   {
     "name": "unity",
     "description": "Game engine supporting cross-platform 2D and 3D development",
     "category": "platform",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/unity.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Unity.svg"
   },
   {
     "name": "unreal engine",
     "description": "High-fidelity game engine with advanced rendering capabilities",
     "category": "platform",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/unrealengine.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Unreal-Engine.svg"
   },
   {
     "name": "godot",
     "description": "Open-source game engine gaining popularity for indie development",
     "category": "platform",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/godotengine.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Godot-Engine.svg"
   },
   {
     "name": "vector databases",
     "description": "Databases optimized for similarity search in AI applications",
     "category": "platform",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/vectordatabases.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/vectordatabases.svg"
   },
   {
     "name": "elasticsearch",
     "description": "Distributed search and analytics engine for log and text data",
     "category": "platform",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/elasticsearch.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Elastic-Search.svg"
   },
   {
     "name": "supabase",
     "description": "Open-source backend-as-a-service built on PostgreSQL",
     "category": "platform",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/supabase.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/supabase.svg"
   },
   {
     "name": "firebase",
     "description": "Backend-as-a-service providing auth, database, and hosting",
     "category": "platform",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/firebase.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Firebase.svg"
   },
   {
     "name": "planetscale",
     "description": "Serverless MySQL platform with branching and scaling",
     "category": "platform",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/planetscale.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/planetscale.svg"
   },
   {
     "name": "cockroachdb",
     "description": "Distributed SQL database designed for resilience and scale",
     "category": "platform",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/cockroachdb.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/cockroachdb.svg"
   },
   {
     "name": "airflow",
     "description": "Workflow orchestration platform for scheduling data pipelines",
     "category": "platform",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/apacheairflow.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Apache-Airflow.svg"
   },
   {
     "name": "vllm",
     "description": "High-performance inference engine for large language models",
     "category": "platform",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/vllm.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/vllm.svg"
   },
   {
     "name": "nginx",
     "description": "High-performance web server and reverse proxy widely used in production systems",
     "category": "platform",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/nginx.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/NGINX.svg"
   },
   {
     "name": "istio",
     "description": "Service mesh providing traffic management and observability",
     "category": "platform",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/istio.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/istio.svg"
   },
   {
     "name": "linkerd",
     "description": "Lightweight service mesh for Kubernetes",
     "category": "platform",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/linkerd.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/linkerd.svg"
   },
   {
     "name": "consul",
     "description": "Service networking platform for service discovery and configuration",
     "category": "platform",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/image-content/images/consul.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Consul.svg"
   }
 ]
