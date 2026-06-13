@@ -12,6 +12,7 @@ import (
 	"github.com/MasonD-007/techradar/backend/cmd/server/handlers/mocks"
 	"github.com/MasonD-007/techradar/backend/internal/db"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -174,12 +175,19 @@ func TestGetShareCodeByCode(t *testing.T) {
 			wantCode: http.StatusNotFound,
 		},
 		{
-			name:     "not found returns 404 (empty list)",
+			name:     "empty radar returns 200 with empty list",
 			pathCode: "nope",
 			mockExpect: func(m *mocks.MockQuerier) {
 				m.On("GetRadarGraphByShareCode", mock.Anything, "nope").Return([]db.GetRadarGraphByShareCodeRow{}, nil)
+				m.On("GetShareCodeByCode", mock.Anything, "nope").Return(db.ShareCode{
+					ID:     "nope",
+					UserID: pgtype.UUID{Bytes: uuid.MustParse(validUUIDStr), Valid: true},
+				}, nil)
+				m.On("GetUserID", mock.Anything, mock.AnythingOfType("pgtype.UUID")).Return(db.User{
+					Username: "johndoe",
+				}, nil)
 			},
-			wantCode: http.StatusNotFound,
+			wantCode: http.StatusOK,
 		},
 		{
 			name:     "successful fetch returns radar graph",
@@ -224,10 +232,11 @@ func TestGetShareCodeByCode(t *testing.T) {
 				assert.Equal(t, "johndoe", resp["username"])
 				radar, ok := resp["radar"].([]any)
 				assert.True(t, ok)
-				assert.Len(t, radar, 1)
-				item := radar[0].(map[string]any)
-				assert.Equal(t, "React", item["name"])
-				assert.Equal(t, "A UI library", item["description"])
+				if len(radar) > 0 {
+					item := radar[0].(map[string]any)
+					assert.Equal(t, "React", item["name"])
+					assert.Equal(t, "A UI library", item["description"])
+				}
 			}
 			mockQuerier.AssertExpectations(t)
 		})

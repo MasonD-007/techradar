@@ -169,12 +169,33 @@ func GetShareCodeByCode(q Querier) http.HandlerFunc {
 			http.Error(w, "Share code not found", http.StatusNotFound)
 			return
 		}
+
+		var username string
 		if len(items) == 0 {
-			http.Error(w, "Share code not found", http.StatusNotFound)
+			shareCode, err := q.GetShareCodeByCode(r.Context(), code)
+			if err != nil {
+				http.Error(w, "Share code not found", http.StatusNotFound)
+				return
+			}
+			user, err := q.GetUserID(r.Context(), shareCode.UserID)
+			if err != nil {
+				http.Error(w, "Share code not found", http.StatusNotFound)
+				return
+			}
+			username = user.Username
+
+			w.Header().Set("Content-Type", "application/json")
+			err = json.NewEncoder(w).Encode(dto.RadarGraphResponse{
+				Username: username,
+				Radar:    []dto.RadarGraphItem{},
+			})
+			if err != nil {
+				http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+			}
 			return
 		}
 
-		username := items[0].Username
+		username = items[0].Username
 		radar := make([]dto.RadarGraphItem, len(items))
 		for i, item := range items {
 			desc := ""
