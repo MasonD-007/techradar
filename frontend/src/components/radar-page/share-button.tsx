@@ -47,12 +47,12 @@ export default function ShareButton({ shareCode }: ShareButtonProps) {
 						radar.
 					</DialogDescription>
 				</DialogHeader>
-				<div className="flex flex-col gap-4">
+				<div className="flex w-full flex-col gap-4 overflow-hidden">
 					<div className="flex flex-col gap-1.5">
 						<span className="font-medium text-muted-foreground text-xs uppercase tracking-wider">
 							URL
 						</span>
-						<div className="flex min-w-0 items-center gap-2">
+						<div className="flex items-center gap-2 overflow-hidden">
 							<code className="block min-w-0 flex-1 truncate rounded-lg border bg-muted px-3 py-2 text-sm">
 								{shareUrl}
 							</code>
@@ -71,7 +71,7 @@ export default function ShareButton({ shareCode }: ShareButtonProps) {
 						<span className="font-medium text-muted-foreground text-xs uppercase tracking-wider">
 							Share code
 						</span>
-						<div className="flex min-w-0 items-center gap-2">
+						<div className="flex items-center gap-2 overflow-hidden">
 							<code className="block min-w-0 flex-1 truncate rounded-lg border bg-muted px-3 py-2 text-sm">
 								{shareCode}
 							</code>
