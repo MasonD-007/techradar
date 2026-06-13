@@ -49,28 +49,30 @@ export default function ShareButton({ shareCode }: ShareButtonProps) {
 				</DialogHeader>
 				<div className="flex flex-col gap-4">
 					<div className="flex flex-col gap-1.5">
-						<label className="font-medium text-muted-foreground text-xs uppercase tracking-wider">
+						<span className="font-medium text-muted-foreground text-xs uppercase tracking-wider">
 							URL
-						</label>
-						<div className="flex items-center gap-2">
-							<code className="flex-1 truncate rounded-lg border bg-muted px-3 py-2 text-sm">
+						</span>
+						<div className="flex min-w-0 items-center gap-2">
+							<code className="block min-w-0 flex-1 truncate rounded-lg border bg-muted px-3 py-2 text-sm">
 								{shareUrl}
 							</code>
 							<Button
 								variant="outline"
 								size="sm"
-								onClick={() => handleCopy(shareUrl!)}
+								onClick={() => {
+									if (shareUrl) handleCopy(shareUrl);
+								}}
 							>
 								{copied ? "Copied" : "Copy"}
 							</Button>
 						</div>
 					</div>
 					<div className="flex flex-col gap-1.5">
-						<label className="font-medium text-muted-foreground text-xs uppercase tracking-wider">
+						<span className="font-medium text-muted-foreground text-xs uppercase tracking-wider">
 							Share code
-						</label>
-						<div className="flex items-center gap-2">
-							<code className="flex-1 truncate rounded-lg border bg-muted px-3 py-2 text-sm">
+						</span>
+						<div className="flex min-w-0 items-center gap-2">
+							<code className="block min-w-0 flex-1 truncate rounded-lg border bg-muted px-3 py-2 text-sm">
 								{shareCode}
 							</code>
 							<Button
