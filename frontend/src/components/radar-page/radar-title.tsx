@@ -15,6 +15,7 @@ import {
 	getTechnologiesByUser,
 	getUser,
 } from "@/lib/actions";
+import ShareButton from "./share-button";
 
 type RadarTitleProps = {
 	userId?: string | null;
@@ -62,7 +63,6 @@ export default function RadarTitle({ userId, shareCode }: RadarTitleProps) {
 				return;
 			}
 
-			// fetch user name for display
 			const userResult = await getUser(currentUserId);
 			if (userResult.success && userResult.data) {
 				setUserName(userResult.data.name ?? null);
@@ -95,10 +95,13 @@ export default function RadarTitle({ userId, shareCode }: RadarTitleProps) {
 	return (
 		<Card className="border-border bg-card/80 shadow-2xl shadow-foreground/10 backdrop-blur">
 			<CardHeader className="border-border border-b px-6 py-5">
-				<CardTitle className="font-black text-3xl text-card-foreground tracking-tight sm:text-4xl">
-					{userName
-						? `${userName}${userName.endsWith("s") ? "'" : "'s"} Tech radar`
-						: "Tech radar"}
+				<CardTitle className="flex items-center gap-2 font-black text-3xl text-card-foreground tracking-tight sm:text-4xl">
+					<span>
+						{userName
+							? `${userName}${userName.endsWith("s") ? "'" : "'s"} Tech radar`
+							: "Tech radar"}
+					</span>
+					{shareCode && <ShareButton shareCode={shareCode} />}
 				</CardTitle>
 				<CardDescription className="max-w-2xl text-muted-foreground text-sm">
 					A curated snapshot of the stack, delivery practices, and supporting
