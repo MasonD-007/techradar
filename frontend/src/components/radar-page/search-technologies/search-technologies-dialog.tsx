@@ -6,7 +6,11 @@ import { getCurrentUserId } from "@/lib/actions";
 import { useEffect, useState } from "react";
 import SearchTechnologiesDialogContent from "./search-tech-dialog-content";
 
-export default function SearchTechnologiesDialog() {
+export default function SearchTechnologiesDialog({
+	onTechnologyChange,
+}: {
+	onTechnologyChange?: () => void;
+}) {
 	const [userId, setUserId] = useState<string | null>(null);
 
 	useEffect(() => {
@@ -33,7 +37,10 @@ export default function SearchTechnologiesDialog() {
 					Search Technologies
 				</Button>
 			</DialogTrigger>
-			<SearchTechnologiesDialogContent userId={userId} />
+			<SearchTechnologiesDialogContent
+				userId={userId}
+				onTechnologyChange={onTechnologyChange}
+			/>
 		</Dialog>
 	);
 }

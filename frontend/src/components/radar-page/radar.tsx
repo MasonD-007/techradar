@@ -292,6 +292,11 @@ function Radar({
 	>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
+	const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+	const handleTechnologyChange = () => {
+		setRefreshTrigger((prev) => prev + 1);
+	};
 
 	useEffect(() => {
 		let cancelled = false;
@@ -493,7 +498,7 @@ function Radar({
 		return () => {
 			cancelled = true;
 		};
-	}, [currentUserId, isOwnRadar, shareCode]);
+	}, [currentUserId, isOwnRadar, shareCode, refreshTrigger]);
 
 	const firstPositionedTechnologyId = positionedTechnologies[0]?.id ?? "";
 	const hasActiveTechnology = positionedTechnologies.some(
@@ -539,7 +544,11 @@ function Radar({
 					</Badge>
 				</CardAction>
 				<div className="col-span-2 pt-2">
-					{isOwnRadar && <SearchTechnologiesDialog />}
+					{isOwnRadar && (
+						<SearchTechnologiesDialog
+							onTechnologyChange={handleTechnologyChange}
+						/>
+					)}
 				</div>
 			</CardHeader>
 

@@ -19,10 +19,12 @@ import AddTechnologyButton from "./add-technology-button";
 
 interface SearchTechnologiesDialogContentProps {
 	userId: string | null;
+	onTechnologyChange?: () => void;
 }
 
 export default function SearchTechnologiesDialogContent({
 	userId,
+	onTechnologyChange,
 }: SearchTechnologiesDialogContentProps) {
 	const [search, setSearch] = useState("");
 	const [technologies, setTechnologies] = useState<Technology[]>([]);
@@ -131,6 +133,7 @@ export default function SearchTechnologiesDialogContent({
 								setUserTechnologies={setUserTechnologies}
 								setSelected={setSelectedTechnologyIds}
 								isSelected={selectedTechnologyIds.includes(tech.id ?? "")}
+								onTechnologyChange={onTechnologyChange}
 								key={tech.id}
 							/>
 						))}

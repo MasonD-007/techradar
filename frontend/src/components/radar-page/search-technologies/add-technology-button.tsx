@@ -29,6 +29,7 @@ export default function AddTechnologyButton({
 	setUserTechnologies,
 	setSelected,
 	isSelected,
+	onTechnologyChange,
 }: {
 	userId: string | null;
 	tech: Technology;
@@ -37,6 +38,7 @@ export default function AddTechnologyButton({
 	setSelected: React.Dispatch<React.SetStateAction<string[]>>;
 	setUserTechnologies: React.Dispatch<React.SetStateAction<UserTechnology[]>>;
 	isSelected: boolean;
+	onTechnologyChange?: () => void;
 }) {
 	const [isAdding, setIsAdding] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
@@ -102,12 +104,13 @@ export default function AddTechnologyButton({
 				nextRingId,
 			);
 
-			if (result.success) {
-				updateSelectedTechnologyRing(
-					nextRingId,
-					result.data?.ring_id ?? nextRingId,
-				);
-			} else {
+		if (result.success) {
+			updateSelectedTechnologyRing(
+				nextRingId,
+				result.data?.ring_id ?? nextRingId,
+			);
+			onTechnologyChange?.();
+		} else {
 				setRingId(currentRingValue);
 				console.log("Failed to update technology ring:", result.error);
 			}
@@ -136,6 +139,7 @@ export default function AddTechnologyButton({
 				if (addedTechnology) {
 					setUserTechnologies((prev) => [...prev, addedTechnology]);
 				}
+				onTechnologyChange?.();
 			} else {
 				console.log("Failed to add technology:", result.error);
 			}
@@ -158,6 +162,7 @@ export default function AddTechnologyButton({
 				setUserTechnologies((prev) =>
 					prev.filter((ut) => ut.id !== userTechnologyId),
 				);
+				onTechnologyChange?.();
 				console.log("Deleted technology successfully");
 			} else {
 				console.log("Failed to delete technology:", result.error);
