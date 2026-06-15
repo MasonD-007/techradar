@@ -1,15 +1,63 @@
 [
   {
-    "name": "terraform",
-    "description": "Infrastructure as Code tool for provisioning cloud resources declaratively",
+    "name": ".NET",
+    "description": "Microsoft's free, cross-platform development framework",
     "category": "tool",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/HashiCorp-Terraform.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/.NET.svg"
   },
   {
-    "name": "pulumi",
-    "description": "IaC tool using general-purpose languages instead of declarative configs",
+    "name": ".NET-core",
+    "description": "Cross-platform .NET runtime for building modern applications",
     "category": "tool",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/pulumi.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/.NET-core.svg"
+  },
+  {
+    "name": "Adobe-Commerce-(Magneto)",
+    "description": "E-commerce platform for scalable online stores",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Adobe-Commerce-(Magneto).svg"
+  },
+  {
+    "name": "Adobe-Illustrator",
+    "description": "Vector graphics editor for design and illustration",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Adobe-Illustrator.svg"
+  },
+  {
+    "name": "Adobe-Photoshop",
+    "description": "Industry-standard raster graphics editing software",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Adobe-Photoshop.svg"
+  },
+  {
+    "name": "Adobe-Premiere-Pro",
+    "description": "Professional video editing software",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Adobe-Premiere-Pro.svg"
+  },
+  {
+    "name": "Adobe-XD",
+    "description": "User experience design tool for wireframing prototypes",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Adobe-XD.svg"
+  },
+  {
+    "name": "After-Effects",
+    "description": "Motion graphics and visual effects software",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/After-Effects.svg"
+  },
+  {
+    "name": "Algolia",
+    "description": "Search-as-a-service platform for fast relevant results",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Algolia.svg"
+  },
+  {
+    "name": "Anaconda",
+    "description": "Python distribution for data science and machine learning",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Anaconda.svg"
   },
   {
     "name": "ansible",
@@ -18,130 +66,16 @@
     "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Ansible.svg"
   },
   {
-    "name": "github actions",
-    "description": "CI/CD automation tightly integrated with Git-based workflows",
-    "category": "tool",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/GitHub-Actions.svg"
-  },
-  {
-    "name": "jenkins",
-    "description": "Legacy but widely used automation server for CI/CD pipelines",
-    "category": "tool",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Jenkins.svg"
-  },
-  {
-    "name": "prometheus",
-    "description": "Monitoring system designed for metrics collection and alerting",
-    "category": "tool",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Prometheus.svg"
-  },
-  {
-    "name": "grafana",
-    "description": "Visualization tool for observability dashboards and monitoring data",
-    "category": "tool",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Grafana.svg"
-  },
-  {
-    "name": "opentelemetry",
-    "description": "Standard for distributed tracing and observability instrumentation",
-    "category": "tool",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/OpenTelemetry.svg"
-  },
-  {
     "name": "apache kafka streams",
     "description": "Stream processing library for building real-time applications on Kafka",
     "category": "tool",
     "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/apachekafkastreams.svg"
   },
   {
-    "name": "logstash",
-    "description": "Data processing pipeline for ingesting and transforming logs",
+    "name": "APL",
+    "description": "Array-oriented programming language for mathematical computing",
     "category": "tool",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Logstash.svg"
-  },
-  {
-    "name": "kibana",
-    "description": "Visualization layer for exploring Elasticsearch data",
-    "category": "tool",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Kibana.svg"
-  },
-  {
-    "name": "duckdb",
-    "description": "In-process analytical database optimized for OLAP workloads",
-    "category": "tool",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/duckdb.svg"
-  },
-  {
-    "name": "dbt",
-    "description": "Data transformation tool for analytics engineering",
-    "category": "tool",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/dbt.svg"
-  },
-  {
-    "name": "prisma",
-    "description": "Next-generation ORM for Node.js and TypeScript",
-    "category": "tool",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/prisma.svg"
-  },
-  {
-    "name": "vite",
-    "description": "Fast frontend build tool leveraging native ES modules",
-    "category": "tool",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Vite.svg"
-  },
-  {
-    "name": "webpack",
-    "description": "Bundler for JavaScript applications with extensive ecosystem",
-    "category": "tool",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Webpack.svg"
-  },
-  {
-    "name": "rollup",
-    "description": "Module bundler optimized for libraries and tree-shaking",
-    "category": "tool",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Rollup.js.svg"
-  },
-  {
-    "name": "esbuild",
-    "description": "Extremely fast JavaScript bundler and minifier",
-    "category": "tool",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/esbuild.svg"
-  },
-  {
-    "name": "playwright",
-    "description": "End-to-end testing framework for modern web apps",
-    "category": "tool",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Playwrite.svg"
-  },
-  {
-    "name": "cypress",
-    "description": "Frontend testing framework focused on developer experience",
-    "category": "tool",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Cypress.svg"
-  },
-  {
-    "name": "jest",
-    "description": "JavaScript testing framework commonly used with React and Node",
-    "category": "tool",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Jest.svg"
-  },
-  {
-    "name": "vitest",
-    "description": "Fast unit testing framework powered by Vite",
-    "category": "tool",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/vitest.svg"
-  },
-  {
-    "name": "storybook",
-    "description": "UI component development and testing environment",
-    "category": "tool",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Storybook.svg"
-  },
-  {
-    "name": "helm",
-    "description": "Kubernetes package manager for defining and installing applications",
-    "category": "tool",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Helm.svg"
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/APL.svg"
   },
   {
     "name": "argo cd",
@@ -150,15 +84,909 @@
     "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Argo-CD.svg"
   },
   {
+    "name": "Astro",
+    "description": "Static site builder delivering fast frontend performance",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Astro.svg"
+  },
+  {
+    "name": "Atom",
+    "description": "Hackable text editor developed by GitHub",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Atom.svg"
+  },
+  {
+    "name": "Autodesk-ShotGrid",
+    "description": "Production tracking and project management for media",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Autodesk-ShotGrid.svg"
+  },
+  {
+    "name": "Awk",
+    "description": "Text processing language for pattern scanning and data extraction",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Awk.svg"
+  },
+  {
+    "name": "Babel",
+    "description": "JavaScript compiler for transpiling modern code to compatible versions",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Babel.svg"
+  },
+  {
+    "name": "Bamboo",
+    "description": "CI/CD server by Atlassian for automated builds",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Bamboo.svg"
+  },
+  {
+    "name": "BitBucket",
+    "description": "Git repository hosting by Atlassian with CI/CD integration",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/BitBucket.svg"
+  },
+  {
+    "name": "Bower",
+    "description": "Package manager for frontend web dependencies",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Bower.svg"
+  },
+  {
+    "name": "BrowserStack",
+    "description": "Cross-browser testing platform for web applications",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/BrowserStack.svg"
+  },
+  {
+    "name": "C",
+    "description": "Foundational procedural programming language for systems",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/C.svg"
+  },
+  {
+    "name": "Canva",
+    "description": "Online graphic design platform for non-designers",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Canva.svg"
+  },
+  {
+    "name": "CircleCI",
+    "description": "Cloud-native CI/CD platform for automated testing and deployment",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/CircleCI.svg"
+  },
+  {
+    "name": "CLion",
+    "description": "JetBrains IDE for C and C++ development",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/CLion.svg"
+  },
+  {
+    "name": "CMake",
+    "description": "Cross-platform build system generator for compiled projects",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/CMake.svg"
+  },
+  {
+    "name": "Codeac",
+    "description": "Code quality analysis and automated code review platform",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Codeac.svg"
+  },
+  {
+    "name": "Codecov",
+    "description": "Code coverage analysis tool for CI pipelines",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Codecov.svg"
+  },
+  {
+    "name": "CodePen",
+    "description": "Online code editor and playground for frontend development",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/CodePen.svg"
+  },
+  {
+    "name": "CoffeeScript",
+    "description": "Language that compiles to JavaScript with cleaner syntax",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/CoffeeScript.svg"
+  },
+  {
+    "name": "Composer",
+    "description": "Dependency manager for PHP libraries and packages",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Composer.svg"
+  },
+  {
+    "name": "Confluence",
+    "description": "Atlassian's collaboration and documentation platform",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Confluence.svg"
+  },
+  {
+    "name": "Cucumber",
+    "description": "BDD testing framework for behavior-driven development",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Cucumber.svg"
+  },
+  {
+    "name": "cypress",
+    "description": "Frontend testing framework focused on developer experience",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Cypress.svg"
+  },
+  {
+    "name": "DataGrip",
+    "description": "JetBrains IDE for database administration and SQL queries",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/DataGrip.svg"
+  },
+  {
+    "name": "DataSpell",
+    "description": "JetBrains IDE for data science and analysis workflows",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/DataSpell.svg"
+  },
+  {
+    "name": "dbt",
+    "description": "Data transformation tool for analytics engineering",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/dbt.svg"
+  },
+  {
+    "name": "Devicon",
+    "description": "Icon set representing programming languages and tools",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Devicon.svg"
+  },
+  {
+    "name": "Digital-Ocean",
+    "description": "Cloud infrastructure provider for scalable deployments",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Digital-Ocean.svg"
+  },
+  {
+    "name": "duckdb",
+    "description": "In-process analytical database optimized for OLAP workloads",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/duckdb.svg"
+  },
+  {
+    "name": "Eclipse-Ceylon",
+    "description": "Language and SDK by Eclipse for modular programming",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Eclipse-Ceylon.svg"
+  },
+  {
+    "name": "Eclipse-IDE",
+    "description": "Integrated development environment for multiple languages",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Eclipse-IDE.svg"
+  },
+  {
+    "name": "Eclipse-Vert.x",
+    "description": "Toolkit for building reactive applications on the JVM",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Eclipse-Vert.x.svg"
+  },
+  {
+    "name": "Elastic-Beats",
+    "description": "Lightweight data shippers for Elasticsearch log ingestion",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Elastic-Beats.svg"
+  },
+  {
+    "name": "Embedded-C",
+    "description": "C language extensions for microcontroller programming",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Embedded-C.svg"
+  },
+  {
+    "name": "esbuild",
+    "description": "Extremely fast JavaScript bundler and minifier",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/esbuild.svg"
+  },
+  {
+    "name": "ESLint",
+    "description": "Static code analysis tool for identifying JavaScript problems",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/ESLint.svg"
+  },
+  {
+    "name": "Figma",
+    "description": "Collaborative interface design tool for teams",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Figma.svg"
+  },
+  {
+    "name": "FileZilla",
+    "description": "Open-source FTP client for file transfer",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/FileZilla.svg"
+  },
+  {
     "name": "flux",
     "description": "GitOps tool for continuous delivery on Kubernetes",
     "category": "tool",
     "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/flux.svg"
   },
   {
+    "name": "Gatling",
+    "description": "Load testing tool for HTTP-based applications",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Gatling.svg"
+  },
+  {
+    "name": "GCC",
+    "description": "GNU Compiler Collection supporting multiple programming languages",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/GCC.svg"
+  },
+  {
+    "name": "GIMP",
+    "description": "Open-source raster graphics editing and image manipulation",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/GIMP.svg"
+  },
+  {
+    "name": "Git",
+    "description": "Distributed version control system for tracking source code changes",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Git.svg"
+  },
+  {
+    "name": "GitBook",
+    "description": "Documentation platform for teams and open-source projects",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/GitBook.svg"
+  },
+  {
+    "name": "GitHub",
+    "description": "Platform for code hosting collaboration and version control",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/GitHub.svg"
+  },
+  {
+    "name": "github actions",
+    "description": "CI/CD automation tightly integrated with Git-based workflows",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/GitHub-Actions.svg"
+  },
+  {
+    "name": "GitHub-Codespaces",
+    "description": "Cloud-based development environment by GitHub",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/GitHub-Codespaces.svg"
+  },
+  {
+    "name": "Gitpod",
+    "description": "Cloud IDE for dev environments integrated with GitHub",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Gitpod.svg"
+  },
+  {
+    "name": "Gitter",
+    "description": "Chat platform for developer communities and open-source projects",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Gitter.svg"
+  },
+  {
+    "name": "GNU-Emacs",
+    "description": "Extensible text editor with deep customization capabilities",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/GNU-Emacs.svg"
+  },
+  {
+    "name": "GoLand",
+    "description": "JetBrains IDE for Go language development",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/GoLand.svg"
+  },
+  {
+    "name": "Gradle",
+    "description": "Build automation tool with Groovy/Kotlin DSL for Java projects",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Gradle.svg"
+  },
+  {
+    "name": "grafana",
+    "description": "Visualization tool for observability dashboards and monitoring data",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Grafana.svg"
+  },
+  {
+    "name": "Grunt.js",
+    "description": "JavaScript task runner for automating build processes",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Grunt.js.svg"
+  },
+  {
+    "name": "Gulp.js",
+    "description": "Streaming build system for frontend asset pipelines",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Gulp.js.svg"
+  },
+  {
+    "name": "Hardhat",
+    "description": "Ethereum development environment for smart contract testing",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Hardhat.svg"
+  },
+  {
+    "name": "HashiCorp-Vagrant",
+    "description": "Tool for building and managing virtual development environments",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/HashiCorp-Vagrant.svg"
+  },
+  {
+    "name": "Haxe",
+    "description": "Multi-target programming language compiling to multiple platforms",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Haxe.svg"
+  },
+  {
+    "name": "helm",
+    "description": "Kubernetes package manager for defining and installing applications",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Helm.svg"
+  },
+  {
+    "name": "Homebrew",
+    "description": "Package manager for macOS and Linux software installations",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Homebrew.svg"
+  },
+  {
+    "name": "IBM-SPSS-Statistics",
+    "description": "Statistical analysis software for data research",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/IBM-SPSS-Statistics.svg"
+  },
+  {
+    "name": "Inkscape-",
+    "description": "Open-source vector graphics editor",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Inkscape-.svg"
+  },
+  {
+    "name": "Insomnia",
+    "description": "API client for testing and debugging REST and GraphQL endpoints",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Insomnia.svg"
+  },
+  {
+    "name": "IntelliJ-IDEA",
+    "description": "JetBrains IDE for Java and Kotlin development",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/IntelliJ-IDEA.svg"
+  },
+  {
+    "name": "Jaeger-Tracing",
+    "description": "Distributed tracing system for monitoring microservices",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Jaeger-Tracing.svg"
+  },
+  {
+    "name": "Jasmine",
+    "description": "Behavior-driven testing framework for JavaScript",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Jasmine.svg"
+  },
+  {
+    "name": "Jeet",
+    "description": "CSS grid framework for responsive layouts",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Jeet.svg"
+  },
+  {
+    "name": "jenkins",
+    "description": "Legacy but widely used automation server for CI/CD pipelines",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Jenkins.svg"
+  },
+  {
+    "name": "jest",
+    "description": "JavaScript testing framework commonly used with React and Node",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Jest.svg"
+  },
+  {
+    "name": "JetBrains",
+    "description": "Software development tooling and IDE vendor",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/JetBrains.svg"
+  },
+  {
+    "name": "Jira",
+    "description": "Project management and issue tracking by Atlassian",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Jira.svg"
+  },
+  {
+    "name": "Jira-Align",
+    "description": "Enterprise portfolio management for scaling agile teams",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Jira-Align.svg"
+  },
+  {
+    "name": "Jule",
+    "description": "Modern systems programming language with safety guarantees",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Jule.svg"
+  },
+  {
+    "name": "JUnit",
+    "description": "Testing framework for unit testing in Java applications",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/JUnit.svg"
+  },
+  {
+    "name": "Karate-Labs",
+    "description": "Test automation framework combining API UI and performance testing",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Karate-Labs.svg"
+  },
+  {
+    "name": "Karma",
+    "description": "Test runner for JavaScript applications in real browsers",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Karma.svg"
+  },
+  {
+    "name": "kibana",
+    "description": "Visualization layer for exploring Elasticsearch data",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Kibana.svg"
+  },
+  {
+    "name": "Krakenjs",
+    "description": "Node.js framework for secure and scalable web applications",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Krakenjs.svg"
+  },
+  {
+    "name": "LabVIEW",
+    "description": "System design platform for graphical programming and instrumentation",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/LabVIEW.svg"
+  },
+  {
+    "name": "Liquibase",
+    "description": "Database change management and migration tool",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Liquibase.svg"
+  },
+  {
+    "name": "LLVM",
+    "description": "Compiler infrastructure for optimizing code generation",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/LLVM.svg"
+  },
+  {
+    "name": "logstash",
+    "description": "Data processing pipeline for ingesting and transforming logs",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Logstash.svg"
+  },
+  {
+    "name": "Lumen",
+    "description": "Micro-framework by Laravel for building fast APIs",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Lumen.svg"
+  },
+  {
+    "name": "MATLAB",
+    "description": "Numerical computing environment for engineering and research",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/MATLAB.svg"
+  },
+  {
+    "name": "Minitab",
+    "description": "Statistical software for quality improvement and data analysis",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Minitab.svg"
+  },
+  {
+    "name": "Mocha",
+    "description": "Test framework for asynchronous JavaScript testing",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Mocha.svg"
+  },
+  {
+    "name": "MODX",
+    "description": "Open-source content management system and application framework",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/MODX.svg"
+  },
+  {
+    "name": "Moodle",
+    "description": "Open-source learning management system for education",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Moodle.svg"
+  },
+  {
+    "name": "Nano",
+    "description": "Simple command-line text editor for Unix systems",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Nano.svg"
+  },
+  {
+    "name": "Nerog",
+    "description": "Emerging technology platform for modern development workflows",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Nerog.svg"
+  },
+  {
+    "name": "New4j",
+    "description": "Graph database platform for connected data applications",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/New4j.svg"
+  },
+  {
+    "name": "Nodemon",
+    "description": "File watcher that auto-restarts Node.js applications",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Nodemon.svg"
+  },
+  {
+    "name": "NPM",
+    "description": "Node.js package manager and registry",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/NPM.svg"
+  },
+  {
+    "name": "NuGet",
+    "description": "Package manager for .NET libraries and tools",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/NuGet.svg"
+  },
+  {
+    "name": "NW.js-(node-webkit)",
+    "description": "Framework for desktop apps with Node.js and Chromium",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/NW.js-(node-webkit).svg"
+  },
+  {
+    "name": "Oh-my-zsh",
+    "description": "Community framework for managing Zsh shell configuration",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Oh-my-zsh.svg"
+  },
+  {
+    "name": "opentelemetry",
+    "description": "Standard for distributed tracing and observability instrumentation",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/OpenTelemetry.svg"
+  },
+  {
+    "name": "p5-JS",
+    "description": "JavaScript library for creative coding and visual art",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/p5-JS.svg"
+  },
+  {
+    "name": "Packer",
+    "description": "Tool for creating identical machine images across platforms",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Packer.svg"
+  },
+  {
+    "name": "playwright",
+    "description": "End-to-end testing framework for modern web apps",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Playwrite.svg"
+  },
+  {
+    "name": "Ploty",
+    "description": "Graphing library for interactive data visualization",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Ploty.svg"
+  },
+  {
+    "name": "Portainer",
+    "description": "Container management platform for Docker and Kubernetes",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Portainer.svg"
+  },
+  {
+    "name": "Postman",
+    "description": "API development platform for testing and documenting APIs",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Postman.svg"
+  },
+  {
+    "name": "prisma",
+    "description": "Next-generation ORM for Node.js and TypeScript",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/prisma.svg"
+  },
+  {
+    "name": "prometheus",
+    "description": "Monitoring system designed for metrics collection and alerting",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Prometheus.svg"
+  },
+  {
+    "name": "Protractor-Test",
+    "description": "End-to-end testing framework for Angular applications",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Protractor-Test.svg"
+  },
+  {
+    "name": "pulumi",
+    "description": "IaC tool using general-purpose languages instead of declarative configs",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/pulumi.svg"
+  },
+  {
+    "name": "PuTTY",
+    "description": "SSH and telnet client for remote computer access",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/PuTTY.svg"
+  },
+  {
+    "name": "PyCharm",
+    "description": "JetBrains IDE for Python development",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/PyCharm.svg"
+  },
+  {
+    "name": "PyScript",
+    "description": "Framework for running Python in the browser",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/PyScript.svg"
+  },
+  {
+    "name": "pytest",
+    "description": "Testing framework for Python with simple syntax",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/pytest.svg"
+  },
+  {
+    "name": "Qodana",
+    "description": "JetBrains code quality platform for static analysis",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Qodana.svg"
+  },
+  {
+    "name": "R-",
+    "description": "Language for statistical computing and data visualization",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/R-.svg"
+  },
+  {
+    "name": "Raspberry-Pi",
+    "description": "Low-cost single-board computer for education and prototyping",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Raspberry-Pi.svg"
+  },
+  {
+    "name": "Reach",
+    "description": "Blockchain development platform for decentralized applications",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Reach.svg"
+  },
+  {
+    "name": "Rider",
+    "description": "JetBrains cross-platform IDE for .NET development",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Rider.svg"
+  },
+  {
+    "name": "rollup",
+    "description": "Module bundler optimized for libraries and tree-shaking",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Rollup.js.svg"
+  },
+  {
+    "name": "RSpec",
+    "description": "Testing framework for behavior-driven Ruby development",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/RSpec.svg"
+  },
+  {
+    "name": "RStudio",
+    "description": "IDE for R language statistical computing and visualization",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/RStudio.svg"
+  },
+  {
+    "name": "Salesforce",
+    "description": "Customer relationship management and enterprise cloud platform",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Salesforce.svg"
+  },
+  {
+    "name": "Selenium",
+    "description": "Browser automation framework for web testing",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Selenium.svg"
+  },
+  {
+    "name": "Sema-Software",
+    "description": "Code review and analysis tool for software teams",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Sema-Software.svg"
+  },
+  {
+    "name": "Sketch",
+    "description": "Vector-based design tool for UI and digital interfaces",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Sketch.svg"
+  },
+  {
+    "name": "Slack",
+    "description": "Team collaboration platform for messaging and workflow",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Slack.svg"
+  },
+  {
+    "name": "SonarQube",
+    "description": "Code quality inspection platform for continuous analysis",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/SonarQube.svg"
+  },
+  {
+    "name": "Sourcetree",
+    "description": "Git desktop client with visual repository management",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Sourcetree.svg"
+  },
+  {
+    "name": "Splunk",
+    "description": "Platform for searching monitoring and analyzing machine data",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Splunk.svg"
+  },
+  {
+    "name": "SQL-Developer",
+    "description": "Oracle's database administration and development tool",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/SQL-Developer.svg"
+  },
+  {
+    "name": "SSH",
+    "description": "Secure protocol for encrypted remote system access",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/SSH.svg"
+  },
+  {
+    "name": "Stata",
+    "description": "Statistical software for data analysis and research",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Stata.svg"
+  },
+  {
+    "name": "storybook",
+    "description": "UI component development and testing environment",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Storybook.svg"
+  },
+  {
+    "name": "terraform",
+    "description": "Infrastructure as Code tool for provisioning cloud resources declaratively",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/HashiCorp-Terraform.svg"
+  },
+  {
+    "name": "The-Algorithms",
+    "description": "Community-driven collection of algorithm implementations",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/The-Algorithms.svg"
+  },
+  {
+    "name": "TortoiseGit",
+    "description": "Git client integrated into Windows file explorer",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/TortoiseGit.svg"
+  },
+  {
+    "name": "Tower",
+    "description": "Git desktop client for visual version control",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Tower.svg"
+  },
+  {
+    "name": "Travis-CI",
+    "description": "CI/CD platform integrated with GitHub repositories",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Travis-CI.svg"
+  },
+  {
+    "name": "Trello",
+    "description": "Kanban-style project management tool for teams",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Trello.svg"
+  },
+  {
+    "name": "TYPO3",
+    "description": "Enterprise content management system with multi-site support",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/TYPO3.svg"
+  },
+  {
+    "name": "uWSGI",
+    "description": "Application server for deploying Python web applications",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/uWSGI.svg"
+  },
+  {
     "name": "vault",
     "description": "Secrets management tool for protecting sensitive data",
     "category": "tool",
     "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/HashiCorp-Vault.svg"
+  },
+  {
+    "name": "Vim",
+    "description": "Highly configurable modal text editor for power users",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Vim.svg"
+  },
+  {
+    "name": "Visual-Studio",
+    "description": "Microsoft's comprehensive IDE for various development stacks",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Visual-Studio.svg"
+  },
+  {
+    "name": "Visual-Studio-Code-(VS-Code)",
+    "description": "Lightweight cross-platform code editor by Microsoft",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Visual-Studio-Code-(VS-Code).svg"
+  },
+  {
+    "name": "vite",
+    "description": "Fast frontend build tool leveraging native ES modules",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Vite.svg"
+  },
+  {
+    "name": "Vite.js",
+    "description": "Next-generation frontend build tool for fast development",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Vite.js.svg"
+  },
+  {
+    "name": "vitest",
+    "description": "Fast unit testing framework powered by Vite",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/vitest.svg"
+  },
+  {
+    "name": "Webflow",
+    "description": "Visual web design platform with integrated CMS",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Webflow.svg"
+  },
+  {
+    "name": "Weblate",
+    "description": "Open-source localization platform for software translation",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Weblate.svg"
+  },
+  {
+    "name": "webpack",
+    "description": "Bundler for JavaScript applications with extensive ecosystem",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Webpack.svg"
+  },
+  {
+    "name": "WebStorm",
+    "description": "JetBrains IDE for JavaScript and TypeScript development",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/WebStorm.svg"
+  },
+  {
+    "name": "Xcode",
+    "description": "Apple's IDE for macOS and iOS application development",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Xcode.svg"
+  },
+  {
+    "name": "Yarn",
+    "description": "Fast reliable JavaScript package manager",
+    "category": "tool",
+    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Yarn.svg"
   }
 ]
