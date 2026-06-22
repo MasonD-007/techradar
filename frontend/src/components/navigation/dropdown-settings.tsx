@@ -43,8 +43,6 @@ export default function DropdownSettings({ user }: DropdownSettingsProps) {
 						Admin
 					</DropdownMenuItem>
 				)}
-				<DropdownMenuItem>Profile</DropdownMenuItem>
-				<DropdownMenuItem>Settings</DropdownMenuItem>
 				<DropdownMenuItem onClick={handleLogout} disabled={isLoggingOut}>
 					{isLoggingOut ? "Logging out..." : "Logout"}
 				</DropdownMenuItem>

@@ -17,7 +17,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import SSOButtons from "./SSO-buttons";
+
 
 export const { fieldContext, formContext, useFieldContext } =
     createFormHookContexts();
@@ -99,7 +99,6 @@ export default function LoginForm() {
                 >
                     {isLoading ? "Logging in..." : "Login"}
                 </Button>
-                <SSOButtons />
             </CardFooter>
         </Card>
     );
