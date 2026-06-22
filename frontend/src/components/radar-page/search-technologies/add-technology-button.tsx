@@ -186,7 +186,7 @@ export default function AddTechnologyButton({
 		>
 			<div className="flex items-center justify-between gap-3">
 				<span className="flex items-center gap-2">
-					{tech.icon_url && (
+					{tech.icon_url ? (
 						<Image
 							src={tech.icon_url}
 							alt=""
@@ -194,6 +194,10 @@ export default function AddTechnologyButton({
 							height={20}
 							className="h-5 w-5 shrink-0"
 						/>
+					) : (
+						<span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white text-[10px] font-bold text-black">
+							{tech.name?.charAt(0)?.toUpperCase()}
+						</span>
 					)}
 					<p className="font-medium leading-none">{tech.name}</p>
 				</span>

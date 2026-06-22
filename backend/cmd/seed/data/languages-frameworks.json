@@ -1,998 +1,998 @@
 [
-  {
-    "name": "AdonisJS",
-    "description": "Full-featured Node.js MVC framework",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/AdonisJS.svg"
-  },
-  {
-    "name": "Akka",
-    "description": "Actor-based toolkit for building concurrent distributed systems",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Akka.svg"
-  },
-  {
-    "name": "Alpine.js",
-    "description": "Lightweight JavaScript framework for minimal interactivity",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Alpine.js.svg"
-  },
-  {
-    "name": "angular",
-    "description": "Full-featured frontend framework for enterprise applications",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Angular.svg"
-  },
-  {
-    "name": "AngularJS",
-    "description": "Legacy JavaScript framework by Google for dynamic web apps",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/AngularJS.svg"
-  },
-  {
-    "name": "Ant-Design",
-    "description": "Design system and UI library for enterprise applications",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Ant-Design.svg"
-  },
-  {
-    "name": "Apache-Groovy",
-    "description": "JVM language with concise syntax for scripting and Java integration",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Apache-Groovy.svg"
-  },
-  {
-    "name": "Backbone.js",
-    "description": "Lightweight JavaScript framework for structuring web apps",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Backbone.js.svg"
-  },
-  {
-    "name": "Ballerina",
-    "description": "Cloud-native programming language with network primitives",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Ballerina.svg"
-  },
-  {
-    "name": "Bash",
-    "description": "Unix shell and command language for scripting",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Bash.svg"
-  },
-  {
-    "name": "bootstrap",
-    "description": "Traditional CSS framework for responsive design systems",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Bootstrap.svg"
-  },
-  {
-    "name": "Bulma",
-    "description": "Modern CSS framework based on Flexbox",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Bulma.svg"
-  },
-  {
-    "name": "C#-(CSharp)",
-    "description": "Type-safe object-oriented language for .NET ecosystem",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/C#-(CSharp).svg"
-  },
-  {
-    "name": "C++-(CPlusPlus)",
-    "description": "High-performance systems programming language",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/C++-(CPlusPlus).svg"
-  },
-  {
-    "name": "Cairo-Graphics",
-    "description": "2D graphics library for vector-based rendering",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Cairo-Graphics.svg"
-  },
-  {
-    "name": "CakePHP",
-    "description": "PHP web framework following the MVC pattern",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/CakePHP.svg"
-  },
-  {
-    "name": "Capacitor",
-    "description": "Cross-platform native runtime for building mobile apps with web tech",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Capacitor.svg"
-  },
-  {
-    "name": "Clarity",
-    "description": "Design system and UI components for Angular applications",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Clarity.svg"
-  },
-  {
-    "name": "Clojure",
-    "description": "Functional Lisp dialect on the JVM for concurrent programming",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Clojure.svg"
-  },
-  {
-    "name": "ClojureScript",
-    "description": "Clojure compiler targeting JavaScript runtime",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/ClojureScript.svg"
-  },
-  {
-    "name": "CodeIgniter",
-    "description": "Lightweight PHP framework for rapid development",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/CodeIgniter.svg"
-  },
-  {
-    "name": "Contao",
-    "description": "Open-source CMS built with PHP for accessible websites",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Contao.svg"
-  },
-  {
-    "name": "Core-js",
-    "description": "Modular JavaScript polyfill library for compatibility",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Core-js.svg"
-  },
-  {
-    "name": "Crystal",
-    "description": "Statically-typed language with Ruby-like syntax and performance",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Crystal.svg"
-  },
-  {
-    "name": "CSS3",
-    "description": "Style sheet language for describing web presentation",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/CSS3.svg"
-  },
-  {
-    "name": "D3.js",
-    "description": "JavaScript library for data-driven SVG visualizations",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/D3.js.svg"
-  },
-  {
-    "name": "Dart",
-    "description": "Client-optimized language for fast multi-platform apps",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Dart.svg"
-  },
-  {
-    "name": "Discord.js",
-    "description": "Node.js library for interacting with the Discord API",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Discord.js.svg"
-  },
-  {
-    "name": "Django",
-    "description": "High-level Python web framework for rapid development",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Django.svg"
-  },
-  {
-    "name": "Doctrine",
-    "description": "ORM and query builder for PHP database abstraction",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Doctrine.svg"
-  },
-  {
-    "name": "Dropwizard",
-    "description": "Java framework for developing RESTful web services",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Dropwizard.svg"
-  },
-  {
-    "name": "Drupal",
-    "description": "Content management system for complex websites and portals",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Drupal.svg"
-  },
-  {
-    "name": "Eleventy-(11ty)",
-    "description": "Static site generator with flexible template support",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Eleventy-(11ty).svg"
-  },
-  {
-    "name": "Elixir",
-    "description": "Functional language for scalable and maintainable applications",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Elixir.svg"
-  },
-  {
-    "name": "Elm",
-    "description": "Functional language for building reliable web frontends",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Elm.svg"
-  },
-  {
-    "name": "Ember.js",
-    "description": "Opinionated JavaScript framework for ambitious web applications",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Ember.js.svg"
-  },
-  {
-    "name": "Erlang",
-    "description": "Concurrent functional language for fault-tolerant systems",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Erlang.svg"
-  },
-  {
-    "name": "express",
-    "description": "Minimal Node.js web framework for building APIs",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Express.svg"
-  },
-  {
-    "name": "fastapi",
-    "description": "Modern Python web framework for building APIs with performance",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/FastAPI.svg"
-  },
-  {
-    "name": "Fastify",
-    "description": "Fast Node.js web framework with low overhead",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Fastify.svg"
-  },
-  {
-    "name": "Feathers",
-    "description": "Lightweight Node.js framework for real-time APIs",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Feathers.svg"
-  },
-  {
-    "name": "Flask",
-    "description": "Minimalist Python web framework for quick development",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Flask.svg"
-  },
-  {
-    "name": "Flutter",
-    "description": "Google's UI toolkit for cross-platform native apps",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Flutter.svg"
-  },
-  {
-    "name": "Fortran",
-    "description": "High-performance language for scientific and numerical computing",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Fortran.svg"
-  },
-  {
-    "name": "Foundation",
-    "description": "Responsive frontend framework for building web interfaces",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Foundation.svg"
-  },
-  {
-    "name": "FSharp-(F#)",
-    "description": "Functional-first language on the .NET platform",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/FSharp-(F#).svg"
-  },
-  {
-    "name": "Gatsby",
-    "description": "React-based static site generator with GraphQL data layer",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Gatsby.svg"
-  },
-  {
-    "name": "Ghost",
-    "description": "Open-source publishing platform for modern content creators",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Ghost.svg"
-  },
-  {
-    "name": "go",
-    "description": "Compiled language optimized for concurrency and cloud-native services",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Go.svg"
-  },
-  {
-    "name": "Grails",
-    "description": "Full-stack Java web framework with Groovy language",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Grails.svg"
-  },
-  {
-    "name": "graphql",
-    "description": "Query language for APIs enabling flexible client-driven data fetching",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/GraphQL.svg"
-  },
-  {
-    "name": "grpc",
-    "description": "High-performance RPC framework using protocol buffers",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/grpc.svg"
-  },
-  {
-    "name": "Handlebars",
-    "description": "Minimal templating engine for JavaScript applications",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Handlebars.svg"
-  },
-  {
-    "name": "Haskell",
-    "description": "Purely functional programming language with strong typing",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Haskell.svg"
-  },
-  {
-    "name": "Hibernate",
-    "description": "ORM framework for Java database persistence",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Hibernate.svg"
-  },
-  {
-    "name": "HTML5",
-    "description": "Markup language standard for structuring web content",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/HTML5.svg"
-  },
-  {
-    "name": "hugging face transformers",
-    "description": "Library for state-of-the-art natural language processing models",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/huggingface.svg"
-  },
-  {
-    "name": "Hugo",
-    "description": "Fast static site generator built with Go",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Hugo.svg"
-  },
-  {
-    "name": "Ionic",
-    "description": "Framework for building cross-platform mobile apps with web tech",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Ionic.svg"
-  },
-  {
-    "name": "Java",
-    "description": "Object-oriented language for enterprise and Android development",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Java.svg"
-  },
-  {
-    "name": "JavaScript",
-    "description": "Essential scripting language for dynamic web applications",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/JavaScript.svg"
-  },
-  {
-    "name": "Jekyll",
-    "description": "Static site generator for blogging and documentation",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Jekyll.svg"
-  },
-  {
-    "name": "jQuery",
-    "description": "JavaScript library simplifying DOM manipulation and events",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/jQuery.svg"
-  },
-  {
-    "name": "JSON",
-    "description": "Lightweight data interchange format for APIs and configuration",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/JSON.svg"
-  },
-  {
-    "name": "Julia",
-    "description": "High-level language for scientific and technical computing",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Julia.svg"
-  },
-  {
-    "name": "Jupyter",
-    "description": "Interactive notebook environment for data science and research",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Jupyter.svg"
-  },
-  {
-    "name": "Keras",
-    "description": "High-level neural networks API for deep learning",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Keras.svg"
-  },
-  {
-    "name": "Knex.js",
-    "description": "SQL query builder for Node.js and TypeScript",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Knex.js.svg"
-  },
-  {
-    "name": "Knockout",
-    "description": "MVVM JavaScript library for dynamic UI bindings",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Knockout.svg"
-  },
-  {
-    "name": "kotlin",
-    "description": "Modern JVM language improving developer ergonomics over Java",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Kotlin.svg"
-  },
-  {
-    "name": "Ktor",
-    "description": "Kotlin framework for building asynchronous client-server applications",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Ktor.svg"
-  },
-  {
-    "name": "langchain",
-    "description": "Framework for building applications with large language models",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/langchain.svg"
-  },
-  {
-    "name": "Laravel",
-    "description": "Expressive PHP framework with elegant syntax and tooling",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Laravel.svg"
-  },
-  {
-    "name": "LaTeX",
-    "description": "Document preparation system for technical and scientific publishing",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/LaTeX.svg"
-  },
-  {
-    "name": "Less.js",
-    "description": "CSS preprocessor extending stylesheet functionality",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Less.js.svg"
-  },
-  {
-    "name": "Livewire",
-    "description": "Full-stack framework for building dynamic Laravel interfaces",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Livewire.svg"
-  },
-  {
-    "name": "llamaindex",
-    "description": "Framework for connecting LLMs with external data sources",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/llamaindex.svg"
-  },
-  {
-    "name": "Lua",
-    "description": "Lightweight embeddable scripting language for games and applications",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Lua.svg"
-  },
-  {
-    "name": "Markdown",
-    "description": "Lightweight markup language for formatted text",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Markdown.svg"
-  },
-  {
-    "name": "Material-UI",
-    "description": "React component library implementing Material Design",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Material-UI.svg"
-  },
-  {
-    "name": "Materialize",
-    "description": "CSS framework implementing Material Design principles",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Materialize.svg"
-  },
-  {
-    "name": "Matplotlib",
-    "description": "Python plotting library for data visualization",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Matplotlib.svg"
-  },
-  {
-    "name": "Meteor.js",
-    "description": "Full-stack JavaScript framework for real-time web apps",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Meteor.js.svg"
-  },
-  {
-    "name": "MobX",
-    "description": "State management library for reactive JavaScript applications",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/MobX.svg"
-  },
-  {
-    "name": "Moleculer",
-    "description": "Microservices framework for Node.js with built-in patterns",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Moleculer.svg"
-  },
-  {
-    "name": "Mongoose.js",
-    "description": "MongoDB ODM for Node.js with schema validation",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Mongoose.js.svg"
-  },
-  {
-    "name": "nestjs",
-    "description": "Opinionated Node.js framework for scalable server-side applications",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Nest.js.svg"
-  },
-  {
-    "name": "NetworkX",
-    "description": "Python library for graph and network analysis",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/NetworkX.svg"
-  },
-  {
-    "name": "nextjs",
-    "description": "Full-stack React framework enabling SSR and edge-rendered applications",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Next.js.svg"
-  },
-  {
-    "name": "NHibernate",
-    "description": "ORM framework for .NET object-relational mapping",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/NHibernate.svg"
-  },
-  {
-    "name": "Nim",
-    "description": "Efficient systems programming language with Python-like syntax",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Nim.svg"
-  },
-  {
-    "name": "Nimble",
-    "description": "Package manager for the Nim programming language",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Nimble.svg"
-  },
-  {
-    "name": "NumPy",
-    "description": "Fundamental Python library for numerical computing",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/NumPy.svg"
-  },
-  {
-    "name": "Nuxt-JS",
-    "description": "Framework for building Vue.js applications with SSR and static generation",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Nuxt-JS.svg"
-  },
-  {
-    "name": "Objective-C",
-    "description": "Primary language for Apple ecosystem before Swift",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Objective-C.svg"
-  },
-  {
-    "name": "OCaml",
-    "description": "Functional programming language with strong type inference",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/OCaml.svg"
-  },
-  {
-    "name": "OpenAL",
-    "description": "Cross-platform audio API for 3D positional sound",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/OpenAL.svg"
-  },
-  {
-    "name": "OpenAPI",
-    "description": "Standard specification for describing RESTful APIs",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/OpenAPI.svg"
-  },
-  {
-    "name": "OpenCL",
-    "description": "Framework for heterogeneous parallel computing across devices",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/OpenCL.svg"
-  },
-  {
-    "name": "OpenCV",
-    "description": "Computer vision library for real-time image processing",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/OpenCV.svg"
-  },
-  {
-    "name": "OpenGL",
-    "description": "Cross-platform graphics API for 2D and 3D rendering",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/OpenGL.svg"
-  },
-  {
-    "name": "Pandas",
-    "description": "Python library for data manipulation and analysis",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Pandas.svg"
-  },
-  {
-    "name": "Perl",
-    "description": "Scripting language for text processing and system administration",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Perl.svg"
-  },
-  {
-    "name": "Phalcon",
-    "description": "Full-stack PHP framework delivered as a C extension",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Phalcon.svg"
-  },
-  {
-    "name": "Phoenix-Framework",
-    "description": "Web framework for building scalable Elixir applications",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Phoenix-Framework.svg"
-  },
-  {
-    "name": "Photon-Engine-",
-    "description": "Game engine for realistic rendering and physics simulation",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Photon-Engine-.svg"
-  },
-  {
-    "name": "PHP",
-    "description": "Scripting language widely used for server-side web development",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/PHP.svg"
-  },
-  {
-    "name": "PhpStorm",
-    "description": "JetBrains IDE for PHP development",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/PhpStorm.svg"
-  },
-  {
-    "name": "PostCSS",
-    "description": "CSS post-processor for transforming stylesheets with plugins",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/PostCSS.svg"
-  },
-  {
-    "name": "Powershell",
-    "description": "Microsoft's task automation and configuration management framework",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Powershell.svg"
-  },
-  {
-    "name": "Processing",
-    "description": "Flexible software sketchbook for visual arts and creative coding",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Processing.svg"
-  },
-  {
-    "name": "PureScript",
-    "description": "Functional language that compiles to JavaScript",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/PureScript.svg"
-  },
-  {
-    "name": "python",
-    "description": "High-level language dominant in AI, data science, and rapid prototyping",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Python.svg"
-  },
-  {
-    "name": "Python-Poetry",
-    "description": "Dependency manager and packaging tool for Python projects",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Python-Poetry.svg"
-  },
-  {
-    "name": "pytorch",
-    "description": "Deep learning framework widely used in research and production",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/PyTorch.svg"
-  },
-  {
-    "name": "Qt-Framework",
-    "description": "Cross-platform GUI framework for C++ applications",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Qt-Framework.svg"
-  },
-  {
-    "name": "Quarkus",
-    "description": "Kubernetes-native Java framework for serverless and cloud",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Quarkus.svg"
-  },
-  {
-    "name": "Quasar",
-    "description": "Vue.js framework for building cross-platform apps",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Quasar.svg"
-  },
-  {
-    "name": "Qwik",
-    "description": "JavaScript framework for instant-loading web applications",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Qwik.svg"
-  },
-  {
-    "name": "ray",
-    "description": "Distributed computing framework for parallel and ML workloads",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/ray.svg"
-  },
-  {
-    "name": "react",
-    "description": "Component-based frontend library dominating modern web development",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/React.svg"
-  },
-  {
-    "name": "React-Bootstrap",
-    "description": "React component library for Bootstrap UI framework",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/React-Bootstrap.svg"
-  },
-  {
-    "name": "RedCube's-epic-Compiler-Thingy-programming-(ReCT)",
-    "description": "Educational programming language and compiler project",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/RedCube's-epic-Compiler-Thingy-programming-(ReCT).svg"
-  },
-  {
-    "name": "Redux",
-    "description": "Predictable state container for JavaScript applications",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Redux.svg"
-  },
-  {
-    "name": "Ren'Py",
-    "description": "Visual novel engine for interactive storytelling",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Ren'Py.svg"
-  },
-  {
-    "name": "Ruby",
-    "description": "Dynamic object-oriented language emphasizing developer happiness",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Ruby.svg"
-  },
-  {
-    "name": "Ruby-on-Rails",
-    "description": "Full-stack web framework for productive Ruby development",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Ruby-on-Rails.svg"
-  },
-  {
-    "name": "RubyMine",
-    "description": "JetBrains IDE for Ruby and Rails development",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/RubyMine.svg"
-  },
-  {
-    "name": "rust",
-    "description": "Systems programming language emphasizing memory safety and performance",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Rust.svg"
-  },
-  {
-    "name": "Sass",
-    "description": "CSS preprocessor with advanced features and nesting",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Sass.svg"
-  },
-  {
-    "name": "Scala",
-    "description": "Scalable language combining OOP and functional on the JVM",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Scala.svg"
-  },
-  {
-    "name": "Sequelize",
-    "description": "Promise-based Node.js ORM for SQL databases",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Sequelize.svg"
-  },
-  {
-    "name": "Simple-DirectMedia-Layer-(SDL)",
-    "description": "Cross-platform library for multimedia and game development",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Simple-DirectMedia-Layer-(SDL).svg"
-  },
-  {
-    "name": "Socket.io",
-    "description": "Library for real-time bidirectional communication between clients and servers",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Socket.io.svg"
-  },
-  {
-    "name": "Solid.js",
-    "description": "Reactive JavaScript library for performant web UIs",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Solid.js.svg"
-  },
-  {
-    "name": "Solidity",
-    "description": "Smart contract language for Ethereum blockchain development",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Solidity.svg"
-  },
-  {
-    "name": "spring boot",
-    "description": "Java framework simplifying microservice and backend development",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Spring.svg"
-  },
-  {
-    "name": "SQLAlchemy",
-    "description": "SQL toolkit and ORM for Python database access",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/SQLAlchemy.svg"
-  },
-  {
-    "name": "Streamlit",
-    "description": "Python framework for building data app dashboards quickly",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Streamlit.svg"
-  },
-  {
-    "name": "Stylus",
-    "description": "Expressive CSS preprocessor with dynamic styling",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Stylus.svg"
-  },
-  {
-    "name": "svelte",
-    "description": "Compiler-based frontend framework reducing runtime overhead",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Svelte.svg"
-  },
-  {
-    "name": "Swagger",
-    "description": "API documentation and design tool for OpenAPI specs",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Swagger.svg"
-  },
-  {
-    "name": "Swift",
-    "description": "Apple's modern language for iOS and macOS app development",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Swift.svg"
-  },
-  {
-    "name": "Symfony",
-    "description": "Enterprise PHP framework with reusable components",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Symfony.svg"
-  },
-  {
-    "name": "t3 stack",
-    "description": "Opinionated full-stack TypeScript stack combining Next.js, tRPC, and Prisma",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/t3stack.svg"
-  },
-  {
-    "name": "tailwind css",
-    "description": "Utility-first CSS framework for rapid UI development",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Tailwind-CSS.svg"
-  },
-  {
-    "name": "Tauri",
-    "description": "Framework for building lightweight desktop apps with web frontends",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Tauri.svg"
-  },
-  {
-    "name": "tensorflow",
-    "description": "Machine learning framework with strong ecosystem and tooling",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/TensorFlow.svg"
-  },
-  {
-    "name": "TeX",
-    "description": "Typesetting system for mathematical and scientific documents",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/TeX.svg"
-  },
-  {
-    "name": "Three.js",
-    "description": "JavaScript 3D library for WebGL rendering",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Three.js.svg"
-  },
-  {
-    "name": "Titanium-SDK",
-    "description": "Framework for building native mobile apps with JavaScript",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Titanium-SDK.svg"
-  },
-  {
-    "name": "trpc",
-    "description": "Type-safe RPC framework for TypeScript applications",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/trpc.svg"
-  },
-  {
-    "name": "typescript",
-    "description": "Strongly typed superset of JavaScript improving maintainability in large-scale applications",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/TypeScript.svg"
-  },
-  {
-    "name": "Unified-Modelling-Language-(UML)",
-    "description": "Standard modeling language for software architecture diagrams",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Unified-Modelling-Language-(UML).svg"
-  },
-  {
-    "name": "Vala",
-    "description": "Programming language for GNOME application development",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Vala.svg"
-  },
-  {
-    "name": "Veutify",
-    "description": "Vue.js component library implementing Material Design",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Veutify.svg"
-  },
-  {
-    "name": "vue",
-    "description": "Progressive frontend framework with approachable learning curve",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Vue.js.svg"
-  },
-  {
-    "name": "Vue-Storefront",
-    "description": "Frontend framework for headless e-commerce with Vue.js",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Vue-Storefront.svg"
-  },
-  {
-    "name": "Vyper",
-    "description": "Smart contract language for Ethereum focused on security",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Vyper.svg"
-  },
-  {
-    "name": "WordPress",
-    "description": "Content management system powering a large portion of websites",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/WordPress.svg"
-  },
-  {
-    "name": "Xamarin",
-    "description": "Cross-platform framework for building mobile apps with C# and .NET",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Xamarin.svg"
-  },
-  {
-    "name": "XML",
-    "description": "Extensible markup language for structured data representation",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/XML.svg"
-  },
-  {
-    "name": "YAML",
-    "description": "Human-readable data serialization format for configuration",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/YAML.svg"
-  },
-  {
-    "name": "Yii-Framework",
-    "description": "High-performance PHP framework for web development",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Yii-Framework.svg"
-  },
-  {
-    "name": "Zend-Framework",
-    "description": "Enterprise PHP framework with robust components",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Zend-Framework.svg"
-  },
-  {
-    "name": "zig",
-    "description": "Emerging low-level language focused on simplicity and control without hidden behavior",
-    "category": "language/framework",
-    "icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Zig.svg"
-  }
+	{
+		"name": "AdonisJS",
+		"description": "Full-featured Node.js MVC framework",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/AdonisJS.svg"
+	},
+	{
+		"name": "Akka",
+		"description": "Actor-based toolkit for building concurrent distributed systems",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Akka.svg"
+	},
+	{
+		"name": "Alpine.js",
+		"description": "Lightweight JavaScript framework for minimal interactivity",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Alpine.js.svg"
+	},
+	{
+		"name": "angular",
+		"description": "Full-featured frontend framework for enterprise applications",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Angular.svg"
+	},
+	{
+		"name": "AngularJS",
+		"description": "Legacy JavaScript framework by Google for dynamic web apps",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/AngularJS.svg"
+	},
+	{
+		"name": "Ant-Design",
+		"description": "Design system and UI library for enterprise applications",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Ant-Design.svg"
+	},
+	{
+		"name": "Apache-Groovy",
+		"description": "JVM language with concise syntax for scripting and Java integration",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Apache-Groovy.svg"
+	},
+	{
+		"name": "Backbone.js",
+		"description": "Lightweight JavaScript framework for structuring web apps",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Backbone.js.svg"
+	},
+	{
+		"name": "Ballerina",
+		"description": "Cloud-native programming language with network primitives",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Ballerina.svg"
+	},
+	{
+		"name": "Bash",
+		"description": "Unix shell and command language for scripting",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Bash.svg"
+	},
+	{
+		"name": "bootstrap",
+		"description": "Traditional CSS framework for responsive design systems",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Bootstrap.svg"
+	},
+	{
+		"name": "Bulma",
+		"description": "Modern CSS framework based on Flexbox",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Bulma.svg"
+	},
+	{
+		"name": "C#-(CSharp)",
+		"description": "Type-safe object-oriented language for .NET ecosystem",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/C%23-(CSharp).svg"
+	},
+	{
+		"name": "C++-(CPlusPlus)",
+		"description": "High-performance systems programming language",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/C++-(CPlusPlus).svg"
+	},
+	{
+		"name": "Cairo-Graphics",
+		"description": "2D graphics library for vector-based rendering",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Cairo-Graphics.svg"
+	},
+	{
+		"name": "CakePHP",
+		"description": "PHP web framework following the MVC pattern",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/CakePHP.svg"
+	},
+	{
+		"name": "Capacitor",
+		"description": "Cross-platform native runtime for building mobile apps with web tech",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Capacitor.svg"
+	},
+	{
+		"name": "Clarity",
+		"description": "Design system and UI components for Angular applications",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Clarity.svg"
+	},
+	{
+		"name": "Clojure",
+		"description": "Functional Lisp dialect on the JVM for concurrent programming",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Clojure.svg"
+	},
+	{
+		"name": "ClojureScript",
+		"description": "Clojure compiler targeting JavaScript runtime",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/ClojureScript.svg"
+	},
+	{
+		"name": "CodeIgniter",
+		"description": "Lightweight PHP framework for rapid development",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/CodeIgniter.svg"
+	},
+	{
+		"name": "Contao",
+		"description": "Open-source CMS built with PHP for accessible websites",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Contao.svg"
+	},
+	{
+		"name": "Core-js",
+		"description": "Modular JavaScript polyfill library for compatibility",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Core-js.svg"
+	},
+	{
+		"name": "Crystal",
+		"description": "Statically-typed language with Ruby-like syntax and performance",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Crystal.svg"
+	},
+	{
+		"name": "CSS3",
+		"description": "Style sheet language for describing web presentation",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/CSS3.svg"
+	},
+	{
+		"name": "D3.js",
+		"description": "JavaScript library for data-driven SVG visualizations",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/D3.js.svg"
+	},
+	{
+		"name": "Dart",
+		"description": "Client-optimized language for fast multi-platform apps",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Dart.svg"
+	},
+	{
+		"name": "Discord.js",
+		"description": "Node.js library for interacting with the Discord API",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Discord.js.svg"
+	},
+	{
+		"name": "Django",
+		"description": "High-level Python web framework for rapid development",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Django.svg"
+	},
+	{
+		"name": "Doctrine",
+		"description": "ORM and query builder for PHP database abstraction",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Doctrine.svg"
+	},
+	{
+		"name": "Dropwizard",
+		"description": "Java framework for developing RESTful web services",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Dropwizard.svg"
+	},
+	{
+		"name": "Drupal",
+		"description": "Content management system for complex websites and portals",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Drupal.svg"
+	},
+	{
+		"name": "Eleventy-(11ty)",
+		"description": "Static site generator with flexible template support",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Eleventy-(11ty).svg"
+	},
+	{
+		"name": "Elixir",
+		"description": "Functional language for scalable and maintainable applications",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Elixir.svg"
+	},
+	{
+		"name": "Elm",
+		"description": "Functional language for building reliable web frontends",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Elm.svg"
+	},
+	{
+		"name": "Ember.js",
+		"description": "Opinionated JavaScript framework for ambitious web applications",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Ember.js.svg"
+	},
+	{
+		"name": "Erlang",
+		"description": "Concurrent functional language for fault-tolerant systems",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Erlang.svg"
+	},
+	{
+		"name": "express",
+		"description": "Minimal Node.js web framework for building APIs",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Express.svg"
+	},
+	{
+		"name": "fastapi",
+		"description": "Modern Python web framework for building APIs with performance",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/FastAPI.svg"
+	},
+	{
+		"name": "Fastify",
+		"description": "Fast Node.js web framework with low overhead",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Fastify.svg"
+	},
+	{
+		"name": "Feathers",
+		"description": "Lightweight Node.js framework for real-time APIs",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Feathers.svg"
+	},
+	{
+		"name": "Flask",
+		"description": "Minimalist Python web framework for quick development",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Flask.svg"
+	},
+	{
+		"name": "Flutter",
+		"description": "Google's UI toolkit for cross-platform native apps",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Flutter.svg"
+	},
+	{
+		"name": "Fortran",
+		"description": "High-performance language for scientific and numerical computing",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Fortran.svg"
+	},
+	{
+		"name": "Foundation",
+		"description": "Responsive frontend framework for building web interfaces",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Foundation.svg"
+	},
+	{
+		"name": "FSharp-(F#)",
+		"description": "Functional-first language on the .NET platform",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/FSharp-(F#).svg"
+	},
+	{
+		"name": "Gatsby",
+		"description": "React-based static site generator with GraphQL data layer",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Gatsby.svg"
+	},
+	{
+		"name": "Ghost",
+		"description": "Open-source publishing platform for modern content creators",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Ghost.svg"
+	},
+	{
+		"name": "go",
+		"description": "Compiled language optimized for concurrency and cloud-native services",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Go.svg"
+	},
+	{
+		"name": "Grails",
+		"description": "Full-stack Java web framework with Groovy language",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Grails.svg"
+	},
+	{
+		"name": "graphql",
+		"description": "Query language for APIs enabling flexible client-driven data fetching",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/GraphQL.svg"
+	},
+	{
+		"name": "grpc",
+		"description": "High-performance RPC framework using protocol buffers",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/grpc.svg"
+	},
+	{
+		"name": "Handlebars",
+		"description": "Minimal templating engine for JavaScript applications",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Handlebars.svg"
+	},
+	{
+		"name": "Haskell",
+		"description": "Purely functional programming language with strong typing",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Haskell.svg"
+	},
+	{
+		"name": "Hibernate",
+		"description": "ORM framework for Java database persistence",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Hibernate.svg"
+	},
+	{
+		"name": "HTML5",
+		"description": "Markup language standard for structuring web content",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/HTML5.svg"
+	},
+	{
+		"name": "hugging face transformers",
+		"description": "Library for state-of-the-art natural language processing models",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/huggingface.svg"
+	},
+	{
+		"name": "Hugo",
+		"description": "Fast static site generator built with Go",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Hugo.svg"
+	},
+	{
+		"name": "Ionic",
+		"description": "Framework for building cross-platform mobile apps with web tech",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Ionic.svg"
+	},
+	{
+		"name": "Java",
+		"description": "Object-oriented language for enterprise and Android development",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Java.svg"
+	},
+	{
+		"name": "JavaScript",
+		"description": "Essential scripting language for dynamic web applications",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/JavaScript.svg"
+	},
+	{
+		"name": "Jekyll",
+		"description": "Static site generator for blogging and documentation",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Jekyll.svg"
+	},
+	{
+		"name": "jQuery",
+		"description": "JavaScript library simplifying DOM manipulation and events",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/jQuery.svg"
+	},
+	{
+		"name": "JSON",
+		"description": "Lightweight data interchange format for APIs and configuration",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/JSON.svg"
+	},
+	{
+		"name": "Julia",
+		"description": "High-level language for scientific and technical computing",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Julia.svg"
+	},
+	{
+		"name": "Jupyter",
+		"description": "Interactive notebook environment for data science and research",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Jupyter.svg"
+	},
+	{
+		"name": "Keras",
+		"description": "High-level neural networks API for deep learning",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Keras.svg"
+	},
+	{
+		"name": "Knex.js",
+		"description": "SQL query builder for Node.js and TypeScript",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Knex.js.svg"
+	},
+	{
+		"name": "Knockout",
+		"description": "MVVM JavaScript library for dynamic UI bindings",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Knockout.svg"
+	},
+	{
+		"name": "kotlin",
+		"description": "Modern JVM language improving developer ergonomics over Java",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Kotlin.svg"
+	},
+	{
+		"name": "Ktor",
+		"description": "Kotlin framework for building asynchronous client-server applications",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Ktor.svg"
+	},
+	{
+		"name": "langchain",
+		"description": "Framework for building applications with large language models",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/langchain.svg"
+	},
+	{
+		"name": "Laravel",
+		"description": "Expressive PHP framework with elegant syntax and tooling",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Laravel.svg"
+	},
+	{
+		"name": "LaTeX",
+		"description": "Document preparation system for technical and scientific publishing",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/LaTeX.svg"
+	},
+	{
+		"name": "Less.js",
+		"description": "CSS preprocessor extending stylesheet functionality",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Less.js.svg"
+	},
+	{
+		"name": "Livewire",
+		"description": "Full-stack framework for building dynamic Laravel interfaces",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Livewire.svg"
+	},
+	{
+		"name": "llamaindex",
+		"description": "Framework for connecting LLMs with external data sources",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/llamaindex.svg"
+	},
+	{
+		"name": "Lua",
+		"description": "Lightweight embeddable scripting language for games and applications",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Lua.svg"
+	},
+	{
+		"name": "Markdown",
+		"description": "Lightweight markup language for formatted text",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Markdown.svg"
+	},
+	{
+		"name": "Material-UI",
+		"description": "React component library implementing Material Design",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Material-UI.svg"
+	},
+	{
+		"name": "Materialize",
+		"description": "CSS framework implementing Material Design principles",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Materialize.svg"
+	},
+	{
+		"name": "Matplotlib",
+		"description": "Python plotting library for data visualization",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Matplotlib.svg"
+	},
+	{
+		"name": "Meteor.js",
+		"description": "Full-stack JavaScript framework for real-time web apps",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Meteor.js.svg"
+	},
+	{
+		"name": "MobX",
+		"description": "State management library for reactive JavaScript applications",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/MobX.svg"
+	},
+	{
+		"name": "Moleculer",
+		"description": "Microservices framework for Node.js with built-in patterns",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Moleculer.svg"
+	},
+	{
+		"name": "Mongoose.js",
+		"description": "MongoDB ODM for Node.js with schema validation",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Mongoose.js.svg"
+	},
+	{
+		"name": "nestjs",
+		"description": "Opinionated Node.js framework for scalable server-side applications",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Nest.js.svg"
+	},
+	{
+		"name": "NetworkX",
+		"description": "Python library for graph and network analysis",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/NetworkX.svg"
+	},
+	{
+		"name": "nextjs",
+		"description": "Full-stack React framework enabling SSR and edge-rendered applications",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Next.js.svg"
+	},
+	{
+		"name": "NHibernate",
+		"description": "ORM framework for .NET object-relational mapping",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/NHibernate.svg"
+	},
+	{
+		"name": "Nim",
+		"description": "Efficient systems programming language with Python-like syntax",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Nim.svg"
+	},
+	{
+		"name": "Nimble",
+		"description": "Package manager for the Nim programming language",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Nimble.svg"
+	},
+	{
+		"name": "NumPy",
+		"description": "Fundamental Python library for numerical computing",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/NumPy.svg"
+	},
+	{
+		"name": "Nuxt-JS",
+		"description": "Framework for building Vue.js applications with SSR and static generation",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Nuxt-JS.svg"
+	},
+	{
+		"name": "Objective-C",
+		"description": "Primary language for Apple ecosystem before Swift",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Objective-C.svg"
+	},
+	{
+		"name": "OCaml",
+		"description": "Functional programming language with strong type inference",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/OCaml.svg"
+	},
+	{
+		"name": "OpenAL",
+		"description": "Cross-platform audio API for 3D positional sound",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/OpenAL.svg"
+	},
+	{
+		"name": "OpenAPI",
+		"description": "Standard specification for describing RESTful APIs",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/OpenAPI.svg"
+	},
+	{
+		"name": "OpenCL",
+		"description": "Framework for heterogeneous parallel computing across devices",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/OpenCL.svg"
+	},
+	{
+		"name": "OpenCV",
+		"description": "Computer vision library for real-time image processing",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/OpenCV.svg"
+	},
+	{
+		"name": "OpenGL",
+		"description": "Cross-platform graphics API for 2D and 3D rendering",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/OpenGL.svg"
+	},
+	{
+		"name": "Pandas",
+		"description": "Python library for data manipulation and analysis",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Pandas.svg"
+	},
+	{
+		"name": "Perl",
+		"description": "Scripting language for text processing and system administration",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Perl.svg"
+	},
+	{
+		"name": "Phalcon",
+		"description": "Full-stack PHP framework delivered as a C extension",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Phalcon.svg"
+	},
+	{
+		"name": "Phoenix-Framework",
+		"description": "Web framework for building scalable Elixir applications",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Phoenix-Framework.svg"
+	},
+	{
+		"name": "Photon-Engine-",
+		"description": "Game engine for realistic rendering and physics simulation",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Photon-Engine-.svg"
+	},
+	{
+		"name": "PHP",
+		"description": "Scripting language widely used for server-side web development",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/PHP.svg"
+	},
+	{
+		"name": "PhpStorm",
+		"description": "JetBrains IDE for PHP development",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/PhpStorm.svg"
+	},
+	{
+		"name": "PostCSS",
+		"description": "CSS post-processor for transforming stylesheets with plugins",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/PostCSS.svg"
+	},
+	{
+		"name": "Powershell",
+		"description": "Microsoft's task automation and configuration management framework",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Powershell.svg"
+	},
+	{
+		"name": "Processing",
+		"description": "Flexible software sketchbook for visual arts and creative coding",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Processing.svg"
+	},
+	{
+		"name": "PureScript",
+		"description": "Functional language that compiles to JavaScript",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/PureScript.svg"
+	},
+	{
+		"name": "python",
+		"description": "High-level language dominant in AI, data science, and rapid prototyping",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Python.svg"
+	},
+	{
+		"name": "Python-Poetry",
+		"description": "Dependency manager and packaging tool for Python projects",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Python-Poetry.svg"
+	},
+	{
+		"name": "pytorch",
+		"description": "Deep learning framework widely used in research and production",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/PyTorch.svg"
+	},
+	{
+		"name": "Qt-Framework",
+		"description": "Cross-platform GUI framework for C++ applications",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Qt-Framework.svg"
+	},
+	{
+		"name": "Quarkus",
+		"description": "Kubernetes-native Java framework for serverless and cloud",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Quarkus.svg"
+	},
+	{
+		"name": "Quasar",
+		"description": "Vue.js framework for building cross-platform apps",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Quasar.svg"
+	},
+	{
+		"name": "Qwik",
+		"description": "JavaScript framework for instant-loading web applications",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Qwik.svg"
+	},
+	{
+		"name": "ray",
+		"description": "Distributed computing framework for parallel and ML workloads",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/ray.svg"
+	},
+	{
+		"name": "react",
+		"description": "Component-based frontend library dominating modern web development",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/React.svg"
+	},
+	{
+		"name": "React-Bootstrap",
+		"description": "React component library for Bootstrap UI framework",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/React-Bootstrap.svg"
+	},
+	{
+		"name": "RedCube's-epic-Compiler-Thingy-programming-(ReCT)",
+		"description": "Educational programming language and compiler project",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/RedCube's-epic-Compiler-Thingy-programming-(ReCT).svg"
+	},
+	{
+		"name": "Redux",
+		"description": "Predictable state container for JavaScript applications",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Redux.svg"
+	},
+	{
+		"name": "Ren'Py",
+		"description": "Visual novel engine for interactive storytelling",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Ren'Py.svg"
+	},
+	{
+		"name": "Ruby",
+		"description": "Dynamic object-oriented language emphasizing developer happiness",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Ruby.svg"
+	},
+	{
+		"name": "Ruby-on-Rails",
+		"description": "Full-stack web framework for productive Ruby development",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Ruby-on-Rails.svg"
+	},
+	{
+		"name": "RubyMine",
+		"description": "JetBrains IDE for Ruby and Rails development",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/RubyMine.svg"
+	},
+	{
+		"name": "rust",
+		"description": "Systems programming language emphasizing memory safety and performance",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Rust.svg"
+	},
+	{
+		"name": "Sass",
+		"description": "CSS preprocessor with advanced features and nesting",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Sass.svg"
+	},
+	{
+		"name": "Scala",
+		"description": "Scalable language combining OOP and functional on the JVM",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Scala.svg"
+	},
+	{
+		"name": "Sequelize",
+		"description": "Promise-based Node.js ORM for SQL databases",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Sequelize.svg"
+	},
+	{
+		"name": "Simple-DirectMedia-Layer-(SDL)",
+		"description": "Cross-platform library for multimedia and game development",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Simple-DirectMedia-Layer-(SDL).svg"
+	},
+	{
+		"name": "Socket.io",
+		"description": "Library for real-time bidirectional communication between clients and servers",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Socket.io.svg"
+	},
+	{
+		"name": "Solid.js",
+		"description": "Reactive JavaScript library for performant web UIs",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Solid.js.svg"
+	},
+	{
+		"name": "Solidity",
+		"description": "Smart contract language for Ethereum blockchain development",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Solidity.svg"
+	},
+	{
+		"name": "spring boot",
+		"description": "Java framework simplifying microservice and backend development",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Spring.svg"
+	},
+	{
+		"name": "SQLAlchemy",
+		"description": "SQL toolkit and ORM for Python database access",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/SQLAlchemy.svg"
+	},
+	{
+		"name": "Streamlit",
+		"description": "Python framework for building data app dashboards quickly",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Streamlit.svg"
+	},
+	{
+		"name": "Stylus",
+		"description": "Expressive CSS preprocessor with dynamic styling",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Stylus.svg"
+	},
+	{
+		"name": "svelte",
+		"description": "Compiler-based frontend framework reducing runtime overhead",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Svelte.svg"
+	},
+	{
+		"name": "Swagger",
+		"description": "API documentation and design tool for OpenAPI specs",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Swagger.svg"
+	},
+	{
+		"name": "Swift",
+		"description": "Apple's modern language for iOS and macOS app development",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Swift.svg"
+	},
+	{
+		"name": "Symfony",
+		"description": "Enterprise PHP framework with reusable components",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Symfony.svg"
+	},
+	{
+		"name": "t3 stack",
+		"description": "Opinionated full-stack TypeScript stack combining Next.js, tRPC, and Prisma",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/t3stack.svg"
+	},
+	{
+		"name": "tailwind css",
+		"description": "Utility-first CSS framework for rapid UI development",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Tailwind-CSS.svg"
+	},
+	{
+		"name": "Tauri",
+		"description": "Framework for building lightweight desktop apps with web frontends",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Tauri.svg"
+	},
+	{
+		"name": "tensorflow",
+		"description": "Machine learning framework with strong ecosystem and tooling",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/TensorFlow.svg"
+	},
+	{
+		"name": "TeX",
+		"description": "Typesetting system for mathematical and scientific documents",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/TeX.svg"
+	},
+	{
+		"name": "Three.js",
+		"description": "JavaScript 3D library for WebGL rendering",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Three.js.svg"
+	},
+	{
+		"name": "Titanium-SDK",
+		"description": "Framework for building native mobile apps with JavaScript",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Titanium-SDK.svg"
+	},
+	{
+		"name": "trpc",
+		"description": "Type-safe RPC framework for TypeScript applications",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/trpc.svg"
+	},
+	{
+		"name": "typescript",
+		"description": "Strongly typed superset of JavaScript improving maintainability in large-scale applications",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/TypeScript.svg"
+	},
+	{
+		"name": "Unified-Modelling-Language-(UML)",
+		"description": "Standard modeling language for software architecture diagrams",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Unified-Modelling-Language-(UML).svg"
+	},
+	{
+		"name": "Vala",
+		"description": "Programming language for GNOME application development",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Vala.svg"
+	},
+	{
+		"name": "Veutify",
+		"description": "Vue.js component library implementing Material Design",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Veutify.svg"
+	},
+	{
+		"name": "vue",
+		"description": "Progressive frontend framework with approachable learning curve",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Vue.js.svg"
+	},
+	{
+		"name": "Vue-Storefront",
+		"description": "Frontend framework for headless e-commerce with Vue.js",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Vue-Storefront.svg"
+	},
+	{
+		"name": "Vyper",
+		"description": "Smart contract language for Ethereum focused on security",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Vyper.svg"
+	},
+	{
+		"name": "WordPress",
+		"description": "Content management system powering a large portion of websites",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/WordPress.svg"
+	},
+	{
+		"name": "Xamarin",
+		"description": "Cross-platform framework for building mobile apps with C# and .NET",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Xamarin.svg"
+	},
+	{
+		"name": "XML",
+		"description": "Extensible markup language for structured data representation",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/XML.svg"
+	},
+	{
+		"name": "YAML",
+		"description": "Human-readable data serialization format for configuration",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/YAML.svg"
+	},
+	{
+		"name": "Yii-Framework",
+		"description": "High-performance PHP framework for web development",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Yii-Framework.svg"
+	},
+	{
+		"name": "Zend-Framework",
+		"description": "Enterprise PHP framework with robust components",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Zend-Framework.svg"
+	},
+	{
+		"name": "zig",
+		"description": "Emerging low-level language focused on simplicity and control without hidden behavior",
+		"category": "language/framework",
+		"icon_url": "https://raw.githubusercontent.com/MasonD-007/techradar/refs/heads/image-content/svg/Zig.svg"
+	}
 ]
