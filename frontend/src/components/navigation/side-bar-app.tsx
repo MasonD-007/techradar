@@ -1,5 +1,5 @@
 "use client";
-import { CircleUser, Cpu, Radar, Scale } from "lucide-react";
+import { Cpu, Radar, Scale } from "lucide-react";
 import { useRouter } from "next/dist/client/components/navigation";
 import Image from "next/image";
 import {
@@ -38,9 +38,7 @@ export default function SideBarApp({ user }: SideBarAppProps) {
 			<SidebarContent className="group-data-[collapsible=icon]:hidden">
 				<SidebarGroup>
 					<SidebarGroupLabel>Personal</SidebarGroupLabel>
-					<RadarMenuItem title="Your Profile" path="user">
-						<CircleUser />
-					</RadarMenuItem>
+					
 					<RadarMenuItem title="Your Radar" path="radar">
 						<Radar />
 					</RadarMenuItem>
@@ -66,9 +64,7 @@ export default function SideBarApp({ user }: SideBarAppProps) {
 					>
 						<Image src="/logo.png" alt="Logo" width={40} height={40} />
 					</SidebarMenuItem>
-					<CollapsedIcons title="Your Profile" path="user">
-						<CircleUser />
-					</CollapsedIcons>
+					
 					<CollapsedIcons title="Your Radar" path="radar">
 						<Radar />
 					</CollapsedIcons>

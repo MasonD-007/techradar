@@ -14,7 +14,7 @@ export default async function RootLayout({
             <SidebarProvider>
                 <SideBarApp user={user} />
                 <main className="w-full">
-                    <SidebarTrigger className="size-10 cursor-pointer" />
+                    <SidebarTrigger className="sticky top-4 z-50 ml-4 size-10 cursor-pointer" />
                     {children}
                 </main>
             </SidebarProvider>

@@ -122,9 +122,7 @@ export default function ComparePage() {
 						) : (
 							<div className="flex min-h-[300px] items-center justify-center rounded-2xl border border-dashed border-border p-6 text-center">
 								<p className="text-muted-foreground text-sm">
-									{signedInUserId
-										? "Set up your share code to view your radar here."
-										: "Sign in to view your radar for comparison."}
+									Loading...
 								</p>
 							</div>
 						)}
