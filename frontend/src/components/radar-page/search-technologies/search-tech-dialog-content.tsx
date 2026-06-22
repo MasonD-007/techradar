@@ -1,5 +1,8 @@
 "use client";
 
+import { useVirtualizer } from "@tanstack/react-virtual";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import {
 	DialogContent,
 	DialogDescription,
@@ -13,9 +16,6 @@ import {
 	type Technology,
 	type UserTechnology,
 } from "@/lib/actions";
-import { useVirtualizer } from "@tanstack/react-virtual";
-import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
 import AddTechnologyButton from "./add-technology-button";
 
 interface SearchTechnologiesDialogContentProps {
@@ -38,7 +38,9 @@ export default function SearchTechnologiesDialogContent({
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
-	const scrollContainerRef = useRef<HTMLDivElement>(null);
+	const [scrollElement, setScrollElement] = useState<HTMLDivElement | null>(
+		null,
+	);
 
 	useEffect(() => {
 		const fetchTechnologies = async () => {
@@ -89,9 +91,9 @@ export default function SearchTechnologiesDialogContent({
 
 	const virtualizer = useVirtualizer({
 		count: filtered.length,
-		getScrollElement: () => scrollContainerRef.current,
+		getScrollElement: () => scrollElement,
 		estimateSize: () => 88,
-		overscan: 5,
+		overscan: 2,
 	});
 
 	const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -130,12 +132,12 @@ export default function SearchTechnologiesDialogContent({
 
 				{!isLoading && !error && (
 					<div
-						ref={scrollContainerRef}
+						ref={setScrollElement}
 						className="max-h-72 overflow-y-auto"
 						style={{ contain: "layout paint" }}
 					>
 						{filtered.length === 0 ? (
-							<p className="text-muted-foreground py-4 text-center text-sm">
+							<p className="py-4 text-center text-muted-foreground text-sm">
 								No technologies found.
 							</p>
 						) : (
