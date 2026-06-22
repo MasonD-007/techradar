@@ -102,7 +102,7 @@ export default function SearchTechnologiesDialogContent({
 	};
 
 	return (
-		<DialogContent>
+		<DialogContent className="sm:max-w-xl">
 			<DialogHeader>
 				<DialogTitle>Search Technologies</DialogTitle>
 				<DialogDescription>
@@ -133,7 +133,7 @@ export default function SearchTechnologiesDialogContent({
 				{!isLoading && !error && (
 					<div
 						ref={setScrollElement}
-						className="max-h-72 overflow-y-auto"
+						className="max-h-96 overflow-y-auto"
 						style={{ contain: "layout paint" }}
 					>
 						{filtered.length === 0 ? (
