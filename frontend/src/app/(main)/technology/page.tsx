@@ -1,14 +1,14 @@
 "use client";
 
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { parseAsString, useQueryState } from "nuqs";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
-	getBlip,
+	getBlips,
 	getTechnologies,
+	type Blip,
 	type Technology,
 } from "@/lib/actions";
 
@@ -33,7 +33,6 @@ function extractBlipIntro(context: unknown): string | null {
 }
 
 export default function TechnologyPage() {
-	const [technologyId, setTechnologyId] = useQueryState("id", parseAsString);
 	const [search, setSearch] = useState("");
 	const [technologies, setTechnologies] = useState<Technology[]>([]);
 	const [blipCache, setBlipCache] = useState<Map<number, string | null>>(
@@ -44,13 +43,18 @@ export default function TechnologyPage() {
 	const [scrollElement, setScrollElement] = useState<HTMLDivElement | null>(
 		null,
 	);
+	const fetchCancelled = useRef(false);
 
 	useEffect(() => {
+		fetchCancelled.current = false;
+
 		const fetchData = async () => {
 			setIsLoading(true);
 			setError(null);
 
 			const techsResult = await getTechnologies();
+			if (fetchCancelled.current) return;
+
 			if (!techsResult.success) {
 				setError(techsResult.error || "Failed to load technologies");
 				setTechnologies([]);
@@ -61,21 +65,13 @@ export default function TechnologyPage() {
 			const techs = techsResult.data || [];
 			setTechnologies(techs);
 
-			const blipIds = techs
-				.map((t) => t.blip_id)
-				.filter((id): id is number => typeof id === "number");
-			const uniqueBlipIds = [...new Set(blipIds)];
+			const allBlips = await getBlips();
+			if (fetchCancelled.current) return;
 
 			const blips = new Map<number, string | null>();
-			const results = await Promise.all(
-				uniqueBlipIds.map(async (blipId) => ({
-					blipId,
-					result: await getBlip(blipId),
-				})),
-			);
-			for (const { blipId, result } of results) {
-				if (result.success) {
-					blips.set(blipId, extractBlipIntro(result.data?.context));
+			for (const blip of allBlips) {
+				if (blip.id !== undefined) {
+					blips.set(blip.id, extractBlipIntro(blip.context));
 				}
 			}
 			setBlipCache(blips);
@@ -83,6 +79,10 @@ export default function TechnologyPage() {
 		};
 
 		void fetchData();
+
+		return () => {
+			fetchCancelled.current = true;
+		};
 	}, []);
 
 	const filtered = technologies.filter((tech) =>
@@ -152,7 +152,7 @@ export default function TechnologyPage() {
 										: "Unknown";
 
 									return (
-										<button
+										<div
 											key={virtualItem.key}
 											data-index={virtualItem.index}
 											ref={virtualizer.measureElement}
@@ -163,15 +163,7 @@ export default function TechnologyPage() {
 												width: "100%",
 												transform: `translateY(${virtualItem.start}px)`,
 											}}
-											type="button"
-											onClick={() =>
-												setTechnologyId(
-													tech.id === technologyId ? null : tech.id ?? null,
-												)
-											}
-											className={`flex w-full items-start gap-4 border-b border-border p-4 text-left transition-colors hover:bg-accent/50 ${
-												technologyId === tech.id ? "bg-accent" : ""
-											}`}
+											className="flex items-start gap-4 border-b border-border p-4"
 										>
 											<div className="min-w-0 flex-1">
 												<p className="font-medium text-card-foreground">
@@ -215,22 +207,11 @@ export default function TechnologyPage() {
 													className="mt-1 size-8 shrink-0 rounded-md object-contain"
 												/>
 											)}
-										</button>
+										</div>
 									);
 								})}
 							</div>
 						)}
-					</div>
-				)}
-
-				{technologyId && (
-					<div className="rounded-2xl border border-border p-4">
-						<p className="text-muted-foreground text-xs uppercase tracking-[0.24em]">
-							Selected Technology ID
-						</p>
-						<p className="mt-1 font-mono text-card-foreground text-sm">
-							{technologyId}
-						</p>
 					</div>
 				)}
 			</CardContent>
