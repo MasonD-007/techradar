@@ -384,6 +384,129 @@ const docTemplate = `{
                 }
             }
         },
+        "/share-codes": {
+            "post": {
+                "description": "Create a new 6-character share code for the authenticated user, or return existing one",
+                "tags": [
+                    "share-codes"
+                ],
+                "summary": "Create or get existing share code",
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ShareCodeResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/share-codes/my": {
+            "get": {
+                "description": "Get the authenticated user's share code",
+                "tags": [
+                    "share-codes"
+                ],
+                "summary": "Get my share code",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ShareCodeResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/share-codes/{code}": {
+            "get": {
+                "description": "Get the full radar graph for a share code. Public endpoint, no auth required.",
+                "tags": [
+                    "share-codes"
+                ],
+                "summary": "Get radar graph by share code",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Share code",
+                        "name": "code",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.RadarGraphResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a share code by code value",
+                "tags": [
+                    "share-codes"
+                ],
+                "summary": "Delete a share code",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Share code",
+                        "name": "code",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/technologies": {
             "get": {
                 "description": "Get all technologies",
@@ -1220,6 +1343,32 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.RadarGraphItem": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "icon_url": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "quadrant_id": {
+                    "type": "integer"
+                },
+                "quadrant_name": {
+                    "type": "string"
+                },
+                "ring_id": {
+                    "type": "integer"
+                },
+                "ring_name": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.RegisterRequest": {
             "type": "object",
             "properties": {
@@ -1287,6 +1436,9 @@ const docTemplate = `{
                 "description": {
                     "type": "string"
                 },
+                "icon_url": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -1346,6 +1498,31 @@ const docTemplate = `{
                 }
             }
         },
+        "handlers.RadarGraphResponse": {
+            "type": "object",
+            "properties": {
+                "radar": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.RadarGraphItem"
+                    }
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.ShareCodeResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                }
+            }
+        },
         "handlers.Technology": {
             "type": "object",
             "properties": {
@@ -1356,6 +1533,10 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string",
                     "example": "2026-04-05T12:00:00Z"
+                },
+                "icon_url": {
+                    "type": "string",
+                    "example": "https://example.com/icon.svg"
                 },
                 "id": {
                     "type": "string",
@@ -1389,6 +1570,9 @@ const docTemplate = `{
             "properties": {
                 "blip_id": {
                     "type": "integer"
+                },
+                "icon_url": {
+                    "type": "string"
                 },
                 "name": {
                     "type": "string"

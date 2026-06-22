@@ -266,6 +266,111 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/handlers.Error"
+  /share-codes:
+    post:
+      description: Create a new 6-character share code for the authenticated user, or
+        return existing one
+      tags:
+        - share-codes
+      summary: Create or get existing share code
+      responses:
+        "201":
+          description: Created
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/handlers.ShareCodeResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+  /share-codes/my:
+    get:
+      description: Get the authenticated user's share code
+      tags:
+        - share-codes
+      summary: Get my share code
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/handlers.ShareCodeResponse"
+        "404":
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+        "500":
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+  "/share-codes/{code}":
+    get:
+      description: Get the full radar graph for a share code. Public endpoint, no auth
+        required.
+      tags:
+        - share-codes
+      summary: Get radar graph by share code
+      parameters:
+        - description: Share code
+          name: code
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/handlers.RadarGraphResponse"
+        "404":
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+        "500":
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+    delete:
+      description: Delete a share code by code value
+      tags:
+        - share-codes
+      summary: Delete a share code
+      parameters:
+        - description: Share code
+          name: code
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+        "500":
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
   /technologies:
     get:
       description: Get all technologies
@@ -873,6 +978,23 @@ components:
           type: string
         password:
           type: string
+    dto.RadarGraphItem:
+      type: object
+      properties:
+        description:
+          type: string
+        icon_url:
+          type: string
+        name:
+          type: string
+        quadrant_id:
+          type: integer
+        quadrant_name:
+          type: string
+        ring_id:
+          type: integer
+        ring_name:
+          type: string
     dto.RegisterRequest:
       type: object
       properties:
@@ -918,6 +1040,8 @@ components:
       properties:
         description:
           type: string
+        icon_url:
+          type: string
         id:
           type: string
         name:
@@ -955,6 +1079,22 @@ components:
       properties:
         message:
           type: string
+    handlers.RadarGraphResponse:
+      type: object
+      properties:
+        radar:
+          type: array
+          items:
+            $ref: "#/components/schemas/dto.RadarGraphItem"
+        username:
+          type: string
+    handlers.ShareCodeResponse:
+      type: object
+      properties:
+        code:
+          type: string
+        created_at:
+          type: string
     handlers.Technology:
       type: object
       properties:
@@ -964,6 +1104,9 @@ components:
         created_at:
           type: string
           example: 2026-04-05T12:00:00Z
+        icon_url:
+          type: string
+          example: https://example.com/icon.svg
         id:
           type: string
           example: 550e8400-e29b-41d4-a716-446655440000
@@ -987,6 +1130,8 @@ components:
       properties:
         blip_id:
           type: integer
+        icon_url:
+          type: string
         name:
           type: string
         quadrant_id:

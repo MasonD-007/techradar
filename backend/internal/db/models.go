@@ -25,6 +25,12 @@ type Ring struct {
 	Name string `json:"name"`
 }
 
+type ShareCode struct {
+	ID        string             `json:"id"`
+	UserID    pgtype.UUID        `json:"user_id"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
+}
+
 type Technology struct {
 	ID         pgtype.UUID        `json:"id"`
 	Name       string             `json:"name"`

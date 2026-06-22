@@ -14,6 +14,10 @@ type UpdateUserRequest = dto.UpdateUserRequest
 type CreateUserTechnologyRequest = dto.CreateUserTechnologyRequest
 type UpdateUserTechnologyRequest = dto.UpdateUserTechnologyRequest
 
+type ShareCodeResponse = dto.ShareCodeResponse
+type RadarGraphItem = dto.RadarGraphItem
+type RadarGraphResponse = dto.RadarGraphResponse
+
 // Error documents the standard error payload returned by handlers.
 type Error struct {
 	Message string `json:"message"`

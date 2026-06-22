@@ -56,6 +56,28 @@ CREATE INDEX idx_user_technologies_user_id ON user_technologies(user_id);
 CREATE INDEX idx_user_technologies_technology_id ON user_technologies(technology_id);
 CREATE INDEX idx_user_technologies_ring_id ON user_technologies(ring_id);
 
+CREATE TABLE share_codes (
+    id TEXT PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE (user_id)
+);
+
+CREATE INDEX idx_share_codes_user_id ON share_codes(user_id);
+
+ALTER TABLE share_codes ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY sc_select ON share_codes
+  FOR SELECT USING (true);
+
+CREATE POLICY sc_own ON share_codes
+  FOR ALL
+  USING (user_id = current_setting('app.current_user_id', true)::uuid)
+  WITH CHECK (user_id = current_setting('app.current_user_id', true)::uuid);
+
+CREATE POLICY sc_admin ON share_codes
+  FOR ALL USING (current_setting('app.current_role', true) = 'admin');
+
 ALTER TABLE user_technologies ENABLE ROW LEVEL SECURITY;
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 

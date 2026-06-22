@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import {
 	Card,
@@ -17,26 +19,25 @@ import {
 import {
 	getBlip,
 	getCurrentUserId,
+	getMyRadarGraph,
+	getRadarGraphByCode,
 	getTechnologies,
 	getTechnologiesByUser,
+	getUser,
+	type RadarGraphResponse,
 	type Technology,
 } from "@/lib/actions";
-import Image from "next/image";
-import * as d3 from "d3";
-import { useEffect, useRef, useState } from "react";
 import {
-	CENTER,
 	outerRadius,
 	polarToCartesian,
-	polarToRelative,
 	type QuadrantKey,
-	type QuadrantLabel,
 	quadrantLabels,
 	RADAR_SIZE,
 	type RingKey,
 	ringPaths,
 	ringRatios,
 } from "./radar-data";
+import RadarSVG, { quadrantStroke } from "./radar-svg";
 import SearchTechnologiesDialog from "./search-technologies/search-technologies-dialog";
 
 export type RadarTechnology = {
@@ -58,6 +59,9 @@ export type PositionedRadarTechnology = RadarTechnology & {
 };
 
 type RadarProps = {
+	shareCode?: string | null;
+	currentUserId?: string | null;
+	isOwnRadar?: boolean;
 	onTechnologySelect?: (technology: RadarTechnology) => void;
 };
 
@@ -173,312 +177,126 @@ function toRadarTechnology(
 	};
 }
 
-function buildRandomPositionedTechnologies(
-	technologies: RadarTechnology[],
-): PositionedRadarTechnology[] {
-	return technologies.map((technology) => {
-		const quadrantBounds = quadrantBoundsByKey[technology.quadrant];
-		const ringIndex = ringIndexByKey[technology.ring];
-		const anglePadding = 0.16;
-		const minRadius =
-			ringIndex === 0 ? 22 : ringRatios[ringIndex - 1] * outerRadius;
-		const maxRadius = ringRatios[ringIndex] * outerRadius - 18;
-		const angleStart = quadrantBounds.startAngle + anglePadding;
-		const angleEnd = quadrantBounds.endAngle - anglePadding;
-		const angle = angleStart + Math.random() * (angleEnd - angleStart);
-		const radius = minRadius + Math.random() * (maxRadius - minRadius);
-		const point = polarToCartesian(angle, radius);
+function toSharedRadarTechnology(
+	item: NonNullable<RadarGraphResponse["radar"]>[number],
+	index: number,
+): RadarTechnology | null {
+	const quadrant = mapQuadrantIdToKey(item.quadrant_id ?? 0);
+	const ring = mapRingIdToKey(item.ring_id ?? 0);
 
-		return {
-			...technology,
-			x: point.x,
-			y: point.y,
-			angle,
-			radius,
-			colorKey: technology.quadrant,
-		};
+	if (!quadrant || !ring) {
+		return null;
+	}
+
+	const title = item.name?.trim() || "Untitled technology";
+	const intro = item.description?.trim() || null;
+	const iconUrl = item.icon_url?.trim();
+
+	return {
+		id: `shared-${index}-${item.quadrant_id}-${item.ring_id}-${title}`,
+		title,
+		quadrant,
+		ring,
+		blipId: null,
+		intro,
+		iconUrl: iconUrl || undefined,
+	};
+}
+
+function sampleRadarPosition(technology: RadarTechnology) {
+	const quadrantBounds = quadrantBoundsByKey[technology.quadrant];
+	const ringIndex = ringIndexByKey[technology.ring];
+	const anglePadding = 0.16;
+	const minRadius =
+		ringIndex === 0 ? 22 : ringRatios[ringIndex - 1] * outerRadius;
+	const maxRadius = ringRatios[ringIndex] * outerRadius - 18;
+	const angleStart = quadrantBounds.startAngle + anglePadding;
+	const angleEnd = quadrantBounds.endAngle - anglePadding;
+	const angle = angleStart + Math.random() * (angleEnd - angleStart);
+	const radius = minRadius + Math.random() * (maxRadius - minRadius);
+	const point = polarToCartesian(angle, radius);
+
+	return {
+		...technology,
+		x: point.x,
+		y: point.y,
+		angle,
+		radius,
+		colorKey: technology.quadrant,
+	};
+}
+
+function isPositionFarEnough(
+	candidate: PositionedRadarTechnology,
+	existingTechnologies: PositionedRadarTechnology[],
+	minDistance: number,
+) {
+	const minDistanceSq = minDistance * minDistance;
+
+	return existingTechnologies.every((existingTechnology) => {
+		const dx = candidate.x - existingTechnology.x;
+		const dy = candidate.y - existingTechnology.y;
+		return dx * dx + dy * dy >= minDistanceSq;
 	});
 }
 
-const quadrantColor = d3
-	.scaleOrdinal<QuadrantKey, string>()
-	.domain(["tools", "techniques", "platforms", "languages"])
-	.range([
-		"color-mix(in oklab, #38bdf8 26%, transparent)",
-		"color-mix(in oklab, #a78bfa 26%, transparent)",
-		"color-mix(in oklab, #34d399 24%, transparent)",
-		"color-mix(in oklab, #f59e0b 26%, transparent)",
-	]);
+function buildRandomPositionedTechnologies(
+	technologies: RadarTechnology[],
+): PositionedRadarTechnology[] {
+	const minSpacing = 46;
+	const maxAttemptsPerTechnology = 120;
+	const positionedTechnologies: PositionedRadarTechnology[] = [];
 
-const quadrantStroke = d3
-	.scaleOrdinal<QuadrantKey, string>()
-	.domain(["tools", "techniques", "platforms", "languages"])
-	.range([
-		"color-mix(in oklab, #38bdf8 62%, transparent)",
-		"color-mix(in oklab, #a78bfa 62%, transparent)",
-		"color-mix(in oklab, #34d399 58%, transparent)",
-		"color-mix(in oklab, #f59e0b 62%, transparent)",
-	]);
+	for (const technology of technologies) {
+		let bestCandidate: PositionedRadarTechnology | null = null;
+		let bestClearance = -Infinity;
 
-const quadrantArc = d3
-	.arc<{ startAngle: number; endAngle: number }>()
-	.innerRadius(0)
-	.outerRadius(outerRadius);
+		for (let attempt = 0; attempt < maxAttemptsPerTechnology; attempt += 1) {
+			const candidate = sampleRadarPosition(technology);
+			const clearance = positionedTechnologies.reduce((smallest, existing) => {
+				const dx = candidate.x - existing.x;
+				const dy = candidate.y - existing.y;
+				return Math.min(smallest, Math.sqrt(dx * dx + dy * dy));
+			}, Number.POSITIVE_INFINITY);
 
-function drawRadarGeometry(svgNode: SVGSVGElement) {
-	const svg = d3.select(svgNode);
-	svg.selectAll("*").remove();
-
-	svg
-		.attr("viewBox", `0 0 ${RADAR_SIZE} ${RADAR_SIZE}`)
-		.attr("role", "img")
-		.attr(
-			"aria-label",
-			"A four quadrant tech radar with concentric rings showing technology placement and status.",
-		)
-		.attr("preserveAspectRatio", "xMidYMid meet");
-
-	const defs = svg.append("defs");
-
-	const backgroundGradient = defs
-		.append("radialGradient")
-		.attr("id", "radar-background-gradient")
-		.attr("cx", "50%")
-		.attr("cy", "42%")
-		.attr("r", "72%");
-
-	backgroundGradient
-		.append("stop")
-		.attr("offset", "0%")
-		.attr("stop-color", "color-mix(in oklab, #0f172a 74%, var(--background))");
-	backgroundGradient
-		.append("stop")
-		.attr("offset", "55%")
-		.attr("stop-color", "color-mix(in oklab, #111827 82%, var(--background))");
-	backgroundGradient
-		.append("stop")
-		.attr("offset", "100%")
-		.attr("stop-color", "color-mix(in oklab, #020617 92%, var(--background))");
-
-	const glowGradient = defs
-		.append("radialGradient")
-		.attr("id", "radar-glow")
-		.attr("cx", "50%")
-		.attr("cy", "50%")
-		.attr("r", "50%");
-
-	glowGradient
-		.append("stop")
-		.attr("offset", "0%")
-		.attr("stop-color", "color-mix(in oklab, #38bdf8 24%, transparent)");
-	glowGradient
-		.append("stop")
-		.attr("offset", "100%")
-		.attr("stop-color", "transparent");
-
-	defs
-		.append("pattern")
-		.attr("id", "radar-grid")
-		.attr("width", 56)
-		.attr("height", 56)
-		.attr("patternUnits", "userSpaceOnUse")
-		.append("path")
-		.attr("d", "M56 0H0V56")
-		.attr("fill", "none")
-		.attr("stroke", "color-mix(in oklab, #94a3b8 12%, transparent)")
-		.attr("stroke-width", 1);
-
-	defs
-		.append("filter")
-		.attr("id", "radar-soft-glow")
-		.attr("x", "-30%")
-		.attr("y", "-30%")
-		.attr("width", "160%")
-		.attr("height", "160%")
-		.append("feGaussianBlur")
-		.attr("stdDeviation", 4);
-
-	svg
-		.append("rect")
-		.attr("width", RADAR_SIZE)
-		.attr("height", RADAR_SIZE)
-		.attr("fill", "url(#radar-background-gradient)");
-	svg
-		.append("rect")
-		.attr("width", RADAR_SIZE)
-		.attr("height", RADAR_SIZE)
-		.attr("fill", "url(#radar-glow)")
-		.attr("opacity", 0.9);
-	svg
-		.append("rect")
-		.attr("width", RADAR_SIZE)
-		.attr("height", RADAR_SIZE)
-		.attr("fill", "url(#radar-grid)");
-
-	svg
-		.append("circle")
-		.attr("cx", CENTER)
-		.attr("cy", CENTER)
-		.attr("r", 240)
-		.attr("fill", "transparent");
-
-	const root = svg
-		.append("g")
-		.attr("transform", `translate(${CENTER},${CENTER})`);
-
-	root
-		.append("circle")
-		.attr("r", 24)
-		.attr("fill", "color-mix(in oklab, var(--card) 70%, var(--background))")
-		.attr("stroke", "color-mix(in oklab, #38bdf8 38%, transparent)")
-		.attr("stroke-width", 1.2)
-		.attr("filter", "url(#radar-soft-glow)");
-
-	const quadrantGroups = root
-		.selectAll<
-			SVGGElement,
-			{
-				key: QuadrantKey;
-				title: string;
-				description: string;
-				startAngle: number;
-				endAngle: number;
+			if (clearance > bestClearance) {
+				bestCandidate = candidate;
+				bestClearance = clearance;
 			}
-		>("g.quadrant")
-		.data(quadrantLabels)
-		.join("g")
-		.attr("class", "quadrant");
 
-	quadrantGroups
-		.append("path")
-		.attr(
-			"d",
-			(d) =>
-				quadrantArc({ startAngle: d.startAngle, endAngle: d.endAngle }) ?? "",
-		)
-		.attr("fill", (d) => quadrantColor(d.key))
-		.attr("stroke", (d) => quadrantStroke(d.key))
-		.attr("stroke-width", 1.5);
-
-	quadrantGroups
-		.append("path")
-		.attr(
-			"d",
-			(d) =>
-				quadrantArc({ startAngle: d.startAngle, endAngle: d.endAngle }) ?? "",
-		)
-		.attr("fill", "none")
-		.attr("stroke", "color-mix(in oklab, #cbd5e1 5%, transparent)")
-		.attr("stroke-width", 1);
-
-	root
-		.selectAll<
-			SVGCircleElement,
-			{ key: string; title: string; blurb: string; radius: number }
-		>("circle.ring")
-		.data(ringPaths)
-		.join("circle")
-		.attr("class", "ring")
-		.attr("r", (radius) => radius.radius)
-		.attr("fill", "none")
-		.attr("stroke", (_radius, index) =>
-			index === ringPaths.length - 1
-				? "color-mix(in oklab, #cbd5e1 26%, transparent)"
-				: "color-mix(in oklab, #94a3b8 16%, transparent)",
-		)
-		.attr("stroke-width", (_radius, index) =>
-			index === ringPaths.length - 1 ? 2 : 1,
-		);
-
-	root
-		.selectAll<SVGLineElement, number>("line.divider")
-		.data([0, Math.PI / 2, Math.PI, (3 * Math.PI) / 2])
-		.join("line")
-		.attr("class", "divider")
-		.attr("x1", 0)
-		.attr("y1", 0)
-		.attr("x2", (angle) => Math.sin(angle) * outerRadius)
-		.attr("y2", (angle) => -Math.cos(angle) * outerRadius)
-		.attr("stroke", "color-mix(in oklab, #60a5fa 18%, transparent)")
-		.attr("stroke-width", 1.3);
-
-	root
-		.selectAll<SVGTextElement, QuadrantLabel>("text.quadrant-label")
-		.data(quadrantLabels)
-		.join("text")
-		.attr("class", "quadrant-label")
-		.attr("fill", "#e2e8f0")
-		.attr("font-size", 22)
-		.attr("font-weight", 800)
-		.attr("dominant-baseline", "middle")
-		.attr("text-anchor", (d) => {
-			const mid = (d.startAngle + d.endAngle) / 2;
-			const x = polarToRelative(mid, 1).x;
-			if (x > 0.1) return "start";
-			if (x < -0.1) return "end";
-			return "middle";
-		})
-		.each(function (d) {
-			const mid = (d.startAngle + d.endAngle) / 2;
-			const pos = polarToRelative(mid, outerRadius + 36);
-			const el = d3.select(this);
-			el.attr("x", pos.x).attr("y", pos.y);
-			el.selectAll("tspan").remove();
-			if (d.key === "languages") {
-				el.append("tspan")
-					.attr("x", pos.x)
-					.attr("dy", "-8")
-					.text("Languages &");
-				el.append("tspan").attr("x", pos.x).attr("dy", "20").text("Frameworks");
-			} else {
-				el.append("tspan").attr("x", pos.x).attr("dy", "6").text(d.title);
+			if (isPositionFarEnough(candidate, positionedTechnologies, minSpacing)) {
+				positionedTechnologies.push(candidate);
+				bestCandidate = null;
+				break;
 			}
-		});
+		}
 
-	root
-		.selectAll<
-			SVGTextElement,
-			{ key: string; title: string; blurb: string; radius: number }
-		>("text.ring-label")
-		.data(ringPaths)
-		.join("text")
-		.attr("class", "ring-label")
-		.attr("x", 0)
-		.attr("y", (d) => -d.radius + 16)
-		.attr("fill", "color-mix(in oklab, var(--foreground) 82%, transparent)")
-		.attr("font-size", 10)
-		.attr("font-weight", 600)
-		.attr("text-anchor", "middle")
-		.attr("dominant-baseline", "middle")
-		.text((d) => d.title);
+		if (bestCandidate) {
+			positionedTechnologies.push(bestCandidate);
+		}
+	}
 
-	root
-		.selectAll<
-			SVGTextElement,
-			{ key: string; title: string; blurb: string; radius: number }
-		>("text.ring-blurb")
-		.data(ringPaths)
-		.join("text")
-		.attr("class", "ring-blurb")
-		.attr("x", 0)
-		.attr("y", (d) => -d.radius + 30)
-		.attr("fill", "color-mix(in oklab, #94a3b8 72%, transparent)")
-		.attr("font-size", 8)
-		.attr("font-weight", 500)
-		.attr("text-anchor", "middle")
-		.attr("dominant-baseline", "middle")
-		.text((d) => d.blurb);
+	return positionedTechnologies;
 }
 
-function Radar({ onTechnologySelect }: RadarProps) {
-	const svgRef = useRef<SVGSVGElement | null>(null);
-	const [userId, setUserId] = useState<string | null>(null);
+function Radar({
+	shareCode,
+	currentUserId,
+	isOwnRadar = false,
+	onTechnologySelect,
+}: RadarProps) {
+	const [viewedUserName, setViewedUserName] = useState<string | null>(null);
 	const [activeItemId, setActiveItemId] = useState("");
 	const [positionedTechnologies, setPositionedTechnologies] = useState<
 		PositionedRadarTechnology[]
 	>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
+	const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+	const handleTechnologyChange = () => {
+		setRefreshTrigger((prev) => prev + 1);
+	};
 
 	useEffect(() => {
 		let cancelled = false;
@@ -487,24 +305,105 @@ function Radar({ onTechnologySelect }: RadarProps) {
 			setIsLoading(true);
 			setError(null);
 
-			const currentUserId = await getCurrentUserId();
+			const resolvedUserId = currentUserId ?? (await getCurrentUserId());
+			const targetUserId = resolvedUserId;
 
 			if (cancelled) {
 				return;
 			}
 
-			setUserId(currentUserId);
+			// load viewed user's name for display
+			if (shareCode) {
+				const radarGraphResult = await getRadarGraphByCode(shareCode);
 
-			if (!currentUserId) {
+				if (cancelled) {
+					return;
+				}
+
+				if (!radarGraphResult.success) {
+					setError(radarGraphResult.error || "Failed to load radar graph");
+					setPositionedTechnologies([]);
+					setActiveItemId("");
+					setViewedUserName(null);
+					setIsLoading(false);
+					return;
+				}
+
+				setViewedUserName(radarGraphResult.data?.username ?? null);
+
+				const sharedTechnologies = (radarGraphResult.data?.radar || [])
+					.map((item, index) => toSharedRadarTechnology(item, index))
+					.filter(
+						(technology): technology is RadarTechnology => technology !== null,
+					);
+
+				const positioned =
+					buildRandomPositionedTechnologies(sharedTechnologies);
+				setPositionedTechnologies(positioned);
+				setActiveItemId(positioned[0]?.id ?? "");
+				setIsLoading(false);
+				return;
+			}
+
+			if (targetUserId) {
+				const userResult = await getUser(targetUserId);
+				if (userResult.success && userResult.data) {
+					setViewedUserName(userResult.data.name ?? null);
+				} else {
+					setViewedUserName(null);
+				}
+			} else {
+				setViewedUserName(null);
+			}
+
+			if (!targetUserId) {
 				setPositionedTechnologies([]);
 				setActiveItemId("");
 				setIsLoading(false);
 				return;
 			}
 
+			if (resolvedUserId && targetUserId === resolvedUserId && isOwnRadar) {
+				const [userResult, radarGraphResult] = await Promise.all([
+					getUser(targetUserId),
+					getMyRadarGraph(),
+				]);
+
+				if (cancelled) {
+					return;
+				}
+
+				if (userResult.success && userResult.data) {
+					setViewedUserName(userResult.data.name ?? null);
+				} else {
+					setViewedUserName(null);
+				}
+
+				if (!radarGraphResult.success) {
+					setError(radarGraphResult.error || "Failed to load radar graph");
+					setPositionedTechnologies([]);
+					setActiveItemId("");
+					setIsLoading(false);
+					return;
+				}
+
+				const sharedTechnologies = (radarGraphResult.data?.radar || [])
+					.map((item, index) => toSharedRadarTechnology(item, index))
+					.filter(
+						(technology): technology is RadarTechnology => technology !== null,
+					);
+
+				const positioned =
+					buildRandomPositionedTechnologies(sharedTechnologies);
+				setPositionedTechnologies(positioned);
+				setActiveItemId(positioned[0]?.id ?? "");
+				setIsLoading(false);
+				return;
+			}
+
 			const [technologiesResult, userTechnologiesResult] = await Promise.all([
 				getTechnologies(),
-				getTechnologiesByUser(currentUserId),
+				getTechnologiesByUser(targetUserId),
 			]);
 
 			if (cancelled) {
@@ -599,16 +498,31 @@ function Radar({ onTechnologySelect }: RadarProps) {
 		return () => {
 			cancelled = true;
 		};
-	}, []);
+	}, [currentUserId, isOwnRadar, shareCode, refreshTrigger]);
+
+	const firstPositionedTechnologyId = positionedTechnologies[0]?.id ?? "";
+	const hasActiveTechnology = positionedTechnologies.some(
+		(technology) => technology.id === activeItemId,
+	);
 
 	useEffect(() => {
-		const svgNode = svgRef.current;
-		if (!svgNode) {
+		if (!firstPositionedTechnologyId) {
+			if (activeItemId) {
+				setActiveItemId("");
+			}
+
 			return;
 		}
 
-		drawRadarGeometry(svgNode);
-	}, []);
+		if (!activeItemId) {
+			setActiveItemId(firstPositionedTechnologyId);
+			return;
+		}
+
+		if (!hasActiveTechnology) {
+			setActiveItemId(firstPositionedTechnologyId);
+		}
+	}, [activeItemId, firstPositionedTechnologyId, hasActiveTechnology]);
 
 	return (
 		<Card className="gap-0 overflow-hidden border-border bg-card/80 py-0 shadow-2xl shadow-foreground/10 backdrop-blur">
@@ -617,7 +531,9 @@ function Radar({ onTechnologySelect }: RadarProps) {
 					Radar canvas
 				</CardTitle>
 				<CardDescription className="text-muted-foreground text-sm">
-					Your selected technologies, placed on the radar.
+					{viewedUserName
+						? `${viewedUserName}${viewedUserName.endsWith("s") ? "'" : "'s"} selected technologies, placed on the radar.`
+						: "Selected technologies, placed on the radar."}
 				</CardDescription>
 				<CardAction>
 					<Badge
@@ -628,12 +544,16 @@ function Radar({ onTechnologySelect }: RadarProps) {
 					</Badge>
 				</CardAction>
 				<div className="col-span-2 pt-2">
-					<SearchTechnologiesDialog />
+					{isOwnRadar && (
+						<SearchTechnologiesDialog
+							onTechnologyChange={handleTechnologyChange}
+						/>
+					)}
 				</div>
 			</CardHeader>
 
 			<CardContent className="relative m-0 px-0! py-0!">
-				<svg ref={svgRef} className="block aspect-square w-full" />
+				<RadarSVG />
 				<div className="pointer-events-none absolute inset-0 z-10">
 					{positionedTechnologies.map((technology, index) => (
 						<HoverCard key={technology.id} openDelay={80} closeDelay={80}>
@@ -751,8 +671,14 @@ function Radar({ onTechnologySelect }: RadarProps) {
 								? "Loading your selected technologies..."
 								: error
 									? error
-									: userId
-										? "Select technologies in your account to populate the radar."
+									: shareCode
+										? viewedUserName
+											? isOwnRadar
+												? `Select technologies in ${viewedUserName}${viewedUserName.endsWith("s") ? "'" : "'s"} account to populate the radar.`
+												: `${viewedUserName} has not populated their radar yet.`
+											: isOwnRadar
+												? "Select technologies in your account to populate the radar."
+												: "This shared radar has not been populated yet."
 										: "Sign in to see your radar."}
 						</p>
 					</div>
