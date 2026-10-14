@@ -24,6 +24,7 @@ const (
 // @Param id path string true "User technology ID"
 // @Success 200 {object} UserTechnology
 // @Failure 400 {object} Error
+// @Failure 401 {object} Error
 // @Failure 404 {object} Error
 // @Failure 500 {object} Error
 // @Router /user-technologies/{id} [get]
@@ -41,7 +42,11 @@ func GetUserTechnology(q Querier, rls RLSExecutor) http.HandlerFunc {
 			return
 		}
 
-		userID, _ := GetUserIDFromRequest(r)
+		userID, ok := GetUserIDFromRequest(r)
+		if !ok {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
 		role, _ := GetRoleFromRequest(r)
 
 		var ut db.UserTechnology
@@ -49,7 +54,7 @@ func GetUserTechnology(q Querier, rls RLSExecutor) http.HandlerFunc {
 			ut, err = q.GetUserTechnologyID(r.Context(), id)
 			return err
 		})
-		if err != nil {
+		if err != nil || !isOwnerOrAdmin(r, userID, ut.UserID) {
 			http.Error(w, ErrNotFound, http.StatusNotFound)
 			return
 		}
@@ -72,6 +77,8 @@ func GetUserTechnology(q Querier, rls RLSExecutor) http.HandlerFunc {
 // @Param user_id path string true "User ID"
 // @Success 200 {array} UserTechnology
 // @Failure 400 {object} Error
+// @Failure 401 {object} Error
+// @Failure 403 {object} Error
 // @Failure 500 {object} Error
 // @Router /user-technologies/user/{user_id} [get]
 func GetUserTechnologiesByUser(q Querier, rls RLSExecutor) http.HandlerFunc {
@@ -88,7 +95,15 @@ func GetUserTechnologiesByUser(q Querier, rls RLSExecutor) http.HandlerFunc {
 			return
 		}
 
-		authUserID, _ := GetUserIDFromRequest(r)
+		authUserID, ok := GetUserIDFromRequest(r)
+		if !ok {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+		if !isOwnerOrAdmin(r, authUserID, userID) {
+			http.Error(w, ErrOwnership, http.StatusForbidden)
+			return
+		}
 		role, _ := GetRoleFromRequest(r)
 
 		var uts []db.UserTechnology
@@ -123,6 +138,8 @@ func GetUserTechnologiesByUser(q Querier, rls RLSExecutor) http.HandlerFunc {
 // @Param UserTechnology body CreateUserTechnologyRequest true "User technology data"
 // @Success 201 {object} UserTechnology
 // @Failure 400 {object} Error
+// @Failure 401 {object} Error
+// @Failure 403 {object} Error
 // @Failure 500 {object} Error
 // @Router /user-technologies [post]
 func CreateUserTechnology(q Querier, rls RLSExecutor) http.HandlerFunc {
@@ -135,8 +152,22 @@ func CreateUserTechnology(q Querier, rls RLSExecutor) http.HandlerFunc {
 
 		params.ID = uuidutil.New()
 
-		userID, _ := GetUserIDFromRequest(r)
+		userID, ok := GetUserIDFromRequest(r)
+		if !ok {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
 		role, _ := GetRoleFromRequest(r)
+
+		// Non-admins may only create rows for themselves.
+		if !isAdminRequest(r) {
+			if !params.UserID.Valid {
+				params.UserID = pgtype.UUID{Bytes: userID, Valid: true}
+			} else if params.UserID.Bytes != userID {
+				http.Error(w, ErrOwnership, http.StatusForbidden)
+				return
+			}
+		}
 
 		var ut db.UserTechnology
 		var err error
@@ -173,6 +204,8 @@ func CreateUserTechnology(q Querier, rls RLSExecutor) http.HandlerFunc {
 // @Param id path string true "User technology ID"
 // @Success 204
 // @Failure 400 {object} Error
+// @Failure 401 {object} Error
+// @Failure 404 {object} Error
 // @Failure 500 {object} Error
 // @Router /user-technologies/{id} [delete]
 func DeleteUserTechnology(q Querier, rls RLSExecutor) http.HandlerFunc {
@@ -189,8 +222,18 @@ func DeleteUserTechnology(q Querier, rls RLSExecutor) http.HandlerFunc {
 			return
 		}
 
-		userID, _ := GetUserIDFromRequest(r)
+		userID, ok := GetUserIDFromRequest(r)
+		if !ok {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
 		role, _ := GetRoleFromRequest(r)
+
+		existing, err := q.GetUserTechnologyID(r.Context(), id)
+		if err != nil || !isOwnerOrAdmin(r, userID, existing.UserID) {
+			http.Error(w, ErrNotFound, http.StatusNotFound)
+			return
+		}
 
 		err = rls.Execute(r.Context(), userID.String(), role, func(q Querier) error {
 			return q.DeleteUserTechnology(r.Context(), id)
@@ -214,6 +257,9 @@ func DeleteUserTechnology(q Querier, rls RLSExecutor) http.HandlerFunc {
 // @Param UserTechnology body UpdateUserTechnologyRequest true "User technology data"
 // @Success 200 {object} UserTechnology
 // @Failure 400 {object} Error
+// @Failure 401 {object} Error
+// @Failure 403 {object} Error
+// @Failure 404 {object} Error
 // @Failure 500 {object} Error
 // @Router /user-technologies/{id} [put]
 func UpdateUserTechnology(q Querier, rls RLSExecutor) http.HandlerFunc {
@@ -236,8 +282,28 @@ func UpdateUserTechnology(q Querier, rls RLSExecutor) http.HandlerFunc {
 			return
 		}
 
-		userID, _ := GetUserIDFromRequest(r)
+		userID, ok := GetUserIDFromRequest(r)
+		if !ok {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
 		role, _ := GetRoleFromRequest(r)
+
+		existing, err := q.GetUserTechnologyID(r.Context(), id)
+		if err != nil || !isOwnerOrAdmin(r, userID, existing.UserID) {
+			http.Error(w, ErrNotFound, http.StatusNotFound)
+			return
+		}
+
+		// Non-admins may not reassign a row to another user.
+		if !isAdminRequest(r) {
+			if !params.UserID.Valid {
+				params.UserID = existing.UserID
+			} else if params.UserID.Bytes != userID {
+				http.Error(w, ErrOwnership, http.StatusForbidden)
+				return
+			}
+		}
 
 		var ut db.UserTechnology
 		err = rls.Execute(r.Context(), userID.String(), role, func(q Querier) error {
