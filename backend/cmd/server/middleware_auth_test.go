@@ -463,6 +463,17 @@ func TestOptionalAuthMiddleware(t *testing.T) {
 	validToken, err := auth.GenerateToken(userID, "alice", "user")
 	assert.NoError(t, err)
 
+	expiredToken, err := jwt.NewWithClaims(jwt.SigningMethodHS256, auth.Claims{
+		UserID:   userID.String(),
+		Username: "alice",
+		Role:     "user",
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(-1 * time.Hour)),
+			IssuedAt:  jwt.NewNumericDate(time.Now().Add(-2 * time.Hour)),
+		},
+	}).SignedString([]byte("test-secret-key"))
+	assert.NoError(t, err)
+
 	tests := []struct {
 		name       string
 		header     string
@@ -471,6 +482,7 @@ func TestOptionalAuthMiddleware(t *testing.T) {
 		{name: "no header is anonymous", header: ""},
 		{name: "wrong scheme is anonymous", header: "Basic abc"},
 		{name: "garbage token is anonymous", header: "Bearer not-a-jwt"},
+		{name: "expired token is anonymous", header: "Bearer " + expiredToken},
 		{name: "valid token sets user", header: "Bearer " + validToken, wantUserID: true},
 	}
 
@@ -479,9 +491,12 @@ func TestOptionalAuthMiddleware(t *testing.T) {
 			called := false
 			var gotID uuid.UUID
 			var gotOK bool
+			var gotName, gotRole string
 			handler := OptionalAuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
 				called = true
 				gotID, gotOK = handlers.GetUserIDFromRequest(r)
+				gotName, _ = handlers.GetUsernameFromRequest(r)
+				gotRole, _ = handlers.GetRoleFromRequest(r)
 				w.WriteHeader(http.StatusOK)
 			})
 
@@ -497,6 +512,8 @@ func TestOptionalAuthMiddleware(t *testing.T) {
 			assert.Equal(t, tt.wantUserID, gotOK)
 			if tt.wantUserID {
 				assert.Equal(t, userID, gotID)
+				assert.Equal(t, "alice", gotName)
+				assert.Equal(t, "user", gotRole)
 			}
 		})
 	}
