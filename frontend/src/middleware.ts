@@ -36,6 +36,13 @@ function isPublicRoute(pathname: string): boolean {
 	);
 }
 
+export function isShareView(
+	pathname: string,
+	searchParams: URLSearchParams,
+): boolean {
+	return pathname === "/radar" && !!searchParams.get("share");
+}
+
 async function verifyToken(request: NextRequest): Promise<boolean> {
 	try {
 		const baseUrl = request.nextUrl.origin;
@@ -79,7 +86,11 @@ export async function middleware(request: NextRequest) {
 		return NextResponse.next();
 	}
 
-	if (pathname !== "/" && !isPublicRoute(pathname)) {
+	if (
+		pathname !== "/" &&
+		!isPublicRoute(pathname) &&
+		!isShareView(pathname, request.nextUrl.searchParams)
+	) {
 		if (!isAuthenticated) {
 			return NextResponse.redirect(new URL(LOGIN_REDIRECT, request.url));
 		}
