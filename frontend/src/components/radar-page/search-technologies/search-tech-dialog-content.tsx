@@ -1,5 +1,8 @@
 "use client";
 
+import { useVirtualizer } from "@tanstack/react-virtual";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import {
 	DialogContent,
 	DialogDescription,
@@ -13,16 +16,16 @@ import {
 	type Technology,
 	type UserTechnology,
 } from "@/lib/actions";
-import Link from "next/link";
-import { useEffect, useState } from "react";
 import AddTechnologyButton from "./add-technology-button";
 
 interface SearchTechnologiesDialogContentProps {
 	userId: string | null;
+	onTechnologyChange?: () => void;
 }
 
 export default function SearchTechnologiesDialogContent({
 	userId,
+	onTechnologyChange,
 }: SearchTechnologiesDialogContentProps) {
 	const [search, setSearch] = useState("");
 	const [technologies, setTechnologies] = useState<Technology[]>([]);
@@ -34,6 +37,10 @@ export default function SearchTechnologiesDialogContent({
 	);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
+
+	const [scrollElement, setScrollElement] = useState<HTMLDivElement | null>(
+		null,
+	);
 
 	useEffect(() => {
 		const fetchTechnologies = async () => {
@@ -50,7 +57,6 @@ export default function SearchTechnologiesDialogContent({
 			}
 
 			setTechnologies(technologiesResult.data || []);
-			// console.log("Fetched technologies:", technologiesResult.data);
 			setIsLoading(false);
 		};
 
@@ -58,7 +64,6 @@ export default function SearchTechnologiesDialogContent({
 	}, []);
 
 	useEffect(() => {
-		// console.log("User ID changed:", userId);
 		const fetchUserTechnologies = async () => {
 			if (!userId) {
 				setSelectedTechnologyIds([]);
@@ -75,7 +80,6 @@ export default function SearchTechnologiesDialogContent({
 			const userTechIds = userTechs.map((ut) => ut.technology_id ?? "");
 			setSelectedTechnologyIds(userTechIds);
 			setUserTechnologies(userTechResult.data || []);
-			// console.log("Fetched user technologies:", userTechIds);
 		};
 		void fetchUserTechnologies();
 	}, [userId]);
@@ -85,8 +89,20 @@ export default function SearchTechnologiesDialogContent({
 		return name.toLowerCase().includes(search.toLowerCase());
 	});
 
+	const virtualizer = useVirtualizer({
+		count: filtered.length,
+		getScrollElement: () => scrollElement,
+		estimateSize: () => 88,
+		overscan: 2,
+	});
+
+	const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setSearch(e.target.value);
+		virtualizer.scrollToOffset(0, { behavior: "smooth" });
+	};
+
 	return (
-		<DialogContent>
+		<DialogContent className="sm:max-w-xl">
 			<DialogHeader>
 				<DialogTitle>Search Technologies</DialogTitle>
 				<DialogDescription>
@@ -106,7 +122,7 @@ export default function SearchTechnologiesDialogContent({
 				<Input
 					placeholder="Search by technology name"
 					value={search}
-					onChange={(e) => setSearch(e.target.value)}
+					onChange={handleSearchChange}
 				/>
 
 				{isLoading && (
@@ -115,29 +131,64 @@ export default function SearchTechnologiesDialogContent({
 				{error && <p className="text-destructive text-sm">{error}</p>}
 
 				{!isLoading && !error && (
-					<div className="max-h-72 space-y-2 overflow-y-auto">
-						{filtered.map((tech) => (
-							<AddTechnologyButton
-								userId={userId}
-								tech={tech}
-								userTechnologyId={
-									userTechnologies.find((ut) => ut.technology_id === tech.id)
-										?.id ?? null
-								}
-								currentRingId={
-									userTechnologies.find((ut) => ut.technology_id === tech.id)
-										?.ring_id ?? null
-								}
-								setUserTechnologies={setUserTechnologies}
-								setSelected={setSelectedTechnologyIds}
-								isSelected={selectedTechnologyIds.includes(tech.id ?? "")}
-								key={tech.id}
-							/>
-						))}
-						{filtered.length === 0 && (
-							<p className="text-muted-foreground text-sm">
+					<div
+						ref={setScrollElement}
+						className="max-h-96 overflow-y-auto"
+						style={{ contain: "layout paint" }}
+					>
+						{filtered.length === 0 ? (
+							<p className="py-4 text-center text-muted-foreground text-sm">
 								No technologies found.
 							</p>
+						) : (
+							<div
+								style={{
+									height: `${virtualizer.getTotalSize()}px`,
+									position: "relative",
+									width: "100%",
+								}}
+							>
+								{virtualizer.getVirtualItems().map((virtualItem) => (
+									<div
+										key={virtualItem.key}
+										data-index={virtualItem.index}
+										ref={virtualizer.measureElement}
+										style={{
+											position: "absolute",
+											top: 0,
+											left: 0,
+											width: "100%",
+											transform: `translateY(${virtualItem.start}px)`,
+										}}
+										className="pb-2"
+									>
+										<AddTechnologyButton
+											userId={userId}
+											tech={filtered[virtualItem.index]}
+											userTechnologyId={
+												userTechnologies.find(
+													(ut) =>
+														ut.technology_id ===
+														filtered[virtualItem.index]?.id,
+												)?.id ?? null
+											}
+											currentRingId={
+												userTechnologies.find(
+													(ut) =>
+														ut.technology_id ===
+														filtered[virtualItem.index]?.id,
+												)?.ring_id ?? null
+											}
+											setUserTechnologies={setUserTechnologies}
+											setSelected={setSelectedTechnologyIds}
+											isSelected={selectedTechnologyIds.includes(
+												filtered[virtualItem.index]?.id ?? "",
+											)}
+											onTechnologyChange={onTechnologyChange}
+										/>
+									</div>
+								))}
+							</div>
 						)}
 					</div>
 				)}

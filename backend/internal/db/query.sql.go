@@ -41,6 +41,29 @@ func (q *Queries) CreateBlip(ctx context.Context, argContext []byte) (CreateBlip
 	return i, err
 }
 
+const createShareCode = `-- name: CreateShareCode :one
+INSERT INTO share_codes (
+    id,
+    user_id
+)
+VALUES ($1, $2)
+RETURNING id,
+    user_id,
+    created_at
+`
+
+type CreateShareCodeParams struct {
+	ID     string      `json:"id"`
+	UserID pgtype.UUID `json:"user_id"`
+}
+
+func (q *Queries) CreateShareCode(ctx context.Context, arg CreateShareCodeParams) (ShareCode, error) {
+	row := q.db.QueryRow(ctx, createShareCode, arg.ID, arg.UserID)
+	var i ShareCode
+	err := row.Scan(&i.ID, &i.UserID, &i.CreatedAt)
+	return i, err
+}
+
 const createTechnology = `-- name: CreateTechnology :one
 INSERT INTO technology (
     id,
@@ -198,6 +221,17 @@ WHERE
 
 func (q *Queries) DeleteBlip(ctx context.Context, id int32) error {
 	_, err := q.db.Exec(ctx, deleteBlip, id)
+	return err
+}
+
+const deleteShareCode = `-- name: DeleteShareCode :exec
+DELETE FROM share_codes
+WHERE
+    id = $1
+`
+
+func (q *Queries) DeleteShareCode(ctx context.Context, id string) error {
+	_, err := q.db.Exec(ctx, deleteShareCode, id)
 	return err
 }
 
@@ -393,6 +427,104 @@ func (q *Queries) GetBlip(ctx context.Context, id int32) (GetBlipRow, error) {
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
+	return i, err
+}
+
+const getRadarGraphByShareCode = `-- name: GetRadarGraphByShareCode :many
+SELECT
+    u.username,
+    t.name,
+    t.quadrant_id,
+    t.icon_url,
+    r.name as ring_name,
+    q.name as quadrant_name,
+    ut.ring_id,
+    b.context::text as blip_context
+FROM
+    share_codes sc
+    JOIN users u ON u.id = sc.user_id
+    JOIN user_technologies ut ON ut.user_id = sc.user_id
+    JOIN technology t ON t.id = ut.technology_id
+    JOIN rings r ON r.id = ut.ring_id
+    JOIN quadrants q ON q.id = t.quadrant_id
+    JOIN blips b ON b.id = t.blip_id
+WHERE
+    sc.id = $1
+`
+
+type GetRadarGraphByShareCodeRow struct {
+	Username     string      `json:"username"`
+	Name         string      `json:"name"`
+	QuadrantID   int32       `json:"quadrant_id"`
+	IconUrl      pgtype.Text `json:"icon_url"`
+	RingName     string      `json:"ring_name"`
+	QuadrantName string      `json:"quadrant_name"`
+	RingID       int32       `json:"ring_id"`
+	BlipContext  string      `json:"blip_context"`
+}
+
+func (q *Queries) GetRadarGraphByShareCode(ctx context.Context, id string) ([]GetRadarGraphByShareCodeRow, error) {
+	rows, err := q.db.Query(ctx, getRadarGraphByShareCode, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetRadarGraphByShareCodeRow
+	for rows.Next() {
+		var i GetRadarGraphByShareCodeRow
+		if err := rows.Scan(
+			&i.Username,
+			&i.Name,
+			&i.QuadrantID,
+			&i.IconUrl,
+			&i.RingName,
+			&i.QuadrantName,
+			&i.RingID,
+			&i.BlipContext,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getShareCodeByCode = `-- name: GetShareCodeByCode :one
+SELECT
+    id,
+    user_id,
+    created_at
+FROM
+    share_codes
+WHERE
+    id = $1
+`
+
+func (q *Queries) GetShareCodeByCode(ctx context.Context, id string) (ShareCode, error) {
+	row := q.db.QueryRow(ctx, getShareCodeByCode, id)
+	var i ShareCode
+	err := row.Scan(&i.ID, &i.UserID, &i.CreatedAt)
+	return i, err
+}
+
+const getShareCodeByUserId = `-- name: GetShareCodeByUserId :one
+SELECT
+    id,
+    user_id,
+    created_at
+FROM
+    share_codes
+WHERE
+    user_id = $1
+`
+
+func (q *Queries) GetShareCodeByUserId(ctx context.Context, userID pgtype.UUID) (ShareCode, error) {
+	row := q.db.QueryRow(ctx, getShareCodeByUserId, userID)
+	var i ShareCode
+	err := row.Scan(&i.ID, &i.UserID, &i.CreatedAt)
 	return i, err
 }
 

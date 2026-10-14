@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import {
 	Card,
@@ -12,11 +13,11 @@ import {
 import { Separator } from "@/components/ui/separator";
 import {
 	getCurrentUserId,
+	getRadarGraphByCode,
 	getTechnologies,
 	getTechnologiesByUser,
 	type Technology,
 } from "@/lib/actions";
-import { useEffect, useState } from "react";
 import { type QuadrantKey, quadrantLabels } from "./radar-data";
 
 function createEmptyQuadrantCounts(): Record<QuadrantKey, number> {
@@ -44,7 +45,12 @@ function mapQuadrantIdToKey(quadrantId: number): QuadrantKey | null {
 	}
 }
 
-export default function QuadrantData() {
+type QuadrantDataProps = {
+	userId?: string | null;
+	shareCode?: string | null;
+};
+
+export default function QuadrantData({ userId, shareCode }: QuadrantDataProps) {
 	const [quadrantCounts, setQuadrantCounts] = useState<
 		Record<QuadrantKey, number>
 	>(createEmptyQuadrantCounts);
@@ -56,7 +62,28 @@ export default function QuadrantData() {
 		const loadQuadrantCounts = async () => {
 			setIsLoading(true);
 
-			const currentUserId = await getCurrentUserId();
+			if (shareCode) {
+				const radarGraphResult = await getRadarGraphByCode(shareCode);
+				if (!radarGraphResult.success) {
+					setQuadrantCounts(createEmptyQuadrantCounts());
+					setIsLoading(false);
+					return;
+				}
+
+				const nextCounts = createEmptyQuadrantCounts();
+				for (const item of radarGraphResult.data?.radar || []) {
+					const quadrantKey = mapQuadrantIdToKey(item.quadrant_id ?? 0);
+					if (quadrantKey) {
+						nextCounts[quadrantKey] += 1;
+					}
+				}
+
+				setQuadrantCounts(nextCounts);
+				setIsLoading(false);
+				return;
+			}
+
+			const currentUserId = userId ?? (await getCurrentUserId());
 			if (cancelled) {
 				return;
 			}
@@ -115,7 +142,7 @@ export default function QuadrantData() {
 		return () => {
 			cancelled = true;
 		};
-	}, []);
+	}, [shareCode, userId]);
 
 	const quadrantStats = quadrantLabels.map((quadrant) => ({
 		...quadrant,

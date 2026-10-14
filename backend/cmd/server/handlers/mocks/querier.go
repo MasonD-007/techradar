@@ -155,3 +155,32 @@ func (m *MockQuerier) DeleteUserTechnology(ctx context.Context, id pgtype.UUID) 
 	args := m.Called(ctx, id)
 	return args.Error(0)
 }
+
+func (m *MockQuerier) GetShareCodeByCode(ctx context.Context, id string) (db.ShareCode, error) {
+	args := m.Called(ctx, id)
+	sc, _ := args.Get(0).(db.ShareCode)
+	return sc, args.Error(1)
+}
+
+func (m *MockQuerier) GetShareCodeByUserId(ctx context.Context, userID pgtype.UUID) (db.ShareCode, error) {
+	args := m.Called(ctx, userID)
+	sc, _ := args.Get(0).(db.ShareCode)
+	return sc, args.Error(1)
+}
+
+func (m *MockQuerier) CreateShareCode(ctx context.Context, params db.CreateShareCodeParams) (db.ShareCode, error) {
+	args := m.Called(ctx, params)
+	sc, _ := args.Get(0).(db.ShareCode)
+	return sc, args.Error(1)
+}
+
+func (m *MockQuerier) DeleteShareCode(ctx context.Context, id string) error {
+	args := m.Called(ctx, id)
+	return args.Error(0)
+}
+
+func (m *MockQuerier) GetRadarGraphByShareCode(ctx context.Context, code string) ([]db.GetRadarGraphByShareCodeRow, error) {
+	args := m.Called(ctx, code)
+	list, _ := args.Get(0).([]db.GetRadarGraphByShareCodeRow)
+	return list, args.Error(1)
+}

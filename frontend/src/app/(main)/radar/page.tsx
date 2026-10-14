@@ -1,5 +1,7 @@
 "use client";
 
+import { parseAsString, useQueryState } from "nuqs";
+import { useEffect, useState } from "react";
 import QuadrantData from "@/components/radar-page/quadrants";
 import type { RadarTechnology } from "@/components/radar-page/radar";
 import Radar from "@/components/radar-page/radar";
@@ -7,20 +9,83 @@ import RadarTitle from "@/components/radar-page/radar-title";
 import RingData from "@/components/radar-page/rings";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useState } from "react";
+import { getCurrentUserId, getMyShareCode } from "@/lib/actions";
 import TechnologyData from "../../../components/radar-page/technology";
 
 export default function RadarPage() {
 	const [activeTab, setActiveTab] = useState("quadrants");
 	const [selectedTechnology, setSelectedTechnology] =
 		useState<RadarTechnology | null>(null);
+	const [shareCode, setShareCode] = useQueryState("share", parseAsString);
+	const [myShareCode, setMyShareCode] = useState<string | null>(null);
+	const [signedInUserId, setSignedInUserId] = useState<string | null>(null);
+
+	useEffect(() => {
+		let cancelled = false;
+
+		const loadCurrentUserId = async () => {
+			const currentUserId = await getCurrentUserId();
+
+			if (cancelled || !currentUserId) {
+				return;
+			}
+
+			setSignedInUserId(currentUserId);
+		};
+
+		void loadCurrentUserId();
+
+		return () => {
+			cancelled = true;
+		};
+	}, []);
+
+	useEffect(() => {
+		let cancelled = false;
+
+		const loadShareCode = async () => {
+			if (!signedInUserId) {
+				return;
+			}
+
+			const shareCodeResult = await getMyShareCode();
+			if (
+				cancelled ||
+				!shareCodeResult.success ||
+				!shareCodeResult.data?.code
+			) {
+				return;
+			}
+
+			setMyShareCode(shareCodeResult.data.code);
+
+			if (shareCode) {
+				return;
+			}
+
+			void setShareCode(shareCodeResult.data.code);
+		};
+
+		void loadShareCode();
+
+		return () => {
+			cancelled = true;
+		};
+	}, [setShareCode, shareCode, signedInUserId]);
+
+	const isOwnRadar = Boolean(
+		signedInUserId && myShareCode && shareCode && myShareCode === shareCode,
+	);
 
 	return (
 		<Card className="min-h-screen bg-background px-4 py-6 text-card-foreground shadow-none ring-0 sm:px-6 lg:px-8">
 			<CardContent className="mx-auto flex min-h-[calc(100vh-3rem)] w-full max-w-7xl flex-col gap-5">
-				<RadarTitle />
+				<RadarTitle shareCode={shareCode} />
 				<div className="grid flex-1 gap-5 xl:grid-cols-[minmax(0,1.65fr)_minmax(320px,0.95fr)] xl:items-start">
 					<Radar
+						shareCode={shareCode}
+						currentUserId={signedInUserId}
+						isOwnRadar={isOwnRadar}
 						onTechnologySelect={(technology) => {
 							setSelectedTechnology(technology);
 							setActiveTab("technology");
@@ -40,13 +105,16 @@ export default function RadarPage() {
 									<TabsTrigger value="technology">Technology</TabsTrigger>
 								</TabsList>
 								<TabsContent value="quadrants" className="mt-0">
-									<QuadrantData />
+									<QuadrantData shareCode={shareCode} />
 								</TabsContent>
 								<TabsContent value="rings" className="mt-0">
-									<RingData />
+									<RingData shareCode={shareCode} />
 								</TabsContent>
 								<TabsContent value="technology" className="mt-0">
-									<TechnologyData technology={selectedTechnology} />
+									<TechnologyData
+										technology={selectedTechnology}
+										isOwnRadar={isOwnRadar}
+									/>
 								</TabsContent>
 							</Tabs>
 						</CardContent>

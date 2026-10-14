@@ -14,6 +14,23 @@ definitions:
       password:
         type: string
     type: object
+  dto.RadarGraphItem:
+    properties:
+      description:
+        type: string
+      icon_url:
+        type: string
+      name:
+        type: string
+      quadrant_id:
+        type: integer
+      quadrant_name:
+        type: string
+      ring_id:
+        type: integer
+      ring_name:
+        type: string
+    type: object
   dto.RegisterRequest:
     properties:
       email:
@@ -96,6 +113,22 @@ definitions:
   handlers.Error:
     properties:
       message:
+        type: string
+    type: object
+  handlers.RadarGraphResponse:
+    properties:
+      radar:
+        items:
+          $ref: '#/definitions/dto.RadarGraphItem'
+        type: array
+      username:
+        type: string
+    type: object
+  handlers.ShareCodeResponse:
+    properties:
+      code:
+        type: string
+      created_at:
         type: string
     type: object
   handlers.Technology:
@@ -461,6 +494,89 @@ paths:
       summary: Update a blip
       tags:
       - blips
+  /share-codes:
+    post:
+      description: Create a new 6-character share code for the authenticated user,
+        or return existing one
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/handlers.ShareCodeResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      summary: Create or get existing share code
+      tags:
+      - share-codes
+  /share-codes/{code}:
+    delete:
+      description: Delete a share code by code value
+      parameters:
+      - description: Share code
+        in: path
+        name: code
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      summary: Delete a share code
+      tags:
+      - share-codes
+    get:
+      description: Get the full radar graph for a share code. Public endpoint, no
+        auth required.
+      parameters:
+      - description: Share code
+        in: path
+        name: code
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.RadarGraphResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      summary: Get radar graph by share code
+      tags:
+      - share-codes
+  /share-codes/my:
+    get:
+      description: Get the authenticated user's share code
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.ShareCodeResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      summary: Get my share code
+      tags:
+      - share-codes
   /technologies:
     get:
       consumes:
