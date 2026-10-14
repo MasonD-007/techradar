@@ -16,6 +16,10 @@ interface JwtPayload {
 function decodeJwt(token: string): JwtPayload | null {
 	try {
 		const payload = JSON.parse(atob(token.split(".")[1]));
+		// An expired token is treated as logged out so the user can reach /login.
+		if (typeof payload.exp === "number" && payload.exp * 1000 <= Date.now()) {
+			return null;
+		}
 		return {
 			user_id: payload.user_id,
 			username: payload.username,

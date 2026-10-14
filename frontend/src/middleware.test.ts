@@ -35,3 +35,42 @@ describe("middleware (logged out)", () => {
 		expect(res.headers.get("location")).toContain("/login");
 	});
 });
+
+const jwtWith = (payload: object) =>
+	`h.${btoa(JSON.stringify(payload))}.s`;
+const reqWithToken = (path: string, payload: object) =>
+	new NextRequest(`http://localhost${path}`, {
+		headers: { cookie: `auth_token=${jwtWith(payload)}` },
+	});
+const nowSec = () => Math.floor(Date.now() / 1000);
+
+describe("middleware (token expiry)", () => {
+	const expired = { user_id: "u1", username: "a", role: "user", exp: nowSec() - 60 };
+	const valid = { user_id: "u1", username: "a", role: "user", exp: nowSec() + 3600 };
+	const noExp = { user_id: "u1", username: "a", role: "user" };
+
+	it("does not bounce an expired token away from /login", async () => {
+		const res = await middleware(reqWithToken("/login?next=%2Fradar", expired));
+		expect(res.headers.get("location")).toBeNull();
+	});
+
+	it("redirects a valid token from /login to /radar", async () => {
+		const res = await middleware(reqWithToken("/login", valid));
+		expect(res.headers.get("location")).toContain("/radar");
+	});
+
+	it("redirects an expired token on /radar to login", async () => {
+		const res = await middleware(reqWithToken("/radar", expired));
+		expect(res.headers.get("location")).toContain("/login");
+	});
+
+	it("lets an expired token through on a share link", async () => {
+		const res = await middleware(reqWithToken("/radar?share=abc123", expired));
+		expect(res.headers.get("location")).toBeNull();
+	});
+
+	it("treats a token without exp as authenticated", async () => {
+		const res = await middleware(reqWithToken("/login", noExp));
+		expect(res.headers.get("location")).toContain("/radar");
+	});
+});
