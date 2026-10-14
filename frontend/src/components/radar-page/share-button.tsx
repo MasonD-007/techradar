@@ -35,6 +35,7 @@ export default function ShareButton({ shareCode }: ShareButtonProps) {
 	const [viewers, setViewers] = useState<string[]>([]);
 	const [username, setUsername] = useState("");
 	const [error, setError] = useState<string | null>(null);
+	const [pending, setPending] = useState(false);
 
 	// Incremented whenever the dialog's owner session changes (open, close,
 	// shareCode change, unmount) so late responses can be discarded.
@@ -85,10 +86,16 @@ export default function ShareButton({ shareCode }: ShareButtonProps) {
 	};
 
 	const handleVisibility = async (next: "public" | "private") => {
+		if (pending) return;
 		setError(null);
-		const result = await setShareVisibility(next);
-		if (result.success) setVisibility(next);
-		else setError(result.error ?? "Failed to update visibility");
+		setPending(true);
+		try {
+			const result = await setShareVisibility(next);
+			if (result.success) setVisibility(next);
+			else setError(result.error ?? "Failed to update visibility");
+		} finally {
+			setPending(false);
+		}
 	};
 
 	const handleAdd = async () => {
@@ -154,6 +161,7 @@ export default function ShareButton({ shareCode }: ShareButtonProps) {
 									<Button
 										size="sm"
 										variant={visibility === "public" ? "default" : "outline"}
+										disabled={pending}
 										onClick={() => handleVisibility("public")}
 									>
 										Public
@@ -161,6 +169,7 @@ export default function ShareButton({ shareCode }: ShareButtonProps) {
 									<Button
 										size="sm"
 										variant={visibility === "private" ? "default" : "outline"}
+										disabled={pending}
 										onClick={() => handleVisibility("private")}
 									>
 										Private

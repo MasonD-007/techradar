@@ -85,6 +85,39 @@ describe("ShareButton", () => {
 		);
 	});
 
+	it("ignores toggle clicks while a visibility change is pending", async () => {
+		actions.getMyShareCode.mockResolvedValue({
+			success: true,
+			data: { code: "abc123", visibility: "private" },
+		});
+		actions.getShareViewers.mockResolvedValue({ success: true, data: [] });
+		let resolveFirst: (v: unknown) => void = () => {};
+		actions.setShareVisibility.mockImplementationOnce(
+			() => new Promise((resolve) => { resolveFirst = resolve; }),
+		);
+		actions.setShareVisibility.mockResolvedValue({ success: true });
+		render(<ShareButton shareCode="abc123" />);
+		await openDialog();
+		await settleOwnerCheck();
+
+		await userEvent.click(screen.getByRole("button", { name: "Public" }));
+		expect(actions.setShareVisibility).toHaveBeenCalledTimes(1);
+
+		await userEvent.click(screen.getByRole("button", { name: "Private" }));
+		expect(actions.setShareVisibility).toHaveBeenCalledTimes(1);
+
+		await act(async () => {
+			resolveFirst({ success: true });
+		});
+		await waitFor(() =>
+			expect(screen.queryByPlaceholderText("Username")).toBeNull(),
+		);
+
+		await userEvent.click(screen.getByRole("button", { name: "Private" }));
+		expect(actions.setShareVisibility).toHaveBeenCalledTimes(2);
+		expect(actions.setShareVisibility).toHaveBeenLastCalledWith("private");
+	});
+
 	it("adds and removes viewers in private mode", async () => {
 		actions.getMyShareCode.mockResolvedValue({
 			success: true,
