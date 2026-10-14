@@ -13,6 +13,8 @@ spec:
       app: backend
   template:
     metadata:
+      annotations:
+        deploy/revision: "initial"
       labels:
         app: backend
     spec:

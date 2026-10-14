@@ -20,34 +20,29 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Update image tags
+      # Images use :latest with imagePullPolicy: Always, so the manifests never
+      # change on their own and ArgoCD sees no diff. Stamping the pod template
+      # with the released commit forces a rollout that pulls the new :latest.
+      - name: Stamp deploy revision
         run: |
-          # Update backend image to latest
-          sed -i "s|ghcr.io/${{ github.repository }}/backend:.*|ghcr.io/${{ github.repository }}/backend:latest|g" k3s/apps/backend/deployment.yaml
-          
-          # Update frontend image to latest
-          sed -i "s|ghcr.io/${{ github.repository }}/frontend:.*|ghcr.io/${{ github.repository }}/frontend:latest|g" k3s/apps/frontend/deployment.yaml
-          
-          echo "Updated image tags to: latest"
-          echo "Backend:"
-          grep "image:" k3s/apps/backend/deployment.yaml
-          echo "Frontend:"
-          grep "image:" k3s/apps/frontend/deployment.yaml
+          for app in backend frontend; do
+            f=k3s/apps/$app/deployment.yaml
+            sed -i -E "s|^( *deploy/revision:).*|\1 \"${{ github.event.workflow_run.head_sha }}\"|" "$f"
+            grep "deploy/revision:" "$f"
+          done
 
       - name: Commit and push changes
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          
-          # Stage the files first
+
           git add k3s/apps/backend/deployment.yaml k3s/apps/frontend/deployment.yaml
-          
-          # Check if there are staged changes
+
           if git diff --staged --quiet; then
             echo "No changes to commit"
             exit 0
           fi
-          
-          git commit -m "chore: update image tags to latest"
-          
+
+          git commit -m "chore: deploy ${{ github.event.workflow_run.head_sha }}"
+
           git push origin main
