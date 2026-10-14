@@ -14,7 +14,7 @@ spec:
   template:
     metadata:
       annotations:
-        deploy/revision: "71b64d62a101e797a6c5673b94835cb15adb529a"
+        deploy/revision: "227da487ee0398d33770006019f543f914362ee3"
       labels:
         app: frontend
     spec:
