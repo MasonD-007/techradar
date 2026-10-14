@@ -345,7 +345,6 @@ func toUserResponse(user db.User) User {
 		Name:         user.Name,
 		Email:        user.Email,
 		Username:     user.Username,
-		HashedPassword: user.HashedPassword,
 		IsAdmin:      user.IsAdmin,
 		CreatedAt:    user.CreatedAt.Time.Format(time.RFC3339),
 		LastLoggedIn: user.LastLoggedIn,
@@ -359,7 +358,6 @@ type User struct {
 	Name           string             `json:"name" example:"John Doe"`
 	Email          string             `json:"email" example:"john@example.com"`
 	Username       string             `json:"username" example:"johndoe"`
-	HashedPassword string             `json:"hashed_password" example:"hashed_password_value"`
 	IsAdmin        bool               `json:"is_admin" example:"false"`
 	CreatedAt      string             `json:"created_at" example:"2026-04-05T12:00:00Z"`
 	LastLoggedIn   pgtype.Timestamptz `json:"last_logged_in" swaggertype:"string" example:"2026-04-05T12:00:00Z"`

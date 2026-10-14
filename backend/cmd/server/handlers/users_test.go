@@ -407,3 +407,64 @@ func TestUpdateUser_Authz(t *testing.T) {
 		})
 	}
 }
+
+func TestUserResponses_OmitHashedPassword(t *testing.T) {
+	secret := db.User{ID: validUUID, Email: "a@b.c", HashedPassword: "$2a$secret"}
+	run := func(t *testing.T, h http.HandlerFunc, req *http.Request) []byte {
+		rec := httptest.NewRecorder()
+		h(rec, req)
+		assert.Less(t, rec.Code, 300)
+		assert.NotContains(t, rec.Body.String(), "hashed_password")
+		assert.NotContains(t, rec.Body.String(), "$2a$secret")
+		return rec.Body.Bytes()
+	}
+	newMocks := func() (*mocks.MockQuerier, *mocks.MockRLSExecutor) {
+		mq := mocks.NewMockQuerier()
+		rls := mocks.NewMockRLSExecutor()
+		rls.SetQuerier(mq)
+		rls.On("Execute", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
+		return mq, rls
+	}
+
+	t.Run("GetUser", func(t *testing.T) {
+		mq, rls := newMocks()
+		mq.On("GetUserID", mock.Anything, validUUID).Return(secret, nil)
+		req := httptest.NewRequest(http.MethodGet, "/users/"+validUUIDStr, nil)
+		req.SetPathValue("id", validUUIDStr)
+		var m map[string]any
+		assert.NoError(t, json.Unmarshal(run(t, handlers.GetUser(mq, rls), withCaller(req, callerUUID, "user")), &m))
+		_, present := m["hashed_password"]
+		assert.False(t, present)
+		assert.Equal(t, "a@b.c", m["email"])
+	})
+	t.Run("GetAllUsers", func(t *testing.T) {
+		mq, rls := newMocks()
+		mq.On("GetAllUsers", mock.Anything).Return([]db.User{secret}, nil)
+		req := httptest.NewRequest(http.MethodGet, "/users", nil)
+		var list []map[string]any
+		assert.NoError(t, json.Unmarshal(run(t, handlers.GetAllUsers(mq, rls), withCaller(req, otherUUID, "admin")), &list))
+		assert.Len(t, list, 1)
+		_, present := list[0]["hashed_password"]
+		assert.False(t, present)
+	})
+	t.Run("GetUserByEmail", func(t *testing.T) {
+		mq, rls := newMocks()
+		mq.On("GetUserEmail", mock.Anything, "a@b.c").Return(secret, nil)
+		req := httptest.NewRequest(http.MethodGet, "/users/by-email/a@b.c", nil)
+		req.SetPathValue("email", "a@b.c")
+		run(t, handlers.GetUserByEmail(mq, rls), withCaller(req, otherUUID, "admin"))
+	})
+	t.Run("CreateUser", func(t *testing.T) {
+		mq, rls := newMocks()
+		mq.On("CreateUser", mock.Anything, mock.Anything).Return(secret, nil)
+		req := httptest.NewRequest(http.MethodPost, "/users", strings.NewReader(`{"email":"a@b.c","username":"u","hashed_password":"x"}`))
+		run(t, handlers.CreateUser(mq, rls), withCaller(req, otherUUID, "admin"))
+	})
+	t.Run("UpdateUser", func(t *testing.T) {
+		mq, rls := newMocks()
+		mq.On("UpdateUser", mock.Anything, mock.Anything).Return(secret, nil)
+		req := httptest.NewRequest(http.MethodPut, "/users/"+validUUIDStr, strings.NewReader(`{"email":"a@b.c"}`))
+		req.SetPathValue("id", validUUIDStr)
+		run(t, handlers.UpdateUser(mq, rls), withCaller(req, callerUUID, "user"))
+	})
+}
