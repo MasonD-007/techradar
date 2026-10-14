@@ -1,0 +1,43 @@
+# Populates the technology table on a fresh cluster or wiped database.
+# Runs after every sync (PostSync, once Postgres and the backend are healthy),
+# but only inserts when the table is empty, so admin edits and deletions stick.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: backend-seed
+  namespace: techradar
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
+spec:
+  backoffLimit: 3
+  activeDeadlineSeconds: 300
+  template:
+    metadata:
+      labels:
+        app: backend-seed
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: seed
+          image: ghcr.io/masond-007/techradar/backend:latest
+          imagePullPolicy: Always
+          command: ["./seed"]
+          envFrom:
+            - configMapRef:
+                name: backend-config
+            - secretRef:
+                name: backend-secrets
+          env:
+            # No default admin account; promote a real user instead.
+            - name: SEED_SKIP_ADMIN
+              value: "true"
+            - name: SEED_ONLY_IF_EMPTY
+              value: "true"
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi

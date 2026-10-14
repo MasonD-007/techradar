@@ -88,8 +88,21 @@ func main() {
 		adminPassword = "admin123"
 	}
 
-	if err := seedAdminUser(context.Background(), q, adminUsername, adminEmail, adminPassword); err != nil {
+	if os.Getenv("SEED_SKIP_ADMIN") == "true" {
+		log.Printf("SEED_SKIP_ADMIN=true, skipping admin user seed")
+	} else if err := seedAdminUser(context.Background(), q, adminUsername, adminEmail, adminPassword); err != nil {
 		log.Fatalf("Failed to seed admin user: %v", err)
+	}
+
+	if os.Getenv("SEED_ONLY_IF_EMPTY") == "true" {
+		var existing int
+		if err := tx.QueryRow(context.Background(), "SELECT count(*) FROM technology").Scan(&existing); err != nil {
+			log.Fatalf("Failed to count existing technologies: %v", err)
+		}
+		if existing > 0 {
+			log.Printf("SEED_ONLY_IF_EMPTY=true and %d technologies exist, nothing to seed", existing)
+			return
+		}
 	}
 
 	seededCount, err := seedTechnologies(context.Background(), tx, q)

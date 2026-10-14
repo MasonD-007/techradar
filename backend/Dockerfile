@@ -11,6 +11,7 @@ RUN go mod download
 COPY backend/ ./
 
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o server ./cmd/server
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o seed ./cmd/seed
 
 # Runtime stage
 FROM alpine:3.19 AS runtime
@@ -23,6 +24,7 @@ RUN addgroup --system --gid 1001 appgroup && \
     adduser --system --uid 1001 appuser
 
 COPY --from=builder /app/server .
+COPY --from=builder /app/seed .
 COPY --from=builder /app/migrations ./migrations
 COPY --from=builder /app/sql ./sql
 COPY --from=builder /app/docs ./docs
