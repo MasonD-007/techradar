@@ -311,13 +311,15 @@ INSERT INTO share_codes (
 VALUES ($1, $2)
 RETURNING id,
     user_id,
-    created_at;
+    created_at,
+    visibility;
 
 -- name: GetShareCodeByCode :one
 SELECT
     id,
     user_id,
-    created_at
+    created_at,
+    visibility
 FROM
     share_codes
 WHERE
@@ -327,7 +329,8 @@ WHERE
 SELECT
     id,
     user_id,
-    created_at
+    created_at,
+    visibility
 FROM
     share_codes
 WHERE
@@ -358,3 +361,60 @@ FROM
     JOIN blips b ON b.id = t.blip_id
 WHERE
     sc.id = $1;
+
+-- name: SetShareCodeVisibility :one
+UPDATE share_codes
+SET visibility = $2
+WHERE user_id = $1
+RETURNING id, user_id, created_at, visibility;
+
+-- name: CanViewShareCode :one
+SELECT EXISTS (
+    SELECT 1
+    FROM share_codes sc
+    WHERE sc.id = sqlc.arg(code)::text
+      AND (
+        sc.visibility = 'public'
+        OR sqlc.arg(is_admin)::boolean
+        OR sc.user_id = sqlc.narg(viewer_id)::uuid
+        OR EXISTS (
+            SELECT 1
+            FROM share_code_viewers v
+            WHERE v.share_code_id = sc.id
+              AND v.user_id = sqlc.narg(viewer_id)::uuid
+        )
+      )
+) AS allowed;
+
+-- name: AddShareCodeViewer :exec
+INSERT INTO share_code_viewers (share_code_id, user_id)
+VALUES ($1, $2)
+ON CONFLICT DO NOTHING;
+
+-- name: RemoveShareCodeViewer :exec
+DELETE FROM share_code_viewers
+WHERE share_code_id = $1
+  AND user_id = $2;
+
+-- name: ListShareCodeViewers :many
+SELECT u.username
+FROM share_code_viewers v
+    JOIN users u ON u.id = v.user_id
+WHERE v.share_code_id = $1
+ORDER BY u.username;
+
+-- name: GetUserByUsername :one
+SELECT
+    id,
+    name,
+    email,
+    username,
+    hashed_password,
+    role,
+    is_admin,
+    created_at,
+    last_logged_in
+FROM
+    users
+WHERE
+    username = $1;

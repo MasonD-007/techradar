@@ -59,6 +59,7 @@ export interface ActionResult<T = unknown> {
 	success: boolean;
 	data?: T;
 	error?: string;
+	status?: number;
 }
 
 function getErrorMessage(err: unknown): string {
@@ -66,6 +67,21 @@ function getErrorMessage(err: unknown): string {
 		return (err as ApiError).message || "An error occurred";
 	}
 	return "An error occurred";
+}
+
+const SHARE_API_BASE = process.env.API_URL || "http://localhost:8080";
+
+async function shareFetch(path: string, init: RequestInit = {}) {
+	const token = (await cookies()).get("auth_token")?.value;
+	const headers = new Headers(init.headers);
+	if (token) headers.set("Authorization", `Bearer ${token}`);
+	if (init.body) headers.set("Content-Type", "application/json");
+	return fetch(`${SHARE_API_BASE}${path}`, { ...init, headers, cache: "no-store" });
+}
+
+async function responseMessage(response: Response, fallback: string) {
+	const text = (await response.text()).trim();
+	return text || fallback;
 }
 
 export async function getBlips(): Promise<Blip[]> {
@@ -847,23 +863,19 @@ export async function getRadarGraphByCode(
 	}
 
 	try {
-		const result = (await api.GET("/share-codes/{code}" as any, {
-			params: { path: { code } },
-		})) as any as {
-			data?: RadarGraphResponse;
-			response: Response;
-		};
-		const { data, response } = result;
-
+		const response = await shareFetch(`/share-codes/${encodeURIComponent(code)}`);
 		if (!response.ok) {
-			const msg = getErrorMessage(data);
-			logError("getRadarGraphByCode", "ERROR", msg, {
-				code,
-				status: response.status,
-			});
-			return { success: false, error: msg };
+			const error =
+				response.status === 401
+					? "Sign in to view this radar"
+					: response.status === 404
+						? "Radar not found or not shared with you"
+						: "Failed to fetch radar graph";
+			logError("getRadarGraphByCode", "ERROR", error, { code, status: response.status });
+			return { success: false, status: response.status, error };
 		}
 
+		const data = (await response.json()) as RadarGraphResponse;
 		logInfo("getRadarGraphByCode", "SUCCESS", {
 			code,
 			username: data?.username,
@@ -1085,5 +1097,69 @@ export async function verifyToken(): Promise<boolean> {
 	} catch (error) {
 		logError("verifyToken", "ERROR", getErrorMessage(error), {});
 		return false;
+	}
+}
+
+export async function setShareVisibility(
+	visibility: "public" | "private",
+): Promise<ActionResult<ShareCodeResponse>> {
+	try {
+		const response = await shareFetch("/share-codes/my", {
+			method: "PATCH",
+			body: JSON.stringify({ visibility }),
+		});
+		if (!response.ok) {
+			return { success: false, status: response.status, error: await responseMessage(response, "Failed to update visibility") };
+		}
+		return { success: true, data: (await response.json()) as ShareCodeResponse };
+	} catch (error) {
+		logError("setShareVisibility", "ERROR", getErrorMessage(error), { visibility });
+		return { success: false, error: "Failed to update visibility" };
+	}
+}
+
+export async function getShareViewers(): Promise<ActionResult<string[]>> {
+	try {
+		const response = await shareFetch("/share-codes/my/viewers");
+		if (!response.ok) {
+			return { success: false, status: response.status, error: await responseMessage(response, "Failed to load viewers") };
+		}
+		const body = (await response.json()) as { viewers?: string[] };
+		return { success: true, data: body.viewers ?? [] };
+	} catch (error) {
+		logError("getShareViewers", "ERROR", getErrorMessage(error), {});
+		return { success: false, error: "Failed to load viewers" };
+	}
+}
+
+export async function addShareViewer(username: string): Promise<ActionResult> {
+	try {
+		const response = await shareFetch("/share-codes/my/viewers", {
+			method: "POST",
+			body: JSON.stringify({ username }),
+		});
+		if (!response.ok) {
+			return { success: false, status: response.status, error: await responseMessage(response, "Failed to add viewer") };
+		}
+		return { success: true };
+	} catch (error) {
+		logError("addShareViewer", "ERROR", getErrorMessage(error), { username });
+		return { success: false, error: "Failed to add viewer" };
+	}
+}
+
+export async function removeShareViewer(username: string): Promise<ActionResult> {
+	try {
+		const response = await shareFetch(
+			`/share-codes/my/viewers/${encodeURIComponent(username)}`,
+			{ method: "DELETE" },
+		);
+		if (!response.ok) {
+			return { success: false, status: response.status, error: await responseMessage(response, "Failed to remove viewer") };
+		}
+		return { success: true };
+	} catch (error) {
+		logError("removeShareViewer", "ERROR", getErrorMessage(error), { username });
+		return { success: false, error: "Failed to remove viewer" };
 	}
 }

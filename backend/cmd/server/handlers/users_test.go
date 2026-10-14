@@ -38,6 +38,7 @@ func TestGetUser(t *testing.T) {
 		{
 			name:   "not found error returns 404",
 			pathID: validUUIDStr,
+			userID: validUUIDStr,
 			mockExpect: func(m *mocks.MockQuerier, rls *mocks.MockRLSExecutor) {
 				rls.On("Execute", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
 				m.On("GetUserID", mock.Anything, validUUID).Return(db.User{}, errors.New("not found"))
@@ -246,13 +247,10 @@ func TestUpdateUser(t *testing.T) {
 			wantCode: http.StatusOK,
 		},
 		{
-			name:   "unauthorized when different user",
-			pathID: validUUIDStr,
-			body:   `{"email":"new@example.com"}`,
-			mockExpect: func(m *mocks.MockQuerier, rls *mocks.MockRLSExecutor) {
-				rls.On("Execute", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(errors.New("unauthorized"))
-			},
-			wantCode: http.StatusInternalServerError, // Change expected HTTP code back or see what handlers does
+			name:     "unauthenticated request is rejected",
+			pathID:   validUUIDStr,
+			body:     `{"email":"new@example.com"}`,
+			wantCode: http.StatusUnauthorized,
 		},
 	}
 
@@ -339,4 +337,134 @@ func TestDeleteUser(t *testing.T) {
 			mockQuerier.AssertExpectations(t)
 		})
 	}
+}
+
+func TestGetUser_Authz(t *testing.T) {
+	tests := []struct {
+		name     string
+		caller   caller
+		wantCode int
+	}{
+		{"self allowed", asOwner, http.StatusOK},
+		{"admin allowed", asAdmin, http.StatusOK},
+		{"different user denied", asOther, http.StatusForbidden},
+		{"unauthenticated denied", anon, http.StatusUnauthorized},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mq := mocks.NewMockQuerier()
+			rls := mocks.NewMockRLSExecutor()
+			rls.SetQuerier(mq)
+			rls.On("Execute", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil).Maybe()
+			mq.On("GetUserID", mock.Anything, validUUID).Return(db.User{ID: validUUID, Email: "a@b.c"}, nil).Maybe()
+			req := httptest.NewRequest(http.MethodGet, "/users/"+validUUIDStr, nil)
+			req.SetPathValue("id", validUUIDStr)
+			rec := httptest.NewRecorder()
+			handlers.GetUser(mq, rls)(rec, tt.caller.apply(req))
+
+			assert.Equal(t, tt.wantCode, rec.Code)
+			if tt.wantCode != http.StatusOK {
+				assert.Empty(t, rls.Calls)
+				mq.AssertNotCalled(t, "GetUserID", mock.Anything, mock.Anything)
+			}
+		})
+	}
+}
+
+func TestUpdateUser_Authz(t *testing.T) {
+	tests := []struct {
+		name       string
+		caller     caller
+		body       string
+		wantCode   int
+		wantUpdate bool
+	}{
+		{"self allowed", asOwner, `{"email":"n@e.c"}`, http.StatusOK, true},
+		{"self may resend own role", asOwner, `{"email":"n@e.c","role":"user"}`, http.StatusOK, true},
+		{"admin may update another user", asAdmin, `{"email":"n@e.c"}`, http.StatusOK, true},
+		{"admin may set role", asAdmin, `{"email":"n@e.c","role":"admin"}`, http.StatusOK, true},
+		{"different user denied", asOther, `{"email":"n@e.c"}`, http.StatusForbidden, false},
+		{"non-admin cannot escalate own role", asOwner, `{"email":"n@e.c","role":"admin"}`, http.StatusForbidden, false},
+		{"unauthenticated denied", anon, `{"email":"n@e.c"}`, http.StatusUnauthorized, false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mq := mocks.NewMockQuerier()
+			rls := mocks.NewMockRLSExecutor()
+			rls.SetQuerier(mq)
+			rls.On("Execute", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil).Maybe()
+			mq.On("UpdateUser", mock.Anything, mock.Anything).Return(db.User{ID: validUUID, Email: "n@e.c"}, nil).Maybe()
+			req := httptest.NewRequest(http.MethodPut, "/users/"+validUUIDStr, strings.NewReader(tt.body))
+			req.SetPathValue("id", validUUIDStr)
+			rec := httptest.NewRecorder()
+			handlers.UpdateUser(mq, rls)(rec, tt.caller.apply(req))
+
+			assert.Equal(t, tt.wantCode, rec.Code)
+			if !tt.wantUpdate {
+				assert.Empty(t, rls.Calls)
+				mq.AssertNotCalled(t, "UpdateUser", mock.Anything, mock.Anything)
+			}
+		})
+	}
+}
+
+func TestUserResponses_OmitHashedPassword(t *testing.T) {
+	secret := db.User{ID: validUUID, Email: "a@b.c", HashedPassword: "$2a$secret"}
+	run := func(t *testing.T, h http.HandlerFunc, req *http.Request) []byte {
+		rec := httptest.NewRecorder()
+		h(rec, req)
+		assert.Less(t, rec.Code, 300)
+		assert.NotContains(t, rec.Body.String(), "hashed_password")
+		assert.NotContains(t, rec.Body.String(), "$2a$secret")
+		return rec.Body.Bytes()
+	}
+	newMocks := func() (*mocks.MockQuerier, *mocks.MockRLSExecutor) {
+		mq := mocks.NewMockQuerier()
+		rls := mocks.NewMockRLSExecutor()
+		rls.SetQuerier(mq)
+		rls.On("Execute", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
+		return mq, rls
+	}
+
+	t.Run("GetUser", func(t *testing.T) {
+		mq, rls := newMocks()
+		mq.On("GetUserID", mock.Anything, validUUID).Return(secret, nil)
+		req := httptest.NewRequest(http.MethodGet, "/users/"+validUUIDStr, nil)
+		req.SetPathValue("id", validUUIDStr)
+		var m map[string]any
+		assert.NoError(t, json.Unmarshal(run(t, handlers.GetUser(mq, rls), withCaller(req, callerUUID, "user")), &m))
+		_, present := m["hashed_password"]
+		assert.False(t, present)
+		assert.Equal(t, "a@b.c", m["email"])
+	})
+	t.Run("GetAllUsers", func(t *testing.T) {
+		mq, rls := newMocks()
+		mq.On("GetAllUsers", mock.Anything).Return([]db.User{secret}, nil)
+		req := httptest.NewRequest(http.MethodGet, "/users", nil)
+		var list []map[string]any
+		assert.NoError(t, json.Unmarshal(run(t, handlers.GetAllUsers(mq, rls), withCaller(req, otherUUID, "admin")), &list))
+		assert.Len(t, list, 1)
+		_, present := list[0]["hashed_password"]
+		assert.False(t, present)
+	})
+	t.Run("GetUserByEmail", func(t *testing.T) {
+		mq, rls := newMocks()
+		mq.On("GetUserEmail", mock.Anything, "a@b.c").Return(secret, nil)
+		req := httptest.NewRequest(http.MethodGet, "/users/by-email/a@b.c", nil)
+		req.SetPathValue("email", "a@b.c")
+		run(t, handlers.GetUserByEmail(mq, rls), withCaller(req, otherUUID, "admin"))
+	})
+	t.Run("CreateUser", func(t *testing.T) {
+		mq, rls := newMocks()
+		mq.On("CreateUser", mock.Anything, mock.Anything).Return(secret, nil)
+		req := httptest.NewRequest(http.MethodPost, "/users", strings.NewReader(`{"email":"a@b.c","username":"u","hashed_password":"x"}`))
+		run(t, handlers.CreateUser(mq, rls), withCaller(req, otherUUID, "admin"))
+	})
+	t.Run("UpdateUser", func(t *testing.T) {
+		mq, rls := newMocks()
+		mq.On("UpdateUser", mock.Anything, mock.Anything).Return(secret, nil)
+		req := httptest.NewRequest(http.MethodPut, "/users/"+validUUIDStr, strings.NewReader(`{"email":"a@b.c"}`))
+		req.SetPathValue("id", validUUIDStr)
+		run(t, handlers.UpdateUser(mq, rls), withCaller(req, callerUUID, "user"))
+	})
 }

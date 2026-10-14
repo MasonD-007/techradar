@@ -71,8 +71,9 @@ type LoginRequest struct {
 }
 
 type ShareCodeResponse struct {
-	Code      string `json:"code"`
-	CreatedAt string `json:"created_at"`
+	Code       string `json:"code"`
+	CreatedAt  string `json:"created_at"`
+	Visibility string `json:"visibility"`
 }
 
 type RadarGraphItem struct {
@@ -101,4 +102,16 @@ type UserDTO struct {
 	Email    string `json:"email"`
 	Username string `json:"username"`
 	IsAdmin  bool   `json:"is_admin"`
+}
+
+type SetVisibilityRequest struct {
+	Visibility string `json:"visibility"`
+}
+
+type AddViewerRequest struct {
+	Username string `json:"username"`
+}
+
+type ShareViewersResponse struct {
+	Viewers []string `json:"viewers"`
 }

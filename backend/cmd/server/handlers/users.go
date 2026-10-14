@@ -15,6 +15,7 @@ import (
 const (
 	ErrUserNotFound  = "User not found"
 	ErrUserOwnership = "You can only access your own profile"
+	ErrRoleChange    = "Only admins can change roles"
 )
 
 // GetUser godoc
@@ -26,6 +27,8 @@ const (
 // @Param id path string true "User ID"
 // @Success 200 {object} User
 // @Failure 400 {object} Error
+// @Failure 401 {object} Error
+// @Failure 403 {object} Error
 // @Failure 404 {object} Error
 // @Failure 500 {object} Error
 // @Router /users/{id} [get]
@@ -43,7 +46,15 @@ func GetUser(q Querier, rls RLSExecutor) http.HandlerFunc {
 			return
 		}
 
-		userID, _ := GetUserIDFromRequest(r)
+		userID, ok := GetUserIDFromRequest(r)
+		if !ok {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+		if !isOwnerOrAdmin(r, userID, id) {
+			http.Error(w, ErrUserOwnership, http.StatusForbidden)
+			return
+		}
 		role, _ := GetRoleFromRequest(r)
 
 		var user db.User
@@ -58,16 +69,7 @@ func GetUser(q Querier, rls RLSExecutor) http.HandlerFunc {
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		err = json.NewEncoder(w).Encode(User{
-			ID:             user.ID,
-			Name:           user.Name,
-			Email:          user.Email,
-			Username:       user.Username,
-			HashedPassword: user.HashedPassword,
-			IsAdmin:        user.IsAdmin,
-			CreatedAt:      user.CreatedAt.Time.Format(time.RFC3339),
-			LastLoggedIn:   user.LastLoggedIn,
-		})
+		err = json.NewEncoder(w).Encode(toUserResponse(user))
 		if err != nil {
 			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 			return
@@ -110,7 +112,7 @@ func GetUserByEmail(q Querier, rls RLSExecutor) http.HandlerFunc {
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		err = json.NewEncoder(w).Encode(user)
+		err = json.NewEncoder(w).Encode(toUserResponse(user))
 		if err != nil {
 			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 			return
@@ -148,16 +150,7 @@ func GetAllUsers(q Querier, rls RLSExecutor) http.HandlerFunc {
 
 		response := make([]User, len(users))
 		for i, user := range users {
-			response[i] = User{
-				ID:             user.ID,
-				Name:           user.Name,
-				Email:          user.Email,
-				Username:       user.Username,
-				HashedPassword: user.HashedPassword,
-				IsAdmin:        user.IsAdmin,
-				CreatedAt:      user.CreatedAt.Time.Format(time.RFC3339),
-				LastLoggedIn:   user.LastLoggedIn,
-			}
+			response[i] = toUserResponse(user)
 		}
 
 		w.Header().Set("Content-Type", "application/json")
@@ -212,7 +205,7 @@ func CreateUser(q Querier, rls RLSExecutor) http.HandlerFunc {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		err = json.NewEncoder(w).Encode(user)
+		err = json.NewEncoder(w).Encode(toUserResponse(user))
 		if err != nil {
 			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 			return
@@ -269,6 +262,8 @@ func DeleteUser(q Querier, rls RLSExecutor) http.HandlerFunc {
 // @Param User body UpdateUserRequest true "User data"
 // @Success 200 {object} User
 // @Failure 400 {object} Error
+// @Failure 401 {object} Error
+// @Failure 403 {object} Error
 // @Failure 500 {object} Error
 // @Router /users/{id} [put]
 func UpdateUser(q Querier, rls RLSExecutor) http.HandlerFunc {
@@ -285,14 +280,30 @@ func UpdateUser(q Querier, rls RLSExecutor) http.HandlerFunc {
 			return
 		}
 
+		userID, ok := GetUserIDFromRequest(r)
+		if !ok {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+		if !isOwnerOrAdmin(r, userID, id) {
+			http.Error(w, ErrUserOwnership, http.StatusForbidden)
+			return
+		}
+
 		var params dto.UpdateUserRequest
 		if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
 			http.Error(w, "Invalid request body", http.StatusBadRequest)
 			return
 		}
 
-		userID, _ := GetUserIDFromRequest(r)
 		role, _ := GetRoleFromRequest(r)
+
+		// Only admins may change roles. A non-admin sending a role other than
+		// their own is rejected rather than silently ignored.
+		if !isAdminRequest(r) && params.Role != "" && params.Role != role {
+			http.Error(w, ErrRoleChange, http.StatusForbidden)
+			return
+		}
 
 		userRole := params.Role
 		if userRole == "" {
@@ -318,11 +329,25 @@ func UpdateUser(q Querier, rls RLSExecutor) http.HandlerFunc {
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		err = json.NewEncoder(w).Encode(user)
+		err = json.NewEncoder(w).Encode(toUserResponse(user))
 		if err != nil {
 			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 			return
 		}
+	}
+}
+
+// toUserResponse maps a database user to the client-facing User, which never
+// includes the password hash.
+func toUserResponse(user db.User) User {
+	return User{
+		ID:           user.ID,
+		Name:         user.Name,
+		Email:        user.Email,
+		Username:     user.Username,
+		IsAdmin:      user.IsAdmin,
+		CreatedAt:    user.CreatedAt.Time.Format(time.RFC3339),
+		LastLoggedIn: user.LastLoggedIn,
 	}
 }
 
@@ -333,7 +358,6 @@ type User struct {
 	Name           string             `json:"name" example:"John Doe"`
 	Email          string             `json:"email" example:"john@example.com"`
 	Username       string             `json:"username" example:"johndoe"`
-	HashedPassword string             `json:"hashed_password" example:"hashed_password_value"`
 	IsAdmin        bool               `json:"is_admin" example:"false"`
 	CreatedAt      string             `json:"created_at" example:"2026-04-05T12:00:00Z"`
 	LastLoggedIn   pgtype.Timestamptz `json:"last_logged_in" swaggertype:"string" example:"2026-04-05T12:00:00Z"`

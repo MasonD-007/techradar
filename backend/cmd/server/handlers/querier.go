@@ -33,6 +33,7 @@ type Querier interface {
 	UpdateUser(ctx context.Context, params db.UpdateUserParams) (db.User, error)
 	UpdateUserLastLogin(ctx context.Context, params db.UpdateUserLastLoginParams) error
 	DeleteUser(ctx context.Context, id pgtype.UUID) error
+	GetUserByUsername(ctx context.Context, username string) (db.User, error)
 
 	// Share Codes
 	GetShareCodeByCode(ctx context.Context, id string) (db.ShareCode, error)
@@ -40,6 +41,11 @@ type Querier interface {
 	CreateShareCode(ctx context.Context, params db.CreateShareCodeParams) (db.ShareCode, error)
 	DeleteShareCode(ctx context.Context, id string) error
 	GetRadarGraphByShareCode(ctx context.Context, code string) ([]db.GetRadarGraphByShareCodeRow, error)
+	SetShareCodeVisibility(ctx context.Context, params db.SetShareCodeVisibilityParams) (db.ShareCode, error)
+	CanViewShareCode(ctx context.Context, params db.CanViewShareCodeParams) (bool, error)
+	AddShareCodeViewer(ctx context.Context, params db.AddShareCodeViewerParams) error
+	RemoveShareCodeViewer(ctx context.Context, params db.RemoveShareCodeViewerParams) error
+	ListShareCodeViewers(ctx context.Context, shareCodeID string) ([]string, error)
 
 	// User Technologies
 	GetUserTechnologyID(ctx context.Context, id pgtype.UUID) (db.UserTechnology, error)

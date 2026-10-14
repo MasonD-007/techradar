@@ -27,6 +27,7 @@ import {
 	type RadarGraphResponse,
 	type Technology,
 } from "@/lib/actions";
+import { loginUrlForShare } from "@/lib/share-access";
 import {
 	outerRadius,
 	polarToCartesian,
@@ -321,6 +322,10 @@ function Radar({
 				}
 
 				if (!radarGraphResult.success) {
+					if (radarGraphResult.status === 401 && shareCode) {
+						window.location.assign(loginUrlForShare(shareCode));
+						return;
+					}
 					setError(radarGraphResult.error || "Failed to load radar graph");
 					setPositionedTechnologies([]);
 					setActiveItemId("");

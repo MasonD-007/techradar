@@ -15,6 +15,9 @@ type CreateUserTechnologyRequest = dto.CreateUserTechnologyRequest
 type UpdateUserTechnologyRequest = dto.UpdateUserTechnologyRequest
 
 type ShareCodeResponse = dto.ShareCodeResponse
+type SetVisibilityRequest = dto.SetVisibilityRequest
+type AddViewerRequest = dto.AddViewerRequest
+type ShareViewersResponse = dto.ShareViewersResponse
 type RadarGraphItem = dto.RadarGraphItem
 type RadarGraphResponse = dto.RadarGraphResponse
 

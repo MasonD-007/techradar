@@ -212,6 +212,9 @@ func TestGetShareCodeByCode(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			mockQuerier := mocks.NewMockQuerier()
+			if tt.pathCode != "" {
+				mockQuerier.On("CanViewShareCode", mock.Anything, mock.AnythingOfType("db.CanViewShareCodeParams")).Return(true, nil)
+			}
 			if tt.mockExpect != nil {
 				tt.mockExpect(mockQuerier)
 			}
@@ -266,6 +269,7 @@ func TestDeleteShareCode(t *testing.T) {
 			pathCode: "abc123",
 			userID:   validUUIDStr,
 			mockExpect: func(m *mocks.MockQuerier, rls *mocks.MockRLSExecutor) {
+				m.On("GetShareCodeByCode", mock.Anything, "abc123").Return(db.ShareCode{ID: "abc123", UserID: validUUID}, nil)
 				rls.On("Execute", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(errors.New("db error"))
 			},
 			wantCode: http.StatusInternalServerError,
@@ -275,6 +279,7 @@ func TestDeleteShareCode(t *testing.T) {
 			pathCode: "abc123",
 			userID:   validUUIDStr,
 			mockExpect: func(m *mocks.MockQuerier, rls *mocks.MockRLSExecutor) {
+				m.On("GetShareCodeByCode", mock.Anything, "abc123").Return(db.ShareCode{ID: "abc123", UserID: validUUID}, nil)
 				rls.On("Execute", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
 				m.On("DeleteShareCode", mock.Anything, "abc123").Return(nil)
 			},
@@ -304,6 +309,109 @@ func TestDeleteShareCode(t *testing.T) {
 
 			assert.Equal(t, tt.wantCode, recorder.Code)
 			mockQuerier.AssertExpectations(t)
+		})
+	}
+}
+
+func TestGetShareCodeByCode_Visibility(t *testing.T) {
+	userID := uuid.MustParse(validUUIDStr)
+	rows := []db.GetRadarGraphByShareCodeRow{{
+		Username: "johndoe", Name: "React", QuadrantID: 2, QuadrantName: "Tools", RingID: 1, RingName: "Adopt",
+	}}
+
+	tests := []struct {
+		name      string
+		loggedIn  bool
+		role      string
+		allowed   bool
+		checkErr  error
+		wantCode  int
+		wantAdmin bool
+	}{
+		{name: "allowed anonymous", allowed: true, wantCode: http.StatusOK},
+		{name: "denied anonymous gets 401", wantCode: http.StatusUnauthorized},
+		{name: "denied logged-in gets 404", loggedIn: true, role: "user", wantCode: http.StatusNotFound},
+		{name: "allowed logged-in", loggedIn: true, role: "user", allowed: true, wantCode: http.StatusOK},
+		{name: "admin flag is passed to the check", loggedIn: true, role: "admin", allowed: true, wantCode: http.StatusOK, wantAdmin: true},
+		{name: "check error returns 500", checkErr: errors.New("db down"), wantCode: http.StatusInternalServerError},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m := mocks.NewMockQuerier()
+			m.On("CanViewShareCode", mock.Anything, mock.MatchedBy(func(p db.CanViewShareCodeParams) bool {
+				return p.Code == "abc123" && p.IsAdmin == tt.wantAdmin && p.ViewerID.Valid == tt.loggedIn
+			})).Return(tt.allowed, tt.checkErr)
+			if tt.allowed {
+				m.On("GetRadarGraphByShareCode", mock.Anything, "abc123").Return(rows, nil)
+			}
+
+			req := httptest.NewRequest(http.MethodGet, "/share-codes/abc123", nil)
+			req.SetPathValue("code", "abc123")
+			if tt.loggedIn {
+				ctx := context.WithValue(req.Context(), handlers.UserIDKey, userID)
+				ctx = context.WithValue(ctx, handlers.RoleKey, tt.role)
+				req = req.WithContext(ctx)
+			}
+			recorder := httptest.NewRecorder()
+			handlers.GetShareCodeByCode(m)(recorder, req)
+
+			assert.Equal(t, tt.wantCode, recorder.Code)
+			m.AssertExpectations(t)
+		})
+	}
+}
+
+func TestGetMyShareCode_IncludesVisibility(t *testing.T) {
+	m := mocks.NewMockQuerier()
+	rls := mocks.NewMockRLSExecutor()
+	rls.SetQuerier(m)
+	rls.On("Execute", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
+	m.On("GetShareCodeByUserId", mock.Anything, mock.AnythingOfType("pgtype.UUID")).Return(db.ShareCode{ID: "xyz789", Visibility: "public"}, nil)
+
+	req := httptest.NewRequest(http.MethodGet, "/share-codes/my", nil)
+	req = req.WithContext(context.WithValue(req.Context(), handlers.UserIDKey, uuid.MustParse(validUUIDStr)))
+	recorder := httptest.NewRecorder()
+	handlers.GetMyShareCode(m, rls)(recorder, req)
+
+	var resp map[string]any
+	assert.NoError(t, json.Unmarshal(recorder.Body.Bytes(), &resp))
+	assert.Equal(t, "public", resp["visibility"])
+}
+
+func TestDeleteShareCode_Authz(t *testing.T) {
+	ownerPg := pgtype.UUID{Bytes: callerUUID, Valid: true}
+	tests := []struct {
+		name       string
+		caller     caller
+		lookupErr  error
+		wantCode   int
+		wantDelete bool
+	}{
+		{"owner allowed", asOwner, nil, http.StatusNoContent, true},
+		{"admin allowed", asAdmin, nil, http.StatusNoContent, true},
+		{"different user gets 404", asOther, nil, http.StatusNotFound, false},
+		{"nonexistent code gets 404", asOwner, errors.New("no rows"), http.StatusNotFound, false},
+		{"unauthenticated denied", anon, nil, http.StatusUnauthorized, false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mq := mocks.NewMockQuerier()
+			rls := mocks.NewMockRLSExecutor()
+			rls.SetQuerier(mq)
+			mq.On("GetShareCodeByCode", mock.Anything, "abc123").Return(db.ShareCode{ID: "abc123", UserID: ownerPg}, tt.lookupErr).Maybe()
+			rls.On("Execute", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil).Maybe()
+			mq.On("DeleteShareCode", mock.Anything, "abc123").Return(nil).Maybe()
+			req := httptest.NewRequest(http.MethodDelete, "/share-codes/abc123", nil)
+			req.SetPathValue("code", "abc123")
+			rec := httptest.NewRecorder()
+			handlers.DeleteShareCode(mq, rls)(rec, tt.caller.apply(req))
+
+			assert.Equal(t, tt.wantCode, rec.Code)
+			if !tt.wantDelete {
+				assert.Empty(t, rls.Calls)
+				mq.AssertNotCalled(t, "DeleteShareCode", mock.Anything, mock.Anything)
+			}
 		})
 	}
 }

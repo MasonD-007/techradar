@@ -50,6 +50,36 @@ func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
+// OptionalAuthMiddleware attaches the caller's identity when a valid bearer
+// token is supplied and otherwise treats the request as anonymous. It never
+// rejects a request.
+func OptionalAuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		parts := strings.SplitN(r.Header.Get("Authorization"), " ", 2)
+		if len(parts) != 2 || strings.ToLower(parts[0]) != "bearer" {
+			next(w, r)
+			return
+		}
+
+		claims, err := auth.ValidateToken(parts[1])
+		if err != nil {
+			next(w, r)
+			return
+		}
+
+		userID, err := uuid.Parse(claims.UserID)
+		if err != nil {
+			next(w, r)
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), handlers.UserIDKey, userID)
+		ctx = context.WithValue(ctx, handlers.UsernameKey, claims.Username)
+		ctx = context.WithValue(ctx, handlers.RoleKey, claims.Role)
+		next(w, r.WithContext(ctx))
+	}
+}
+
 func AdminMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		role, ok := handlers.GetRoleFromRequest(r)
