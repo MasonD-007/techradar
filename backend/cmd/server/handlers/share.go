@@ -148,10 +148,11 @@ func GetMyShareCode(q Querier, rls RLSExecutor) http.HandlerFunc {
 
 // GetShareCodeByCode godoc
 // @Summary Get radar graph by share code
-// @Description Get the full radar graph for a share code. Public endpoint, no auth required.
+// @Description Get the full radar graph for a share code. Public radars need no auth; private radars require a bearer token for an allowed user.
 // @Tags share-codes
 // @Param code path string true "Share code"
 // @Success 200 {object} RadarGraphResponse
+// @Failure 401 {object} Error
 // @Failure 404 {object} Error
 // @Failure 500 {object} Error
 // @Router /share-codes/{code} [get]

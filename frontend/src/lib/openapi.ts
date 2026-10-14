@@ -584,6 +584,244 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
+        /**
+         * Set share code visibility
+         * @description Set the authenticated user's radar to public (anyone with the link) or private (only listed viewers)
+         */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Visibility */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["handlers.SetVisibilityRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.ShareCodeResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.Error"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.Error"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/share-codes/my/viewers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List private-radar viewers
+         * @description List the usernames allowed to view the authenticated user's private radar
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.ShareViewersResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.Error"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Allow a user to view my private radar
+         * @description Add a viewer by username. Adding an existing viewer succeeds.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Viewer */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["handlers.AddViewerRequest"];
+                };
+            };
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["handlers.Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["handlers.Error"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["handlers.Error"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["handlers.Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/share-codes/my/viewers/{username}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove a viewer from my private radar */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Username */
+                    username: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["handlers.Error"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["handlers.Error"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["handlers.Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
         patch?: never;
         trace?: never;
     };
@@ -596,7 +834,7 @@ export interface paths {
         };
         /**
          * Get radar graph by share code
-         * @description Get the full radar graph for a share code. Public endpoint, no auth required.
+         * @description Get the full radar graph for a share code. Public radars need no auth; private radars require a bearer token for an allowed user.
          */
         get: {
             parameters: {
@@ -617,6 +855,15 @@ export interface paths {
                     };
                     content: {
                         "*/*": components["schemas"]["handlers.RadarGraphResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["handlers.Error"];
                     };
                 };
                 /** @description Not Found */
@@ -1711,6 +1958,9 @@ export interface components {
             name?: string;
             username?: string;
         };
+        "handlers.AddViewerRequest": {
+            username?: string;
+        };
         "handlers.Blip": {
             context?: unknown;
             created_at?: string;
@@ -1750,9 +2000,16 @@ export interface components {
             radar?: components["schemas"]["dto.RadarGraphItem"][];
             username?: string;
         };
+        "handlers.SetVisibilityRequest": {
+            visibility?: string;
+        };
         "handlers.ShareCodeResponse": {
             code?: string;
             created_at?: string;
+            visibility?: string;
+        };
+        "handlers.ShareViewersResponse": {
+            viewers?: string[];
         };
         "handlers.Technology": {
             /** @example 1 */

@@ -434,11 +434,183 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "patch": {
+                "description": "Set the authenticated user's radar to public (anyone with the link) or private (only listed viewers)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "share-codes"
+                ],
+                "summary": "Set share code visibility",
+                "parameters": [
+                    {
+                        "description": "Visibility",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.SetVisibilityRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ShareCodeResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/share-codes/my/viewers": {
+            "get": {
+                "description": "List the usernames allowed to view the authenticated user's private radar",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "share-codes"
+                ],
+                "summary": "List private-radar viewers",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ShareViewersResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Add a viewer by username. Adding an existing viewer succeeds.",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "share-codes"
+                ],
+                "summary": "Allow a user to view my private radar",
+                "parameters": [
+                    {
+                        "description": "Viewer",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.AddViewerRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/share-codes/my/viewers/{username}": {
+            "delete": {
+                "tags": [
+                    "share-codes"
+                ],
+                "summary": "Remove a viewer from my private radar",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Username",
+                        "name": "username",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    }
+                }
             }
         },
         "/share-codes/{code}": {
             "get": {
-                "description": "Get the full radar graph for a share code. Public endpoint, no auth required.",
+                "description": "Get the full radar graph for a share code. Public radars need no auth; private radars require a bearer token for an allowed user.",
                 "tags": [
                     "share-codes"
                 ],
@@ -457,6 +629,12 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/handlers.RadarGraphResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
                         }
                     },
                     "404": {
@@ -1406,6 +1584,14 @@ const docTemplate = `{
                 }
             }
         },
+        "handlers.AddViewerRequest": {
+            "type": "object",
+            "properties": {
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
         "handlers.Blip": {
             "type": "object",
             "properties": {
@@ -1512,6 +1698,14 @@ const docTemplate = `{
                 }
             }
         },
+        "handlers.SetVisibilityRequest": {
+            "type": "object",
+            "properties": {
+                "visibility": {
+                    "type": "string"
+                }
+            }
+        },
         "handlers.ShareCodeResponse": {
             "type": "object",
             "properties": {
@@ -1520,6 +1714,20 @@ const docTemplate = `{
                 },
                 "created_at": {
                     "type": "string"
+                },
+                "visibility": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.ShareViewersResponse": {
+            "type": "object",
+            "properties": {
+                "viewers": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },

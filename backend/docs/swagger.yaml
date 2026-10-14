@@ -55,6 +55,11 @@ definitions:
       username:
         type: string
     type: object
+  handlers.AddViewerRequest:
+    properties:
+      username:
+        type: string
+    type: object
   handlers.Blip:
     properties:
       context: {}
@@ -124,12 +129,26 @@ definitions:
       username:
         type: string
     type: object
+  handlers.SetVisibilityRequest:
+    properties:
+      visibility:
+        type: string
+    type: object
   handlers.ShareCodeResponse:
     properties:
       code:
         type: string
       created_at:
         type: string
+      visibility:
+        type: string
+    type: object
+  handlers.ShareViewersResponse:
+    properties:
+      viewers:
+        items:
+          type: string
+        type: array
     type: object
   handlers.Technology:
     properties:
@@ -534,8 +553,8 @@ paths:
       tags:
       - share-codes
     get:
-      description: Get the full radar graph for a share code. Public endpoint, no
-        auth required.
+      description: Get the full radar graph for a share code. Public radars need no
+        auth; private radars require a bearer token for an allowed user.
       parameters:
       - description: Share code
         in: path
@@ -547,6 +566,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/handlers.RadarGraphResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Error'
         "404":
           description: Not Found
           schema:
@@ -575,6 +598,121 @@ paths:
           schema:
             $ref: '#/definitions/handlers.Error'
       summary: Get my share code
+      tags:
+      - share-codes
+    patch:
+      consumes:
+      - application/json
+      description: Set the authenticated user's radar to public (anyone with the link)
+        or private (only listed viewers)
+      parameters:
+      - description: Visibility
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.SetVisibilityRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.ShareCodeResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      summary: Set share code visibility
+      tags:
+      - share-codes
+  /share-codes/my/viewers:
+    get:
+      description: List the usernames allowed to view the authenticated user's private
+        radar
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.ShareViewersResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      summary: List private-radar viewers
+      tags:
+      - share-codes
+    post:
+      consumes:
+      - application/json
+      description: Add a viewer by username. Adding an existing viewer succeeds.
+      parameters:
+      - description: Viewer
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.AddViewerRequest'
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      summary: Allow a user to view my private radar
+      tags:
+      - share-codes
+  /share-codes/my/viewers/{username}:
+    delete:
+      parameters:
+      - description: Username
+        in: path
+        name: username
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      summary: Remove a viewer from my private radar
       tags:
       - share-codes
   /technologies:

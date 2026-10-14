@@ -311,10 +311,145 @@ paths:
             "*/*":
               schema:
                 $ref: "#/components/schemas/handlers.Error"
+    patch:
+      description: Set the authenticated user's radar to public (anyone with the link)
+        or private (only listed viewers)
+      tags:
+        - share-codes
+      summary: Set share code visibility
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/handlers.SetVisibilityRequest"
+        description: Visibility
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.ShareCodeResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+  /share-codes/my/viewers:
+    get:
+      description: List the usernames allowed to view the authenticated user's private radar
+      tags:
+        - share-codes
+      summary: List private-radar viewers
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.ShareViewersResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+    post:
+      description: Add a viewer by username. Adding an existing viewer succeeds.
+      tags:
+        - share-codes
+      summary: Allow a user to view my private radar
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/handlers.AddViewerRequest"
+        description: Viewer
+        required: true
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+        "401":
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+        "404":
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+        "500":
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+  "/share-codes/my/viewers/{username}":
+    delete:
+      tags:
+        - share-codes
+      summary: Remove a viewer from my private radar
+      parameters:
+        - description: Username
+          name: username
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+        "404":
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+        "500":
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
   "/share-codes/{code}":
     get:
-      description: Get the full radar graph for a share code. Public endpoint, no auth
-        required.
+      description: Get the full radar graph for a share code. Public radars need no
+        auth; private radars require a bearer token for an allowed user.
       tags:
         - share-codes
       summary: Get radar graph by share code
@@ -332,6 +467,12 @@ paths:
             "*/*":
               schema:
                 $ref: "#/components/schemas/handlers.RadarGraphResponse"
+        "401":
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
         "404":
           description: Not Found
           content:
@@ -1019,6 +1160,11 @@ components:
           type: string
         username:
           type: string
+    handlers.AddViewerRequest:
+      type: object
+      properties:
+        username:
+          type: string
     handlers.Blip:
       type: object
       properties:
@@ -1088,6 +1234,11 @@ components:
             $ref: "#/components/schemas/dto.RadarGraphItem"
         username:
           type: string
+    handlers.SetVisibilityRequest:
+      type: object
+      properties:
+        visibility:
+          type: string
     handlers.ShareCodeResponse:
       type: object
       properties:
@@ -1095,6 +1246,15 @@ components:
           type: string
         created_at:
           type: string
+        visibility:
+          type: string
+    handlers.ShareViewersResponse:
+      type: object
+      properties:
+        viewers:
+          type: array
+          items:
+            type: string
     handlers.Technology:
       type: object
       properties:

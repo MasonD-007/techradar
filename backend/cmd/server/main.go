@@ -65,7 +65,7 @@ func main() {
 
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:3000", "http://127.0.0.1:3000"},
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
 		AllowCredentials: true,
@@ -139,7 +139,11 @@ func registerShareCodesRoutes(r chi.Router, q *db.Queries, pool *pgxpool.Pool) {
 	rls := handlers.NewDBRLSExecutor(pool)
 	r.Post("/share-codes", loggingMiddleware(AuthMiddleware(handlers.CreateShareCode(q, rls))))
 	r.Get("/share-codes/my", loggingMiddleware(AuthMiddleware(handlers.GetMyShareCode(q, rls))))
-	r.Get("/share-codes/{code}", loggingMiddleware(handlers.GetShareCodeByCode(q)))
+	r.Patch("/share-codes/my", loggingMiddleware(AuthMiddleware(handlers.SetShareVisibility(rls))))
+	r.Get("/share-codes/my/viewers", loggingMiddleware(AuthMiddleware(handlers.ListShareViewers(q, rls))))
+	r.Post("/share-codes/my/viewers", loggingMiddleware(AuthMiddleware(handlers.AddShareViewer(q, rls))))
+	r.Delete("/share-codes/my/viewers/{username}", loggingMiddleware(AuthMiddleware(handlers.RemoveShareViewer(q, rls))))
+	r.Get("/share-codes/{code}", loggingMiddleware(OptionalAuthMiddleware(handlers.GetShareCodeByCode(q))))
 	r.Delete("/share-codes/{code}", loggingMiddleware(AuthMiddleware(handlers.DeleteShareCode(q, rls))))
 }
 
