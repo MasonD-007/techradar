@@ -266,6 +266,7 @@ func GetShareCodeByCode(q Querier) http.HandlerFunc {
 // @Param code path string true "Share code"
 // @Success 204
 // @Failure 400 {object} Error
+// @Failure 404 {object} Error
 // @Failure 500 {object} Error
 // @Router /share-codes/{code} [delete]
 func DeleteShareCode(q Querier, rls RLSExecutor) http.HandlerFunc {
@@ -283,7 +284,15 @@ func DeleteShareCode(q Querier, rls RLSExecutor) http.HandlerFunc {
 		}
 		role, _ := GetRoleFromRequest(r)
 
-		err := rls.Execute(r.Context(), userID.String(), role, func(q Querier) error {
+		// RLS is bypassed by the database role, so check ownership here. Respond
+		// 404 for both missing and foreign codes so existence is not revealed.
+		sc, err := q.GetShareCodeByCode(r.Context(), code)
+		if err != nil || !isOwnerOrAdmin(r, userID, sc.UserID) {
+			http.Error(w, "Share code not found", http.StatusNotFound)
+			return
+		}
+
+		err = rls.Execute(r.Context(), userID.String(), role, func(q Querier) error {
 			return q.DeleteShareCode(r.Context(), code)
 		})
 		if err != nil {

@@ -269,6 +269,7 @@ func TestDeleteShareCode(t *testing.T) {
 			pathCode: "abc123",
 			userID:   validUUIDStr,
 			mockExpect: func(m *mocks.MockQuerier, rls *mocks.MockRLSExecutor) {
+				m.On("GetShareCodeByCode", mock.Anything, "abc123").Return(db.ShareCode{ID: "abc123", UserID: validUUID}, nil)
 				rls.On("Execute", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(errors.New("db error"))
 			},
 			wantCode: http.StatusInternalServerError,
@@ -278,6 +279,7 @@ func TestDeleteShareCode(t *testing.T) {
 			pathCode: "abc123",
 			userID:   validUUIDStr,
 			mockExpect: func(m *mocks.MockQuerier, rls *mocks.MockRLSExecutor) {
+				m.On("GetShareCodeByCode", mock.Anything, "abc123").Return(db.ShareCode{ID: "abc123", UserID: validUUID}, nil)
 				rls.On("Execute", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
 				m.On("DeleteShareCode", mock.Anything, "abc123").Return(nil)
 			},
@@ -375,4 +377,41 @@ func TestGetMyShareCode_IncludesVisibility(t *testing.T) {
 	var resp map[string]any
 	assert.NoError(t, json.Unmarshal(recorder.Body.Bytes(), &resp))
 	assert.Equal(t, "public", resp["visibility"])
+}
+
+func TestDeleteShareCode_Authz(t *testing.T) {
+	ownerPg := pgtype.UUID{Bytes: callerUUID, Valid: true}
+	tests := []struct {
+		name       string
+		caller     caller
+		lookupErr  error
+		wantCode   int
+		wantDelete bool
+	}{
+		{"owner allowed", asOwner, nil, http.StatusNoContent, true},
+		{"admin allowed", asAdmin, nil, http.StatusNoContent, true},
+		{"different user gets 404", asOther, nil, http.StatusNotFound, false},
+		{"nonexistent code gets 404", asOwner, errors.New("no rows"), http.StatusNotFound, false},
+		{"unauthenticated denied", anon, nil, http.StatusUnauthorized, false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mq := mocks.NewMockQuerier()
+			rls := mocks.NewMockRLSExecutor()
+			rls.SetQuerier(mq)
+			mq.On("GetShareCodeByCode", mock.Anything, "abc123").Return(db.ShareCode{ID: "abc123", UserID: ownerPg}, tt.lookupErr).Maybe()
+			rls.On("Execute", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil).Maybe()
+			mq.On("DeleteShareCode", mock.Anything, "abc123").Return(nil).Maybe()
+			req := httptest.NewRequest(http.MethodDelete, "/share-codes/abc123", nil)
+			req.SetPathValue("code", "abc123")
+			rec := httptest.NewRecorder()
+			handlers.DeleteShareCode(mq, rls)(rec, tt.caller.apply(req))
+
+			assert.Equal(t, tt.wantCode, rec.Code)
+			if !tt.wantDelete {
+				assert.Empty(t, rls.Calls)
+				mq.AssertNotCalled(t, "DeleteShareCode", mock.Anything, mock.Anything)
+			}
+		})
+	}
 }
