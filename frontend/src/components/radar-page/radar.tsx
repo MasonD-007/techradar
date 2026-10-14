@@ -286,7 +286,7 @@ function Radar({
 	onTechnologySelect,
 }: RadarProps) {
 	const [viewedUserName, setViewedUserName] = useState<string | null>(null);
-	const [activeItemId, setActiveItemId] = useState("");
+	const [selectedItemId, setActiveItemId] = useState("");
 	const [positionedTechnologies, setPositionedTechnologies] = useState<
 		PositionedRadarTechnology[]
 	>([]);
@@ -501,28 +501,11 @@ function Radar({
 	}, [currentUserId, isOwnRadar, shareCode, refreshTrigger]);
 
 	const firstPositionedTechnologyId = positionedTechnologies[0]?.id ?? "";
-	const hasActiveTechnology = positionedTechnologies.some(
-		(technology) => technology.id === activeItemId,
-	);
-
-	useEffect(() => {
-		if (!firstPositionedTechnologyId) {
-			if (activeItemId) {
-				setActiveItemId("");
-			}
-
-			return;
-		}
-
-		if (!activeItemId) {
-			setActiveItemId(firstPositionedTechnologyId);
-			return;
-		}
-
-		if (!hasActiveTechnology) {
-			setActiveItemId(firstPositionedTechnologyId);
-		}
-	}, [activeItemId, firstPositionedTechnologyId, hasActiveTechnology]);
+	const activeItemId = positionedTechnologies.some(
+		(technology) => technology.id === selectedItemId,
+	)
+		? selectedItemId
+		: firstPositionedTechnologyId;
 
 	return (
 		<Card className="gap-0 overflow-hidden border-border bg-card/80 py-0 shadow-2xl shadow-foreground/10 backdrop-blur">

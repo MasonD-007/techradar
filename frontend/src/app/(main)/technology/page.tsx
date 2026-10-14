@@ -8,7 +8,6 @@ import { Input } from "@/components/ui/input";
 import {
 	getBlips,
 	getTechnologies,
-	type Blip,
 	type Technology,
 } from "@/lib/actions";
 
