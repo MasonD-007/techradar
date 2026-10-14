@@ -11,6 +11,14 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+func toShareCodeResponse(sc db.ShareCode) dto.ShareCodeResponse {
+	return dto.ShareCodeResponse{
+		Code:       sc.ID,
+		CreatedAt:  sc.CreatedAt.Time.Format("2006-01-02T15:04:05Z"),
+		Visibility: sc.Visibility,
+	}
+}
+
 func generateShareCode() (string, error) {
 	b := make([]byte, 3)
 	if _, err := rand.Read(b); err != nil {
@@ -47,10 +55,7 @@ func CreateShareCode(q Querier, rls RLSExecutor) http.HandlerFunc {
 		})
 		if err == nil {
 			w.Header().Set("Content-Type", "application/json")
-			err = json.NewEncoder(w).Encode(dto.ShareCodeResponse{
-				Code:      existing.ID,
-				CreatedAt: existing.CreatedAt.Time.Format("2006-01-02T15:04:05Z"),
-			})
+			err = json.NewEncoder(w).Encode(toShareCodeResponse(existing))
 			if err != nil {
 				http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 			}
@@ -79,10 +84,7 @@ func CreateShareCode(q Querier, rls RLSExecutor) http.HandlerFunc {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		err = json.NewEncoder(w).Encode(dto.ShareCodeResponse{
-			Code:      sc.ID,
-			CreatedAt: sc.CreatedAt.Time.Format("2006-01-02T15:04:05Z"),
-		})
+		err = json.NewEncoder(w).Encode(toShareCodeResponse(sc))
 		if err != nil {
 			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 		}
@@ -137,10 +139,7 @@ func GetMyShareCode(q Querier, rls RLSExecutor) http.HandlerFunc {
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		err = json.NewEncoder(w).Encode(dto.ShareCodeResponse{
-			Code:      sc.ID,
-			CreatedAt: sc.CreatedAt.Time.Format("2006-01-02T15:04:05Z"),
-		})
+		err = json.NewEncoder(w).Encode(toShareCodeResponse(sc))
 		if err != nil {
 			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 		}
@@ -161,6 +160,31 @@ func GetShareCodeByCode(q Querier) http.HandlerFunc {
 		code := r.PathValue("code")
 		if code == "" {
 			http.Error(w, "Missing code parameter", http.StatusBadRequest)
+			return
+		}
+
+		var viewerID pgtype.UUID
+		uid, loggedIn := GetUserIDFromRequest(r)
+		if loggedIn {
+			viewerID = pgtype.UUID{Bytes: uid, Valid: true}
+		}
+		role, _ := GetRoleFromRequest(r)
+
+		allowed, err := q.CanViewShareCode(r.Context(), db.CanViewShareCodeParams{
+			Code:     code,
+			IsAdmin:  role == "admin",
+			ViewerID: viewerID,
+		})
+		if err != nil {
+			http.Error(w, "Failed to check share code access", http.StatusInternalServerError)
+			return
+		}
+		if !allowed {
+			if !loggedIn {
+				http.Error(w, "Authentication required", http.StatusUnauthorized)
+				return
+			}
+			http.Error(w, "Share code not found", http.StatusNotFound)
 			return
 		}
 

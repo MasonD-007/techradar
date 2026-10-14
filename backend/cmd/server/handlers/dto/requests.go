@@ -71,8 +71,9 @@ type LoginRequest struct {
 }
 
 type ShareCodeResponse struct {
-	Code      string `json:"code"`
-	CreatedAt string `json:"created_at"`
+	Code       string `json:"code"`
+	CreatedAt  string `json:"created_at"`
+	Visibility string `json:"visibility"`
 }
 
 type RadarGraphItem struct {
