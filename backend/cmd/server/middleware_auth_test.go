@@ -458,3 +458,46 @@ func TestVerifyToken_TamperedPayload_Returns401(t *testing.T) {
 	assert.Equal(t, http.StatusUnauthorized, recorder.Code)
 }
 
+func TestOptionalAuthMiddleware(t *testing.T) {
+	userID := uuid.New()
+	validToken, err := auth.GenerateToken(userID, "alice", "user")
+	assert.NoError(t, err)
+
+	tests := []struct {
+		name       string
+		header     string
+		wantUserID bool
+	}{
+		{name: "no header is anonymous", header: ""},
+		{name: "wrong scheme is anonymous", header: "Basic abc"},
+		{name: "garbage token is anonymous", header: "Bearer not-a-jwt"},
+		{name: "valid token sets user", header: "Bearer " + validToken, wantUserID: true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			called := false
+			var gotID uuid.UUID
+			var gotOK bool
+			handler := OptionalAuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
+				called = true
+				gotID, gotOK = handlers.GetUserIDFromRequest(r)
+				w.WriteHeader(http.StatusOK)
+			})
+
+			req := httptest.NewRequest(http.MethodGet, "/test", nil)
+			if tt.header != "" {
+				req.Header.Set("Authorization", tt.header)
+			}
+			recorder := httptest.NewRecorder()
+			handler(recorder, req)
+
+			assert.True(t, called, "next must always be called")
+			assert.Equal(t, http.StatusOK, recorder.Code)
+			assert.Equal(t, tt.wantUserID, gotOK)
+			if tt.wantUserID {
+				assert.Equal(t, userID, gotID)
+			}
+		})
+	}
+}
