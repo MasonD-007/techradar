@@ -14,7 +14,7 @@ spec:
   template:
     metadata:
       annotations:
-        deploy/revision: "initial"
+        deploy/revision: "71b64d62a101e797a6c5673b94835cb15adb529a"
       labels:
         app: backend
     spec:
