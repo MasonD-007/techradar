@@ -103,3 +103,15 @@ type UserDTO struct {
 	Username string `json:"username"`
 	IsAdmin  bool   `json:"is_admin"`
 }
+
+type SetVisibilityRequest struct {
+	Visibility string `json:"visibility"`
+}
+
+type AddViewerRequest struct {
+	Username string `json:"username"`
+}
+
+type ShareViewersResponse struct {
+	Viewers []string `json:"viewers"`
+}
