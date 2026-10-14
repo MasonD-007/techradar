@@ -11,6 +11,54 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const addShareCodeViewer = `-- name: AddShareCodeViewer :exec
+INSERT INTO share_code_viewers (share_code_id, user_id)
+VALUES ($1, $2)
+ON CONFLICT DO NOTHING
+`
+
+type AddShareCodeViewerParams struct {
+	ShareCodeID string      `json:"share_code_id"`
+	UserID      pgtype.UUID `json:"user_id"`
+}
+
+func (q *Queries) AddShareCodeViewer(ctx context.Context, arg AddShareCodeViewerParams) error {
+	_, err := q.db.Exec(ctx, addShareCodeViewer, arg.ShareCodeID, arg.UserID)
+	return err
+}
+
+const canViewShareCode = `-- name: CanViewShareCode :one
+SELECT EXISTS (
+    SELECT 1
+    FROM share_codes sc
+    WHERE sc.id = $1::text
+      AND (
+        sc.visibility = 'public'
+        OR $2::boolean
+        OR sc.user_id = $3::uuid
+        OR EXISTS (
+            SELECT 1
+            FROM share_code_viewers v
+            WHERE v.share_code_id = sc.id
+              AND v.user_id = $3::uuid
+        )
+      )
+) AS allowed
+`
+
+type CanViewShareCodeParams struct {
+	Code     string      `json:"code"`
+	IsAdmin  bool        `json:"is_admin"`
+	ViewerID pgtype.UUID `json:"viewer_id"`
+}
+
+func (q *Queries) CanViewShareCode(ctx context.Context, arg CanViewShareCodeParams) (bool, error) {
+	row := q.db.QueryRow(ctx, canViewShareCode, arg.Code, arg.IsAdmin, arg.ViewerID)
+	var allowed bool
+	err := row.Scan(&allowed)
+	return allowed, err
+}
+
 const createBlip = `-- name: CreateBlip :one
 INSERT INTO blips (
     context
@@ -49,7 +97,8 @@ INSERT INTO share_codes (
 VALUES ($1, $2)
 RETURNING id,
     user_id,
-    created_at
+    created_at,
+    visibility
 `
 
 type CreateShareCodeParams struct {
@@ -60,7 +109,12 @@ type CreateShareCodeParams struct {
 func (q *Queries) CreateShareCode(ctx context.Context, arg CreateShareCodeParams) (ShareCode, error) {
 	row := q.db.QueryRow(ctx, createShareCode, arg.ID, arg.UserID)
 	var i ShareCode
-	err := row.Scan(&i.ID, &i.UserID, &i.CreatedAt)
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.CreatedAt,
+		&i.Visibility,
+	)
 	return i, err
 }
 
@@ -496,7 +550,8 @@ const getShareCodeByCode = `-- name: GetShareCodeByCode :one
 SELECT
     id,
     user_id,
-    created_at
+    created_at,
+    visibility
 FROM
     share_codes
 WHERE
@@ -506,7 +561,12 @@ WHERE
 func (q *Queries) GetShareCodeByCode(ctx context.Context, id string) (ShareCode, error) {
 	row := q.db.QueryRow(ctx, getShareCodeByCode, id)
 	var i ShareCode
-	err := row.Scan(&i.ID, &i.UserID, &i.CreatedAt)
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.CreatedAt,
+		&i.Visibility,
+	)
 	return i, err
 }
 
@@ -514,7 +574,8 @@ const getShareCodeByUserId = `-- name: GetShareCodeByUserId :one
 SELECT
     id,
     user_id,
-    created_at
+    created_at,
+    visibility
 FROM
     share_codes
 WHERE
@@ -524,7 +585,12 @@ WHERE
 func (q *Queries) GetShareCodeByUserId(ctx context.Context, userID pgtype.UUID) (ShareCode, error) {
 	row := q.db.QueryRow(ctx, getShareCodeByUserId, userID)
 	var i ShareCode
-	err := row.Scan(&i.ID, &i.UserID, &i.CreatedAt)
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.CreatedAt,
+		&i.Visibility,
+	)
 	return i, err
 }
 
@@ -629,6 +695,40 @@ func (q *Queries) GetTechnologyQuad(ctx context.Context, quadrantID int32) ([]Te
 		return nil, err
 	}
 	return items, nil
+}
+
+const getUserByUsername = `-- name: GetUserByUsername :one
+SELECT
+    id,
+    name,
+    email,
+    username,
+    hashed_password,
+    role,
+    is_admin,
+    created_at,
+    last_logged_in
+FROM
+    users
+WHERE
+    username = $1
+`
+
+func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User, error) {
+	row := q.db.QueryRow(ctx, getUserByUsername, username)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Email,
+		&i.Username,
+		&i.HashedPassword,
+		&i.Role,
+		&i.IsAdmin,
+		&i.CreatedAt,
+		&i.LastLoggedIn,
+	)
+	return i, err
 }
 
 const getUserEmail = `-- name: GetUserEmail :one
@@ -766,6 +866,74 @@ func (q *Queries) GetUserTechnologyUserId(ctx context.Context, userID pgtype.UUI
 		return nil, err
 	}
 	return items, nil
+}
+
+const listShareCodeViewers = `-- name: ListShareCodeViewers :many
+SELECT u.username
+FROM share_code_viewers v
+    JOIN users u ON u.id = v.user_id
+WHERE v.share_code_id = $1
+ORDER BY u.username
+`
+
+func (q *Queries) ListShareCodeViewers(ctx context.Context, shareCodeID string) ([]string, error) {
+	rows, err := q.db.Query(ctx, listShareCodeViewers, shareCodeID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []string
+	for rows.Next() {
+		var username string
+		if err := rows.Scan(&username); err != nil {
+			return nil, err
+		}
+		items = append(items, username)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const removeShareCodeViewer = `-- name: RemoveShareCodeViewer :exec
+DELETE FROM share_code_viewers
+WHERE share_code_id = $1
+  AND user_id = $2
+`
+
+type RemoveShareCodeViewerParams struct {
+	ShareCodeID string      `json:"share_code_id"`
+	UserID      pgtype.UUID `json:"user_id"`
+}
+
+func (q *Queries) RemoveShareCodeViewer(ctx context.Context, arg RemoveShareCodeViewerParams) error {
+	_, err := q.db.Exec(ctx, removeShareCodeViewer, arg.ShareCodeID, arg.UserID)
+	return err
+}
+
+const setShareCodeVisibility = `-- name: SetShareCodeVisibility :one
+UPDATE share_codes
+SET visibility = $2
+WHERE user_id = $1
+RETURNING id, user_id, created_at, visibility
+`
+
+type SetShareCodeVisibilityParams struct {
+	UserID     pgtype.UUID `json:"user_id"`
+	Visibility string      `json:"visibility"`
+}
+
+func (q *Queries) SetShareCodeVisibility(ctx context.Context, arg SetShareCodeVisibilityParams) (ShareCode, error) {
+	row := q.db.QueryRow(ctx, setShareCodeVisibility, arg.UserID, arg.Visibility)
+	var i ShareCode
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.CreatedAt,
+		&i.Visibility,
+	)
+	return i, err
 }
 
 const updateBlip = `-- name: UpdateBlip :one

@@ -184,3 +184,36 @@ func (m *MockQuerier) GetRadarGraphByShareCode(ctx context.Context, code string)
 	list, _ := args.Get(0).([]db.GetRadarGraphByShareCodeRow)
 	return list, args.Error(1)
 }
+
+func (m *MockQuerier) SetShareCodeVisibility(ctx context.Context, params db.SetShareCodeVisibilityParams) (db.ShareCode, error) {
+	args := m.Called(ctx, params)
+	sc, _ := args.Get(0).(db.ShareCode)
+	return sc, args.Error(1)
+}
+
+func (m *MockQuerier) CanViewShareCode(ctx context.Context, params db.CanViewShareCodeParams) (bool, error) {
+	args := m.Called(ctx, params)
+	return args.Bool(0), args.Error(1)
+}
+
+func (m *MockQuerier) AddShareCodeViewer(ctx context.Context, params db.AddShareCodeViewerParams) error {
+	args := m.Called(ctx, params)
+	return args.Error(0)
+}
+
+func (m *MockQuerier) RemoveShareCodeViewer(ctx context.Context, params db.RemoveShareCodeViewerParams) error {
+	args := m.Called(ctx, params)
+	return args.Error(0)
+}
+
+func (m *MockQuerier) ListShareCodeViewers(ctx context.Context, shareCodeID string) ([]string, error) {
+	args := m.Called(ctx, shareCodeID)
+	list, _ := args.Get(0).([]string)
+	return list, args.Error(1)
+}
+
+func (m *MockQuerier) GetUserByUsername(ctx context.Context, username string) (db.User, error) {
+	args := m.Called(ctx, username)
+	u, _ := args.Get(0).(db.User)
+	return u, args.Error(1)
+}

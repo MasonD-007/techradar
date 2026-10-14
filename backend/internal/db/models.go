@@ -26,9 +26,16 @@ type Ring struct {
 }
 
 type ShareCode struct {
-	ID        string             `json:"id"`
-	UserID    pgtype.UUID        `json:"user_id"`
-	CreatedAt pgtype.Timestamptz `json:"created_at"`
+	ID         string             `json:"id"`
+	UserID     pgtype.UUID        `json:"user_id"`
+	CreatedAt  pgtype.Timestamptz `json:"created_at"`
+	Visibility string             `json:"visibility"`
+}
+
+type ShareCodeViewer struct {
+	ShareCodeID string             `json:"share_code_id"`
+	UserID      pgtype.UUID        `json:"user_id"`
+	CreatedAt   pgtype.Timestamptz `json:"created_at"`
 }
 
 type Technology struct {
