@@ -1,7 +1,7 @@
 "use client";
 
 import { Share } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -27,34 +27,62 @@ type ShareButtonProps = {
 export default function ShareButton({ shareCode }: ShareButtonProps) {
 	const [copied, setCopied] = useState(false);
 	const [open, setOpen] = useState(false);
-	const [isOwner, setIsOwner] = useState(false);
+	// The share code the current viewer was verified as owner of; the owner
+	// controls only show while this matches the shareCode prop.
+	const [ownerOf, setOwnerOf] = useState<string | null>(null);
+	const isOwner = open && ownerOf === shareCode;
 	const [visibility, setVisibility] = useState<"public" | "private">("private");
 	const [viewers, setViewers] = useState<string[]>([]);
 	const [username, setUsername] = useState("");
 	const [error, setError] = useState<string | null>(null);
 
+	// Incremented whenever the dialog's owner session changes (open, close,
+	// shareCode change, unmount) so late responses can be discarded.
+	const generation = useRef(0);
+
 	const refreshViewers = async () => {
+		const gen = generation.current;
 		const result = await getShareViewers();
+		if (gen !== generation.current) return;
 		if (result.success) setViewers(result.data ?? []);
+		else setError(result.error ?? "Failed to load viewers");
 	};
 
 	useEffect(() => {
+		generation.current += 1;
 		if (!open) return;
-		let cancelled = false;
+		const gen = generation.current;
 		const load = async () => {
-			const mine = await getMyShareCode();
-			if (cancelled) return;
-			const owner = mine.success && mine.data?.code === shareCode;
-			setIsOwner(owner);
-			if (!owner) return;
-			setVisibility(mine.data?.visibility === "public" ? "public" : "private");
-			await refreshViewers();
+			try {
+				const mine = await getMyShareCode();
+				if (gen !== generation.current) return;
+				const owner = mine.success && mine.data?.code === shareCode;
+				if (!owner) return;
+				setError(null);
+				setViewers([]);
+				setVisibility(
+					mine.data?.visibility === "public" ? "public" : "private",
+				);
+				setOwnerOf(shareCode);
+				await refreshViewers();
+			} catch {
+				// Leave owner controls hidden when ownership cannot be verified.
+			}
 		};
 		void load();
 		return () => {
-			cancelled = true;
+			generation.current += 1;
 		};
 	}, [open, shareCode]);
+
+	const handleOpenChange = (next: boolean) => {
+		setOwnerOf(null);
+		setViewers([]);
+		setVisibility("private");
+		setError(null);
+		setUsername("");
+		setOpen(next);
+	};
 
 	const handleVisibility = async (next: "public" | "private") => {
 		setError(null);
@@ -98,7 +126,7 @@ export default function ShareButton({ shareCode }: ShareButtonProps) {
 	};
 
 	return (
-		<Dialog open={open} onOpenChange={setOpen}>
+		<Dialog open={open} onOpenChange={handleOpenChange}>
 			<DialogTrigger asChild>
 				<Share
 					aria-label="Share tech radar"
