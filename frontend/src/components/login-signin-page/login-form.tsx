@@ -4,6 +4,7 @@ import { createFormHook, createFormHookContexts } from "@tanstack/react-form";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { login } from "@/lib/actions";
+import { safeNextPath } from "@/lib/share-access";
 import { toast } from "sonner";
 import { EmailField } from "@/components/login-signin-page/email-field";
 import { PasswordField } from "@/components/login-signin-page/password-field";
@@ -50,7 +51,9 @@ export default function LoginForm() {
 
             if (result.success) {
                 toast.success("Login successful");
-                router.push("/radar");
+                router.push(
+                    safeNextPath(new URLSearchParams(window.location.search).get("next")),
+                );
                 router.refresh();
             } else {
                 toast.error(result.error || "Login failed");
