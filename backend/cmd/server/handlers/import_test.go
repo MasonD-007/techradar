@@ -65,6 +65,8 @@ func TestImportRadar(t *testing.T) {
 		{name: "unauthenticated", body: importBody(codeSrc), want: 401,
 			noCalls: []string{"CanViewShareCode", "GetRadarGraphByShareCode", "AddUserTechnologyIfMissing"}},
 		{name: "bad json", loggedIn: true, body: `{`, want: 400},
+		{name: "body too large", loggedIn: true, body: importBody(`{"shareCode":"` + strings.Repeat("a", 2<<20) + `"}`), want: 413,
+			noCalls: []string{"CanViewShareCode", "AddUserTechnologyIfMissing"}},
 		{name: "neither source", loggedIn: true, body: importBody(`{}`), want: 400},
 		{name: "both sources", loggedIn: true, body: importBody(`{"shareCode":"abc","templateSlug":"web"}`), want: 400,
 			noCalls: []string{"CanViewShareCode", "GetTemplateBySlug"}},

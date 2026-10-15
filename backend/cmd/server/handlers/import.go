@@ -16,6 +16,7 @@ import (
 const (
 	importMaxTechnologyIDs = 500
 	importMaxKeyLen        = 64
+	importMaxBodyBytes     = 1 << 20
 )
 
 func validImportKey(s string) bool {
@@ -45,6 +46,7 @@ func uuidFromPg(id pgtype.UUID) (uuid.UUID, bool) {
 // @Failure 400 {object} Error
 // @Failure 401 {object} Error
 // @Failure 404 {object} Error
+// @Failure 413 {object} Error
 // @Failure 500 {object} Error
 // @Router /radar/import [post]
 func ImportRadar(q Querier, rls RLSExecutor) http.HandlerFunc {
@@ -57,7 +59,13 @@ func ImportRadar(q Querier, rls RLSExecutor) http.HandlerFunc {
 		role, _ := GetRoleFromRequest(r)
 
 		var req dto.ImportRequest
+		r.Body = http.MaxBytesReader(w, r.Body, importMaxBodyBytes)
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			var tooLarge *http.MaxBytesError
+			if errors.As(err, &tooLarge) {
+				http.Error(w, "Request body too large", http.StatusRequestEntityTooLarge)
+				return
+			}
 			http.Error(w, "Invalid request body", http.StatusBadRequest)
 			return
 		}
