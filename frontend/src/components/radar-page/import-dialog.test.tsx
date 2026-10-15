@@ -98,6 +98,20 @@ describe("ImportDialog", () => {
 		);
 	});
 
+	it("shows an empty state for a source with no technologies", async () => {
+		actions.getRadarGraphByCode.mockResolvedValue({
+			success: true,
+			data: { radar: [] },
+		});
+		setup();
+		expect(
+			await screen.findByText("This radar has no technologies yet."),
+		).toBeTruthy();
+		expect(screen.queryByText("0 selected")).toBeNull();
+		const confirm = screen.getByRole("button", { name: /^Copy 0/ });
+		expect((confirm as HTMLButtonElement).disabled).toBe(true);
+	});
+
 	it("disables confirm when nothing is selected", async () => {
 		setup();
 		await screen.findByText("2 selected");

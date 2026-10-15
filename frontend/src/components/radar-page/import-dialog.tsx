@@ -170,7 +170,17 @@ export default function ImportDialog({
 						{loadError}
 					</p>
 				)}
-				{status === "ready" && (
+				{status === "ready" && items.length === 0 && (
+					<>
+						<p className="text-muted-foreground text-sm">
+							This radar has no technologies yet.
+						</p>
+						<Button type="button" disabled>
+							Copy 0 technologies
+						</Button>
+					</>
+				)}
+				{status === "ready" && items.length > 0 && (
 					<>
 						<div className="flex items-center justify-between text-sm">
 							<span>{selected.size} selected</span>
