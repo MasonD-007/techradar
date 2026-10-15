@@ -7,10 +7,13 @@ vi.mock("next/headers", () => ({
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 
 import {
+	createTemplate,
+	deleteTemplate,
 	getGallery,
 	getTemplate,
 	getTemplates,
 	importRadar,
+	updateTemplate,
 } from "./discovery-actions";
 
 const fetchMock = vi.fn();
@@ -123,6 +126,74 @@ describe("importRadar", () => {
 		expect(await importRadar({ shareCode: "abc123" })).toEqual({
 			success: false,
 			error: "Failed to copy technologies",
+		});
+	});
+});
+
+describe("template mutations", () => {
+	const input = {
+		slug: "my tpl/x",
+		name: "N",
+		description: "D",
+		items: [{ technology_id: "t1", ring_id: 1 }],
+	};
+
+	it("createTemplate POSTs the body to /templates", async () => {
+		fetchMock.mockResolvedValue(res(201, "{}"));
+		expect(await createTemplate(input)).toEqual({ success: true });
+		const [url, init] = fetchMock.mock.calls[0];
+		expect(String(url).endsWith("/templates")).toBe(true);
+		expect(init.method).toBe("POST");
+		expect(JSON.parse(init.body)).toEqual(input);
+	});
+
+	it("updateTemplate PUTs to the encoded slug", async () => {
+		fetchMock.mockResolvedValue(res(200, "{}"));
+		expect(await updateTemplate(input)).toEqual({ success: true });
+		const [url, init] = fetchMock.mock.calls[0];
+		expect(String(url).endsWith("/templates/my%20tpl%2Fx")).toBe(true);
+		expect(init.method).toBe("PUT");
+		expect(JSON.parse(init.body)).toEqual(input);
+	});
+
+	it("deleteTemplate DELETEs the encoded slug", async () => {
+		fetchMock.mockResolvedValue(res(200));
+		expect(await deleteTemplate("a/b")).toEqual({ success: true });
+		const [url, init] = fetchMock.mock.calls[0];
+		expect(String(url).endsWith("/templates/a%2Fb")).toBe(true);
+		expect(init.method).toBe("DELETE");
+	});
+
+	it("passes server error text and status through", async () => {
+		fetchMock.mockResolvedValue(res(409, "slug taken\n"));
+		expect(await createTemplate(input)).toEqual({
+			success: false,
+			status: 409,
+			error: "slug taken",
+		});
+		fetchMock.mockResolvedValue(res(400, "bad"));
+		expect(await updateTemplate(input)).toMatchObject({ error: "bad", status: 400 });
+		fetchMock.mockResolvedValue(res(403, "nope"));
+		expect(await deleteTemplate("x")).toMatchObject({ error: "nope", status: 403 });
+	});
+
+	it("falls back to a friendly message on empty body and never throws", async () => {
+		fetchMock.mockResolvedValue(res(500));
+		expect(await createTemplate(input)).toMatchObject({
+			error: "Failed to create template",
+		});
+		fetchMock.mockRejectedValue(new Error("net"));
+		expect(await createTemplate(input)).toEqual({
+			success: false,
+			error: "Failed to create template",
+		});
+		expect(await updateTemplate(input)).toEqual({
+			success: false,
+			error: "Failed to update template",
+		});
+		expect(await deleteTemplate("x")).toEqual({
+			success: false,
+			error: "Failed to delete template",
 		});
 	});
 });

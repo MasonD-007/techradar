@@ -22,6 +22,7 @@ import BlipsContent from "./tab-content.tsx/blips-content";
 import ImportContent from "./tab-content.tsx/import-content";
 import OverviewContent from "./tab-content.tsx/overview-content";
 import TechnologiesContent from "./tab-content.tsx/technologies-content";
+import TemplatesContent from "./tab-content.tsx/templates-content";
 import UsersContent from "./tab-content.tsx/users-content";
 
 function getActionIcon(actionType: string) {
@@ -145,6 +146,7 @@ export default function NavigationTab() {
 				<TabsTrigger value="overview">Overview</TabsTrigger>
 				<TabsTrigger value="technologies">Technologies</TabsTrigger>
 				<TabsTrigger value="blips">Blips</TabsTrigger>
+				<TabsTrigger value="templates">Templates</TabsTrigger>
 				<TabsTrigger value="users">Users</TabsTrigger>
 				<TabsTrigger value="import">Import/Export</TabsTrigger>
 			</TabsList>
@@ -163,6 +165,8 @@ export default function NavigationTab() {
 			/>
 
 			<BlipsContent blips={blips} setBlips={setBlips} />
+
+			<TemplatesContent />
 
 			<UsersContent users={users} setUsers={setUsers} />
 
