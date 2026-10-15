@@ -194,4 +194,21 @@ describe("ImportDialog", () => {
 			resolve({ success: true, data: { added: 2, skipped: 0 } });
 		});
 	});
+
+	it("ignores close requests while importing", async () => {
+		let resolve: (v: unknown) => void = () => {};
+		discovery.importRadar.mockImplementation(
+			() => new Promise((r) => { resolve = r; }),
+		);
+		const { onOpenChange, onImported } = setup();
+		await screen.findByText("2 selected");
+		await userEvent.click(screen.getByRole("button", { name: /^Copy 2/ }));
+		await userEvent.keyboard("{Escape}");
+		expect(onOpenChange).not.toHaveBeenCalled();
+		await act(async () => {
+			resolve({ success: true, data: { added: 2, skipped: 0 } });
+		});
+		expect(onImported).toHaveBeenCalledWith({ added: 2, skipped: 0 });
+		expect(onOpenChange).toHaveBeenCalledWith(false);
+	});
 });

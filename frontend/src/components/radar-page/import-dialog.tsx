@@ -147,7 +147,13 @@ export default function ImportDialog({
 	};
 
 	return (
-		<Dialog open={open} onOpenChange={onOpenChange}>
+		<Dialog
+			open={open}
+			onOpenChange={(next) => {
+				if (submitting.current) return;
+				onOpenChange(next);
+			}}
+		>
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>Copy to my radar</DialogTitle>

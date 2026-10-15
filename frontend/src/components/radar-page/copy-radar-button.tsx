@@ -17,7 +17,6 @@ export default function CopyRadarButton({
 	isOwnRadar = false,
 }: Props) {
 	const [open, setOpen] = useState(false);
-	const [message, setMessage] = useState<string | null>(null);
 
 	if (!shareCode || isOwnRadar) return null;
 
@@ -34,19 +33,11 @@ export default function CopyRadarButton({
 			<Button variant="outline" size="sm" onClick={() => setOpen(true)}>
 				Copy to my radar
 			</Button>
-			{message && (
-				<span role="status" className="text-muted-foreground text-sm">
-					{message}
-				</span>
-			)}
 			<ImportDialog
 				open={open}
 				onOpenChange={setOpen}
 				source={{ shareCode }}
-				onImported={({ added, skipped }) => {
-					setMessage(`Added ${added}, skipped ${skipped}`);
-					window.location.assign("/radar");
-				}}
+				onImported={() => window.location.assign("/radar")}
 			/>
 		</>
 	);

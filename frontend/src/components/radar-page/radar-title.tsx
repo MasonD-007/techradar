@@ -28,28 +28,37 @@ export default function RadarTitle({ userId, shareCode }: RadarTitleProps) {
 	const [blipCount, setBlipCount] = useState(0);
 	const [isLoading, setIsLoading] = useState(true);
 	const [userName, setUserName] = useState<string | null>(null);
-	const [viewerSignedIn, setViewerSignedIn] = useState(false);
-	const [viewerShareCode, setViewerShareCode] = useState<string | null>(null);
+	// Viewer relationship to shareCode; undefined until resolved for that code.
+	const [viewer, setViewer] = useState<{
+		code: string;
+		state: "signedOut" | "owner" | "other" | "unknown";
+	} | null>(null);
 
 	useEffect(() => {
+		if (!shareCode) return;
 		let cancelled = false;
-		const loadViewer = async () => {
-			const viewerId = await getCurrentUserId();
-			if (cancelled) return;
-			setViewerSignedIn(Boolean(viewerId));
-			if (!viewerId) {
-				setViewerShareCode(null);
-				return;
+		const resolve = async (): Promise<
+			"signedOut" | "owner" | "other" | "unknown"
+		> => {
+			try {
+				const viewerId = await getCurrentUserId();
+				if (!viewerId) return "signedOut";
+				const mine = await getMyShareCode();
+				if (!mine.success || !mine.data?.code) return "unknown";
+				return mine.data.code === shareCode ? "owner" : "other";
+			} catch {
+				return "unknown";
 			}
-			const mine = await getMyShareCode();
-			if (cancelled) return;
-			setViewerShareCode(mine.success ? (mine.data?.code ?? null) : null);
 		};
-		void loadViewer();
+		void resolve().then((state) => {
+			if (!cancelled) setViewer({ code: shareCode, state });
+		});
 		return () => {
 			cancelled = true;
 		};
-	}, []);
+	}, [shareCode]);
+
+	const viewerState = viewer && viewer.code === shareCode ? viewer.state : null;
 
 	useEffect(() => {
 		let cancelled = false;
@@ -126,13 +135,13 @@ export default function RadarTitle({ userId, shareCode }: RadarTitleProps) {
 							: "Tech radar"}
 					</span>
 					{shareCode && <ShareButton shareCode={shareCode} />}
-					{shareCode && (
-						<CopyRadarButton
-							shareCode={shareCode}
-							signedIn={viewerSignedIn}
-							isOwnRadar={viewerSignedIn && viewerShareCode === shareCode}
-						/>
-					)}
+					{shareCode &&
+						(viewerState === "signedOut" || viewerState === "other") && (
+							<CopyRadarButton
+								shareCode={shareCode}
+								signedIn={viewerState === "other"}
+							/>
+						)}
 				</CardTitle>
 				<CardDescription className="max-w-2xl text-muted-foreground text-sm">
 					A curated snapshot of the stack, delivery practices, and supporting
