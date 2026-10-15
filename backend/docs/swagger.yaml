@@ -7,6 +7,28 @@ definitions:
       user:
         $ref: '#/definitions/dto.UserDTO'
     type: object
+  dto.GalleryEntry:
+    properties:
+      blip_count:
+        type: integer
+      code:
+        type: string
+      top_technologies:
+        items:
+          type: string
+        type: array
+      updated_at:
+        type: string
+      username:
+        type: string
+    type: object
+  dto.ImportSource:
+    properties:
+      shareCode:
+        type: string
+      templateSlug:
+        type: string
+    type: object
   dto.LoginRequest:
     properties:
       email:
@@ -30,6 +52,8 @@ definitions:
         type: integer
       ring_name:
         type: string
+      technology_id:
+        type: string
     type: object
   dto.RegisterRequest:
     properties:
@@ -40,6 +64,13 @@ definitions:
       password:
         type: string
       username:
+        type: string
+    type: object
+  dto.TemplateItemRequest:
+    properties:
+      ring_id:
+        type: integer
+      technology_id:
         type: string
     type: object
   dto.UserDTO:
@@ -120,6 +151,33 @@ definitions:
       message:
         type: string
     type: object
+  handlers.GalleryResponse:
+    properties:
+      has_more:
+        type: boolean
+      page:
+        type: integer
+      radars:
+        items:
+          $ref: '#/definitions/dto.GalleryEntry'
+        type: array
+    type: object
+  handlers.ImportRequest:
+    properties:
+      source:
+        $ref: '#/definitions/dto.ImportSource'
+      technologyIds:
+        items:
+          type: string
+        type: array
+    type: object
+  handlers.ImportResponse:
+    properties:
+      added:
+        type: integer
+      skipped:
+        type: integer
+    type: object
   handlers.RadarGraphResponse:
     properties:
       radar:
@@ -131,6 +189,8 @@ definitions:
     type: object
   handlers.SetVisibilityRequest:
     properties:
+      listed:
+        type: boolean
       visibility:
         type: string
     type: object
@@ -140,6 +200,8 @@ definitions:
         type: string
       created_at:
         type: string
+      listed:
+        type: boolean
       visibility:
         type: string
     type: object
@@ -173,6 +235,43 @@ definitions:
       updated_at:
         example: "2026-04-05T12:00:00Z"
         type: string
+    type: object
+  handlers.TemplateDetail:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      radar:
+        items:
+          $ref: '#/definitions/dto.RadarGraphItem'
+        type: array
+      slug:
+        type: string
+    type: object
+  handlers.TemplateRequest:
+    properties:
+      description:
+        type: string
+      items:
+        items:
+          $ref: '#/definitions/dto.TemplateItemRequest'
+        type: array
+      name:
+        type: string
+      slug:
+        type: string
+    type: object
+  handlers.TemplateSummary:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      slug:
+        type: string
+      technology_count:
+        type: integer
     type: object
   handlers.UpdateBlipRequest:
     properties:
@@ -510,6 +609,81 @@ paths:
       summary: Update a blip
       tags:
       - blips
+  /gallery:
+    get:
+      description: List public radars whose owners opted into the gallery. No authentication
+        required.
+      parameters:
+      - description: Search username or technology name
+        in: query
+        name: q
+        type: string
+      - description: Quadrant id (1-4)
+        in: query
+        name: quadrant
+        type: integer
+      - description: Page number, starting at 1
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.GalleryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      summary: List gallery radars
+      tags:
+      - gallery
+  /radar/import:
+    post:
+      consumes:
+      - application/json
+      description: Merge technologies from a viewable radar or a template into the
+        caller's radar. Technologies already on the radar are skipped and keep their
+        ring.
+      parameters:
+      - description: Source and optional technology ids
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.ImportRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.ImportResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      summary: Copy technologies into my radar
+      tags:
+      - radar
   /share-codes:
     post:
       description: Create a new 6-character share code for the authenticated user,
@@ -605,7 +779,8 @@ paths:
       consumes:
       - application/json
       description: Set the authenticated user's radar to public (anyone with the link)
-        or private (only listed viewers)
+        or private (only listed viewers), and optionally list a public radar in the
+        gallery via listed
       parameters:
       - description: Visibility
         in: body
@@ -923,6 +1098,158 @@ paths:
       summary: Get technologies by quadrant
       tags:
       - technologies
+  /templates:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/handlers.TemplateSummary'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      summary: List starter templates
+      tags:
+      - templates
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Template
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.TemplateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/handlers.TemplateSummary'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      security:
+      - BearerAuth: []
+      summary: Create a starter template (admin)
+      tags:
+      - templates
+  /templates/{slug}:
+    delete:
+      parameters:
+      - description: Template slug
+        in: path
+        name: slug
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      security:
+      - BearerAuth: []
+      summary: Delete a starter template (admin)
+      tags:
+      - templates
+    get:
+      parameters:
+      - description: Template slug
+        in: path
+        name: slug
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.TemplateDetail'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      summary: Get a starter template
+      tags:
+      - templates
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Template slug
+        in: path
+        name: slug
+        required: true
+        type: string
+      - description: Template
+        in: body
+        name: template
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.TemplateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.TemplateSummary'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.Error'
+      security:
+      - BearerAuth: []
+      summary: Replace a starter template (admin)
+      tags:
+      - templates
   /user-technologies:
     post:
       consumes:

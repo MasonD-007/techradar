@@ -222,6 +222,42 @@ await api.put('/posts', {
 await api.delete('/posts', { params: { query: { id: 1 } } });
 ```
 
+## Discovery
+
+Public radars can be browsed, copied, and bootstrapped from starter templates.
+
+| Endpoint | Description |
+|----------|-------------|
+| `GET /gallery` | Browse listed radars (search, quadrant filter, pagination) |
+| `GET /templates` | List starter templates |
+| `GET /templates/{slug}` | Get one template with its technologies |
+| `POST/PUT/DELETE /templates` | Manage templates (admin only) |
+| `POST /radar/import` | Copy technologies from a radar or template into your radar |
+| `PATCH /share-codes/my` | Accepts `listed` to add/remove your radar from the gallery |
+
+**Listing is opt-in.** A radar appears in the gallery only when it is Public *and* "List in gallery" is ticked. Switching to Private un-lists it.
+
+### Template seed format
+
+`make backend-seed` loads starter templates from `backend/cmd/seed/templates/templates.json`:
+
+```json
+[
+  {
+    "slug": "frontend-starter",
+    "name": "Frontend developer",
+    "description": "A modern web frontend toolbox",
+    "technologies": [{ "name": "JavaScript", "ring": "Adopt" }]
+  }
+]
+```
+
+Technology `name`s must match exactly those in `backend/cmd/seed/data/*.json`. The seed never overwrites an existing slug, so edits made in the admin Templates tab survive re-seeding. A template technology missing from the database is skipped with a warning. With `SEED_ONLY_IF_EMPTY=true` (the k3s seed job), technologies and templates are only seeded when their tables are empty, so deleted templates stay deleted.
+
+### Link previews
+
+Set `SITE_URL` (e.g. `https://radar.example.com`) so shared radar links get absolute preview image URLs. It is a runtime variable read per request (no rebuild needed); `NEXT_PUBLIC_SITE_URL` is accepted as a fallback. It defaults to `http://localhost:3000`.
+
 ## Updating the API
 
 1. Modify handlers in `backend/cmd/server/handlers/`

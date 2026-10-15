@@ -266,6 +266,94 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/handlers.Error"
+  /gallery:
+    get:
+      description: List public radars whose owners opted into the gallery. No
+        authentication required.
+      tags:
+        - gallery
+      summary: List gallery radars
+      parameters:
+        - description: Search username or technology name
+          name: q
+          in: query
+          schema:
+            type: string
+        - description: Quadrant id (1-4)
+          name: quadrant
+          in: query
+          schema:
+            type: integer
+        - description: Page number, starting at 1
+          name: page
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.GalleryResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+  /radar/import:
+    post:
+      description: Merge technologies from a viewable radar or a template into the
+        caller's radar. Technologies already on the radar are skipped and keep
+        their ring.
+      tags:
+        - radar
+      summary: Copy technologies into my radar
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/handlers.ImportRequest"
+        description: Source and optional technology ids
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.ImportResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
   /share-codes:
     post:
       description: Create a new 6-character share code for the authenticated user, or
@@ -313,7 +401,8 @@ paths:
                 $ref: "#/components/schemas/handlers.Error"
     patch:
       description: Set the authenticated user's radar to public (anyone with the link)
-        or private (only listed viewers)
+        or private (only listed viewers), and optionally list a public radar in
+        the gallery via listed
       tags:
         - share-codes
       summary: Set share code visibility
@@ -743,6 +832,186 @@ paths:
           description: Internal Server Error
           content:
             application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+  /templates:
+    get:
+      tags:
+        - templates
+      summary: List starter templates
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/handlers.TemplateSummary"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+    post:
+      security:
+        - BearerAuth: []
+      tags:
+        - templates
+      summary: Create a starter template (admin)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/handlers.TemplateRequest"
+        description: Template
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.TemplateSummary"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+  "/templates/{slug}":
+    get:
+      tags:
+        - templates
+      summary: Get a starter template
+      parameters:
+        - description: Template slug
+          name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.TemplateDetail"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+    put:
+      security:
+        - BearerAuth: []
+      tags:
+        - templates
+      summary: Replace a starter template (admin)
+      parameters:
+        - description: Template slug
+          name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/handlers.TemplateRequest"
+        description: Template
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.TemplateSummary"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+    delete:
+      security:
+        - BearerAuth: []
+      tags:
+        - templates
+      summary: Delete a starter template (admin)
+      parameters:
+        - description: Template slug
+          name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+        "404":
+          description: Not Found
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/handlers.Error"
+        "500":
+          description: Internal Server Error
+          content:
+            "*/*":
               schema:
                 $ref: "#/components/schemas/handlers.Error"
   /user-technologies:
@@ -1202,6 +1471,28 @@ components:
           type: string
         user:
           $ref: "#/components/schemas/dto.UserDTO"
+    dto.GalleryEntry:
+      type: object
+      properties:
+        blip_count:
+          type: integer
+        code:
+          type: string
+        top_technologies:
+          type: array
+          items:
+            type: string
+        updated_at:
+          type: string
+        username:
+          type: string
+    dto.ImportSource:
+      type: object
+      properties:
+        shareCode:
+          type: string
+        templateSlug:
+          type: string
     dto.LoginRequest:
       type: object
       properties:
@@ -1226,6 +1517,8 @@ components:
           type: integer
         ring_name:
           type: string
+        technology_id:
+          type: string
     dto.RegisterRequest:
       type: object
       properties:
@@ -1236,6 +1529,13 @@ components:
         password:
           type: string
         username:
+          type: string
+    dto.TemplateItemRequest:
+      type: object
+      properties:
+        ring_id:
+          type: integer
+        technology_id:
           type: string
     dto.UserDTO:
       type: object
@@ -1315,6 +1615,33 @@ components:
       properties:
         message:
           type: string
+    handlers.GalleryResponse:
+      type: object
+      properties:
+        has_more:
+          type: boolean
+        page:
+          type: integer
+        radars:
+          type: array
+          items:
+            $ref: "#/components/schemas/dto.GalleryEntry"
+    handlers.ImportRequest:
+      type: object
+      properties:
+        source:
+          $ref: "#/components/schemas/dto.ImportSource"
+        technologyIds:
+          type: array
+          items:
+            type: string
+    handlers.ImportResponse:
+      type: object
+      properties:
+        added:
+          type: integer
+        skipped:
+          type: integer
     handlers.RadarGraphResponse:
       type: object
       properties:
@@ -1327,6 +1654,8 @@ components:
     handlers.SetVisibilityRequest:
       type: object
       properties:
+        listed:
+          type: boolean
         visibility:
           type: string
     handlers.ShareCodeResponse:
@@ -1336,6 +1665,8 @@ components:
           type: string
         created_at:
           type: string
+        listed:
+          type: boolean
         visibility:
           type: string
     handlers.ShareViewersResponse:
@@ -1369,6 +1700,43 @@ components:
         updated_at:
           type: string
           example: 2026-04-05T12:00:00Z
+    handlers.TemplateDetail:
+      type: object
+      properties:
+        description:
+          type: string
+        name:
+          type: string
+        radar:
+          type: array
+          items:
+            $ref: "#/components/schemas/dto.RadarGraphItem"
+        slug:
+          type: string
+    handlers.TemplateRequest:
+      type: object
+      properties:
+        description:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/dto.TemplateItemRequest"
+        name:
+          type: string
+        slug:
+          type: string
+    handlers.TemplateSummary:
+      type: object
+      properties:
+        description:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        technology_count:
+          type: integer
     handlers.UpdateBlipRequest:
       type: object
       properties:

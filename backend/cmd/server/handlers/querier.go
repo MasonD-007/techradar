@@ -46,6 +46,22 @@ type Querier interface {
 	AddShareCodeViewer(ctx context.Context, params db.AddShareCodeViewerParams) error
 	RemoveShareCodeViewer(ctx context.Context, params db.RemoveShareCodeViewerParams) error
 	ListShareCodeViewers(ctx context.Context, shareCodeID string) ([]string, error)
+	SetShareCodeListed(ctx context.Context, params db.SetShareCodeListedParams) (db.ShareCode, error)
+	ListGalleryRadars(ctx context.Context, params db.ListGalleryRadarsParams) ([]db.ListGalleryRadarsRow, error)
+	ListGalleryTopTechnologies(ctx context.Context, codes []string) ([]db.ListGalleryTopTechnologiesRow, error)
+
+	// Templates
+	ListTemplates(ctx context.Context) ([]db.ListTemplatesRow, error)
+	GetTemplateBySlug(ctx context.Context, slug string) (db.Template, error)
+	ListTemplateItems(ctx context.Context, templateID int32) ([]db.ListTemplateItemsRow, error)
+	CreateTemplate(ctx context.Context, params db.CreateTemplateParams) (db.Template, error)
+	UpdateTemplate(ctx context.Context, params db.UpdateTemplateParams) (db.Template, error)
+	DeleteTemplate(ctx context.Context, slug string) (int64, error)
+	DeleteTemplateItems(ctx context.Context, templateID int32) error
+	AddTemplateItem(ctx context.Context, params db.AddTemplateItemParams) error
+
+	// Import
+	AddUserTechnologyIfMissing(ctx context.Context, params db.AddUserTechnologyIfMissingParams) (int64, error)
 
 	// User Technologies
 	GetUserTechnologyID(ctx context.Context, id pgtype.UUID) (db.UserTechnology, error)

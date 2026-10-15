@@ -61,6 +61,7 @@ CREATE TABLE share_codes (
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     visibility TEXT NOT NULL DEFAULT 'private' CHECK (visibility IN ('public', 'private')),
+    listed BOOLEAN NOT NULL DEFAULT FALSE CHECK (NOT listed OR visibility = 'public'),
     UNIQUE (user_id)
 );
 
@@ -128,3 +129,18 @@ CREATE POLICY users_own ON users
 
 CREATE POLICY users_admin ON users
   FOR ALL USING (current_setting('app.current_role', true) = 'admin');
+
+CREATE TABLE templates (
+    id SERIAL PRIMARY KEY,
+    slug TEXT NOT NULL UNIQUE,
+    name TEXT NOT NULL,
+    description TEXT NOT NULL DEFAULT '',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE template_technologies (
+    template_id INTEGER NOT NULL REFERENCES templates(id) ON DELETE CASCADE,
+    technology_id UUID NOT NULL REFERENCES technology(id) ON DELETE CASCADE,
+    ring_id INTEGER NOT NULL REFERENCES rings(id),
+    PRIMARY KEY (template_id, technology_id)
+);

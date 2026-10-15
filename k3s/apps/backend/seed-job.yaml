@@ -1,6 +1,7 @@
-# Populates the technology table on a fresh cluster or wiped database.
+# Populates the technology and template tables on a fresh cluster or wiped database.
 # Runs after every sync (PostSync, once Postgres and the backend are healthy),
-# but only inserts when the table is empty, so admin edits and deletions stick.
+# but with SEED_ONLY_IF_EMPTY=true technologies and templates are each only seeded
+# when their table is empty, so admin edits and deletions stick.
 apiVersion: batch/v1
 kind: Job
 metadata:

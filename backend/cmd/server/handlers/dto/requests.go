@@ -74,9 +74,11 @@ type ShareCodeResponse struct {
 	Code       string `json:"code"`
 	CreatedAt  string `json:"created_at"`
 	Visibility string `json:"visibility"`
+	Listed     bool   `json:"listed"`
 }
 
 type RadarGraphItem struct {
+	TechnologyID string `json:"technology_id"`
 	Name         string `json:"name"`
 	QuadrantID   int32  `json:"quadrant_id"`
 	QuadrantName string `json:"quadrant_name"`
@@ -105,7 +107,63 @@ type UserDTO struct {
 }
 
 type SetVisibilityRequest struct {
-	Visibility string `json:"visibility"`
+	Visibility string `json:"visibility,omitempty"`
+	Listed     *bool  `json:"listed,omitempty"`
+}
+
+type GalleryEntry struct {
+	Code            string   `json:"code"`
+	Username        string   `json:"username"`
+	BlipCount       int      `json:"blip_count"`
+	TopTechnologies []string `json:"top_technologies"`
+	UpdatedAt       string   `json:"updated_at"`
+}
+
+type GalleryResponse struct {
+	Radars  []GalleryEntry `json:"radars"`
+	Page    int            `json:"page"`
+	HasMore bool           `json:"has_more"`
+}
+
+type TemplateSummary struct {
+	Slug            string `json:"slug"`
+	Name            string `json:"name"`
+	Description     string `json:"description"`
+	TechnologyCount int    `json:"technology_count"`
+}
+
+type TemplateDetail struct {
+	Slug        string           `json:"slug"`
+	Name        string           `json:"name"`
+	Description string           `json:"description"`
+	Radar       []RadarGraphItem `json:"radar"`
+}
+
+type TemplateItemRequest struct {
+	TechnologyID string `json:"technology_id"`
+	RingID       int32  `json:"ring_id"`
+}
+
+type TemplateRequest struct {
+	Slug        string                `json:"slug"`
+	Name        string                `json:"name"`
+	Description string                `json:"description"`
+	Items       []TemplateItemRequest `json:"items"`
+}
+
+type ImportSource struct {
+	ShareCode    string `json:"shareCode,omitempty"`
+	TemplateSlug string `json:"templateSlug,omitempty"`
+}
+
+type ImportRequest struct {
+	Source        ImportSource `json:"source"`
+	TechnologyIDs []string     `json:"technologyIds,omitempty"`
+}
+
+type ImportResponse struct {
+	Added   int `json:"added"`
+	Skipped int `json:"skipped"`
 }
 
 type AddViewerRequest struct {

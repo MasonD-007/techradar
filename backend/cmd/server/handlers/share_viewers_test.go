@@ -205,3 +205,64 @@ func TestListShareViewers(t *testing.T) {
 		assert.Equal(t, http.StatusUnauthorized, rec.Code)
 	})
 }
+
+func TestSetShareVisibilityListed(t *testing.T) {
+	owner := pgtype.UUID{Bytes: uuid.MustParse(validUUIDStr), Valid: true}
+	tests := []struct {
+		name           string
+		existing       db.ShareCode
+		body           string
+		want           int
+		wantVisibility bool
+		wantListed     bool
+		wantListedVal  bool
+	}{
+		{name: "list a public radar", existing: db.ShareCode{ID: "abc123", Visibility: "public"}, body: `{"listed":true}`, want: 200, wantListed: true, wantListedVal: true},
+		{name: "list a private radar rejected", existing: db.ShareCode{ID: "abc123", Visibility: "private"}, body: `{"listed":true}`, want: 400},
+		{name: "make public and list", existing: db.ShareCode{ID: "abc123", Visibility: "private"}, body: `{"visibility":"public","listed":true}`, want: 200, wantVisibility: true, wantListed: true, wantListedVal: true},
+		{name: "private and listed rejected", existing: db.ShareCode{ID: "abc123", Visibility: "public"}, body: `{"visibility":"private","listed":true}`, want: 400},
+		{name: "empty body rejected", existing: db.ShareCode{ID: "abc123", Visibility: "public"}, body: `{}`, want: 400},
+		{name: "going private unlists", existing: db.ShareCode{ID: "abc123", Visibility: "public", Listed: true}, body: `{"visibility":"private"}`, want: 200, wantVisibility: true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m := mocks.NewMockQuerier()
+			rls := mocks.NewMockRLSExecutor()
+			rls.SetQuerier(m)
+			rls.On("Execute", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
+			sc := tt.existing
+			sc.UserID = owner
+			m.On("GetShareCodeByUserId", mock.Anything, mock.AnythingOfType("pgtype.UUID")).Return(sc, nil).Maybe()
+			vis := sc
+			if strings.Contains(tt.body, `"visibility":"private"`) {
+				vis.Visibility, vis.Listed = "private", false
+			} else {
+				vis.Visibility = "public"
+			}
+			m.On("SetShareCodeVisibility", mock.Anything, mock.Anything).Return(vis, nil).Maybe()
+			lst := sc
+			lst.Visibility, lst.Listed = "public", tt.wantListedVal
+			m.On("SetShareCodeListed", mock.Anything, mock.Anything).Return(lst, nil).Maybe()
+
+			rec := httptest.NewRecorder()
+			handlers.SetShareVisibility(rls)(rec, ownerRequest(http.MethodPatch, "/share-codes/my", tt.body, true))
+			assert.Equal(t, tt.want, rec.Code)
+
+			if tt.wantVisibility {
+				m.AssertCalled(t, "SetShareCodeVisibility", mock.Anything, mock.Anything)
+			} else {
+				m.AssertNotCalled(t, "SetShareCodeVisibility", mock.Anything, mock.Anything)
+			}
+			if tt.wantListed {
+				m.AssertCalled(t, "SetShareCodeListed", mock.Anything, db.SetShareCodeListedParams{UserID: owner, Listed: tt.wantListedVal})
+			} else {
+				m.AssertNotCalled(t, "SetShareCodeListed", mock.Anything, mock.Anything)
+			}
+			if tt.want == http.StatusOK && tt.wantListed {
+				var resp map[string]any
+				assert.NoError(t, json.Unmarshal(rec.Body.Bytes(), &resp))
+				assert.Equal(t, true, resp["listed"])
+			}
+		})
+	}
+}

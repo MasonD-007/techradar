@@ -78,6 +78,7 @@ func main() {
 	registerUsersRoutes(r, q, conn)
 	registerUserTechnologiesRoutes(r, q, conn)
 	registerShareCodesRoutes(r, q, conn)
+	registerDiscoveryRoutes(r, q, conn)
 
 	r.HandleFunc("/swagger/doc.json", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "docs/swagger.json")
@@ -145,6 +146,17 @@ func registerShareCodesRoutes(r chi.Router, q *db.Queries, pool *pgxpool.Pool) {
 	r.Delete("/share-codes/my/viewers/{username}", loggingMiddleware(AuthMiddleware(handlers.RemoveShareViewer(q, rls))))
 	r.Get("/share-codes/{code}", loggingMiddleware(OptionalAuthMiddleware(handlers.GetShareCodeByCode(q))))
 	r.Delete("/share-codes/{code}", loggingMiddleware(AuthMiddleware(handlers.DeleteShareCode(q, rls))))
+}
+
+func registerDiscoveryRoutes(r chi.Router, q *db.Queries, pool *pgxpool.Pool) {
+	rls := handlers.NewDBRLSExecutor(pool)
+	r.Get("/gallery", loggingMiddleware(handlers.GetGallery(q)))
+	r.Get("/templates", loggingMiddleware(handlers.ListTemplates(q)))
+	r.Get("/templates/{slug}", loggingMiddleware(handlers.GetTemplate(q)))
+	r.Post("/templates", loggingMiddleware(AuthMiddleware(AdminMiddleware(handlers.CreateTemplate(rls)))))
+	r.Put("/templates/{slug}", loggingMiddleware(AuthMiddleware(AdminMiddleware(handlers.UpdateTemplate(rls)))))
+	r.Delete("/templates/{slug}", loggingMiddleware(AuthMiddleware(AdminMiddleware(handlers.DeleteTemplate(rls)))))
+	r.Post("/radar/import", loggingMiddleware(AuthMiddleware(handlers.ImportRadar(q, rls))))
 }
 
 func registerUserTechnologiesRoutes(r chi.Router, q *db.Queries, pool *pgxpool.Pool) {

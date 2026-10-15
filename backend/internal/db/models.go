@@ -30,6 +30,7 @@ type ShareCode struct {
 	UserID     pgtype.UUID        `json:"user_id"`
 	CreatedAt  pgtype.Timestamptz `json:"created_at"`
 	Visibility string             `json:"visibility"`
+	Listed     bool               `json:"listed"`
 }
 
 type ShareCodeViewer struct {
@@ -46,6 +47,20 @@ type Technology struct {
 	IconUrl    pgtype.Text        `json:"icon_url"`
 	CreatedAt  pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt  pgtype.Timestamptz `json:"updated_at"`
+}
+
+type Template struct {
+	ID          int32              `json:"id"`
+	Slug        string             `json:"slug"`
+	Name        string             `json:"name"`
+	Description string             `json:"description"`
+	CreatedAt   pgtype.Timestamptz `json:"created_at"`
+}
+
+type TemplateTechnology struct {
+	TemplateID   int32       `json:"template_id"`
+	TechnologyID pgtype.UUID `json:"technology_id"`
+	RingID       int32       `json:"ring_id"`
 }
 
 type User struct {

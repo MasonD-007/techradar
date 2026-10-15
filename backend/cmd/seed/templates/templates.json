@@ -1,0 +1,72 @@
+[
+  {
+    "slug": "frontend-starter",
+    "name": "Frontend developer",
+    "description": "A modern web frontend toolbox: languages, build tooling and testing.",
+    "technologies": [
+      {"name": "JavaScript", "ring": "Adopt"},
+      {"name": "HTML5", "ring": "Adopt"},
+      {"name": "CSS3", "ring": "Adopt"},
+      {"name": "Git", "ring": "Adopt"},
+      {"name": "ESLint", "ring": "Adopt"},
+      {"name": "esbuild", "ring": "Trial"},
+      {"name": "cypress", "ring": "Trial"},
+      {"name": "Figma", "ring": "Trial"},
+      {"name": "D3.js", "ring": "Assess"},
+      {"name": "Astro", "ring": "Assess"},
+      {"name": "Babel", "ring": "Hold"}
+    ]
+  },
+  {
+    "slug": "backend-starter",
+    "name": "Backend developer",
+    "description": "Services, data stores and architecture patterns for server-side work.",
+    "technologies": [
+      {"name": "go", "ring": "Adopt"},
+      {"name": "docker", "ring": "Adopt"},
+      {"name": "Git", "ring": "Adopt"},
+      {"name": "rest", "ring": "Adopt"},
+      {"name": "mongodb", "ring": "Trial"},
+      {"name": "graphql", "ring": "Trial"},
+      {"name": "grpc", "ring": "Trial"},
+      {"name": "kafka", "ring": "Assess"},
+      {"name": "elasticsearch", "ring": "Assess"},
+      {"name": "event-driven architecture", "ring": "Assess"},
+      {"name": "microservices", "ring": "Hold"}
+    ]
+  },
+  {
+    "slug": "devops-starter",
+    "name": "DevOps / platform engineer",
+    "description": "Containers, delivery pipelines and observability.",
+    "technologies": [
+      {"name": "docker", "ring": "Adopt"},
+      {"name": "kubernetes", "ring": "Adopt"},
+      {"name": "github actions", "ring": "Adopt"},
+      {"name": "Linux", "ring": "Adopt"},
+      {"name": "ansible", "ring": "Trial"},
+      {"name": "grafana", "ring": "Trial"},
+      {"name": "argo cd", "ring": "Trial"},
+      {"name": "K3s", "ring": "Assess"},
+      {"name": "istio", "ring": "Assess"},
+      {"name": "platform engineering", "ring": "Assess"},
+      {"name": "gitlab ci", "ring": "Hold"}
+    ]
+  },
+  {
+    "slug": "ai-starter",
+    "name": "AI / data practitioner",
+    "description": "Models, notebooks and data tooling for applied AI.",
+    "technologies": [
+      {"name": "Jupyter", "ring": "Adopt"},
+      {"name": "prompt engineering", "ring": "Adopt"},
+      {"name": "ai-assisted coding", "ring": "Adopt"},
+      {"name": "hugging face transformers", "ring": "Trial"},
+      {"name": "Keras", "ring": "Trial"},
+      {"name": "dbt", "ring": "Trial"},
+      {"name": "duckdb", "ring": "Assess"},
+      {"name": "airflow", "ring": "Assess"},
+      {"name": "Anaconda", "ring": "Hold"}
+    ]
+  }
+]

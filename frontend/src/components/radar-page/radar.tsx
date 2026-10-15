@@ -32,6 +32,7 @@ import {
 	outerRadius,
 	polarToCartesian,
 	type QuadrantKey,
+	quadrantIdToKey,
 	quadrantLabels,
 	RADAR_SIZE,
 	type RingKey,
@@ -40,6 +41,7 @@ import {
 } from "./radar-data";
 import RadarSVG, { quadrantStroke } from "./radar-svg";
 import SearchTechnologiesDialog from "./search-technologies/search-technologies-dialog";
+import TemplatePicker from "./template-picker";
 
 export type RadarTechnology = {
 	id: string;
@@ -104,18 +106,7 @@ const ringLabelByKey = ringPaths.reduce(
 );
 
 function mapQuadrantIdToKey(quadrantId: number): QuadrantKey | null {
-	switch (quadrantId) {
-		case 1:
-			return "techniques";
-		case 2:
-			return "tools";
-		case 3:
-			return "platforms";
-		case 4:
-			return "languages";
-		default:
-			return null;
-	}
+	return quadrantIdToKey(quadrantId);
 }
 
 function mapRingIdToKey(ringId: number): RingKey | null {
@@ -672,6 +663,13 @@ function Radar({
 					</div>
 				)}
 			</CardContent>
+			{!isLoading &&
+				!error &&
+				isOwnRadar &&
+				currentUserId &&
+				positionedTechnologies.length === 0 && (
+					<TemplatePicker onDone={handleTechnologyChange} />
+				)}
 		</Card>
 	);
 }

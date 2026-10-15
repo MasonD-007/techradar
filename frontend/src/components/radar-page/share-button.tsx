@@ -17,6 +17,7 @@ import {
 	getMyShareCode,
 	getShareViewers,
 	removeShareViewer,
+	setShareListed,
 	setShareVisibility,
 } from "@/lib/actions";
 
@@ -32,6 +33,7 @@ export default function ShareButton({ shareCode }: ShareButtonProps) {
 	const [ownerOf, setOwnerOf] = useState<string | null>(null);
 	const isOwner = open && ownerOf === shareCode;
 	const [visibility, setVisibility] = useState<"public" | "private">("private");
+	const [listed, setListed] = useState(false);
 	const [viewers, setViewers] = useState<string[]>([]);
 	const [username, setUsername] = useState("");
 	const [error, setError] = useState<string | null>(null);
@@ -64,6 +66,7 @@ export default function ShareButton({ shareCode }: ShareButtonProps) {
 				setVisibility(
 					mine.data?.visibility === "public" ? "public" : "private",
 				);
+				setListed(mine.data?.listed === true);
 				setOwnerOf(shareCode);
 				await refreshViewers();
 			} catch {
@@ -80,6 +83,7 @@ export default function ShareButton({ shareCode }: ShareButtonProps) {
 		setOwnerOf(null);
 		setViewers([]);
 		setVisibility("private");
+		setListed(false);
 		setError(null);
 		setUsername("");
 		setOpen(next);
@@ -91,8 +95,24 @@ export default function ShareButton({ shareCode }: ShareButtonProps) {
 		setPending(true);
 		try {
 			const result = await setShareVisibility(next);
-			if (result.success) setVisibility(next);
-			else setError(result.error ?? "Failed to update visibility");
+			if (result.success) {
+				setVisibility(next);
+				// The server clears the listing when going private; public->public keeps it.
+				if (next === "private") setListed(false);
+			} else setError(result.error ?? "Failed to update visibility");
+		} finally {
+			setPending(false);
+		}
+	};
+
+	const handleListed = async (next: boolean) => {
+		if (pending) return;
+		setError(null);
+		setPending(true);
+		try {
+			const result = await setShareListed(next);
+			if (result.success) setListed(next);
+			else setError(result.error ?? "Failed to update gallery listing");
 		} finally {
 			setPending(false);
 		}
@@ -177,9 +197,20 @@ export default function ShareButton({ shareCode }: ShareButtonProps) {
 								</div>
 								<p className="text-muted-foreground text-xs">
 									{visibility === "public"
-										? "Anyone with the link can view, no account needed."
+										? 'Anyone with the link can view, no account needed. Tick "List in gallery" to also let people discover it.'
 										: "Only the people below can view, and they must be signed in."}
 								</p>
+								{visibility === "public" && (
+									<label className="flex items-center gap-2 text-sm">
+										<input
+											type="checkbox"
+											checked={listed}
+											disabled={pending}
+											onChange={(e) => void handleListed(e.target.checked)}
+										/>
+										List in gallery
+									</label>
+								)}
 							</div>
 							{visibility === "private" && (
 								<div className="flex flex-col gap-2">

@@ -2,7 +2,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 const COOKIE_NAME = "auth_token";
-const PUBLIC_ROUTES = ["/", "/login", "/sign-up"];
+const PUBLIC_ROUTES = ["/", "/login", "/sign-up", "/explore", "/og"];
 const ADMIN_ROUTE = "/admin";
 const AUTHENTICATED_REDIRECT = "/radar";
 const LOGIN_REDIRECT = "/login";

@@ -27,6 +27,49 @@ func (q *Queries) AddShareCodeViewer(ctx context.Context, arg AddShareCodeViewer
 	return err
 }
 
+const addTemplateItem = `-- name: AddTemplateItem :exec
+INSERT INTO template_technologies (template_id, technology_id, ring_id)
+VALUES ($1, $2, $3)
+ON CONFLICT (template_id, technology_id) DO UPDATE SET ring_id = EXCLUDED.ring_id
+`
+
+type AddTemplateItemParams struct {
+	TemplateID   int32       `json:"template_id"`
+	TechnologyID pgtype.UUID `json:"technology_id"`
+	RingID       int32       `json:"ring_id"`
+}
+
+func (q *Queries) AddTemplateItem(ctx context.Context, arg AddTemplateItemParams) error {
+	_, err := q.db.Exec(ctx, addTemplateItem, arg.TemplateID, arg.TechnologyID, arg.RingID)
+	return err
+}
+
+const addUserTechnologyIfMissing = `-- name: AddUserTechnologyIfMissing :execrows
+INSERT INTO user_technologies (id, user_id, technology_id, ring_id)
+VALUES ($1, $2, $3, $4)
+ON CONFLICT (user_id, technology_id) DO NOTHING
+`
+
+type AddUserTechnologyIfMissingParams struct {
+	ID           pgtype.UUID `json:"id"`
+	UserID       pgtype.UUID `json:"user_id"`
+	TechnologyID pgtype.UUID `json:"technology_id"`
+	RingID       int32       `json:"ring_id"`
+}
+
+func (q *Queries) AddUserTechnologyIfMissing(ctx context.Context, arg AddUserTechnologyIfMissingParams) (int64, error) {
+	result, err := q.db.Exec(ctx, addUserTechnologyIfMissing,
+		arg.ID,
+		arg.UserID,
+		arg.TechnologyID,
+		arg.RingID,
+	)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
 const canViewShareCode = `-- name: CanViewShareCode :one
 SELECT EXISTS (
     SELECT 1
@@ -98,7 +141,8 @@ VALUES ($1, $2)
 RETURNING id,
     user_id,
     created_at,
-    visibility
+    visibility,
+    listed
 `
 
 type CreateShareCodeParams struct {
@@ -114,6 +158,7 @@ func (q *Queries) CreateShareCode(ctx context.Context, arg CreateShareCodeParams
 		&i.UserID,
 		&i.CreatedAt,
 		&i.Visibility,
+		&i.Listed,
 	)
 	return i, err
 }
@@ -161,6 +206,31 @@ func (q *Queries) CreateTechnology(ctx context.Context, arg CreateTechnologyPara
 		&i.IconUrl,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const createTemplate = `-- name: CreateTemplate :one
+INSERT INTO templates (slug, name, description)
+VALUES ($1, $2, $3)
+RETURNING id, slug, name, description, created_at
+`
+
+type CreateTemplateParams struct {
+	Slug        string `json:"slug"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
+func (q *Queries) CreateTemplate(ctx context.Context, arg CreateTemplateParams) (Template, error) {
+	row := q.db.QueryRow(ctx, createTemplate, arg.Slug, arg.Name, arg.Description)
+	var i Template
+	err := row.Scan(
+		&i.ID,
+		&i.Slug,
+		&i.Name,
+		&i.Description,
+		&i.CreatedAt,
 	)
 	return i, err
 }
@@ -297,6 +367,27 @@ WHERE
 
 func (q *Queries) DeleteTechnology(ctx context.Context, id pgtype.UUID) error {
 	_, err := q.db.Exec(ctx, deleteTechnology, id)
+	return err
+}
+
+const deleteTemplate = `-- name: DeleteTemplate :execrows
+DELETE FROM templates WHERE slug = $1
+`
+
+func (q *Queries) DeleteTemplate(ctx context.Context, slug string) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteTemplate, slug)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
+const deleteTemplateItems = `-- name: DeleteTemplateItems :exec
+DELETE FROM template_technologies WHERE template_id = $1
+`
+
+func (q *Queries) DeleteTemplateItems(ctx context.Context, templateID int32) error {
+	_, err := q.db.Exec(ctx, deleteTemplateItems, templateID)
 	return err
 }
 
@@ -487,6 +578,7 @@ func (q *Queries) GetBlip(ctx context.Context, id int32) (GetBlipRow, error) {
 const getRadarGraphByShareCode = `-- name: GetRadarGraphByShareCode :many
 SELECT
     u.username,
+    t.id AS technology_id,
     t.name,
     t.quadrant_id,
     t.icon_url,
@@ -508,6 +600,7 @@ WHERE
 
 type GetRadarGraphByShareCodeRow struct {
 	Username     string      `json:"username"`
+	TechnologyID pgtype.UUID `json:"technology_id"`
 	Name         string      `json:"name"`
 	QuadrantID   int32       `json:"quadrant_id"`
 	IconUrl      pgtype.Text `json:"icon_url"`
@@ -528,6 +621,7 @@ func (q *Queries) GetRadarGraphByShareCode(ctx context.Context, id string) ([]Ge
 		var i GetRadarGraphByShareCodeRow
 		if err := rows.Scan(
 			&i.Username,
+			&i.TechnologyID,
 			&i.Name,
 			&i.QuadrantID,
 			&i.IconUrl,
@@ -546,12 +640,24 @@ func (q *Queries) GetRadarGraphByShareCode(ctx context.Context, id string) ([]Ge
 	return items, nil
 }
 
+const getRingByName = `-- name: GetRingByName :one
+SELECT id, name FROM rings WHERE name = $1
+`
+
+func (q *Queries) GetRingByName(ctx context.Context, name string) (Ring, error) {
+	row := q.db.QueryRow(ctx, getRingByName, name)
+	var i Ring
+	err := row.Scan(&i.ID, &i.Name)
+	return i, err
+}
+
 const getShareCodeByCode = `-- name: GetShareCodeByCode :one
 SELECT
     id,
     user_id,
     created_at,
-    visibility
+    visibility,
+    listed
 FROM
     share_codes
 WHERE
@@ -566,6 +672,7 @@ func (q *Queries) GetShareCodeByCode(ctx context.Context, id string) (ShareCode,
 		&i.UserID,
 		&i.CreatedAt,
 		&i.Visibility,
+		&i.Listed,
 	)
 	return i, err
 }
@@ -575,7 +682,8 @@ SELECT
     id,
     user_id,
     created_at,
-    visibility
+    visibility,
+    listed
 FROM
     share_codes
 WHERE
@@ -590,6 +698,7 @@ func (q *Queries) GetShareCodeByUserId(ctx context.Context, userID pgtype.UUID) 
 		&i.UserID,
 		&i.CreatedAt,
 		&i.Visibility,
+		&i.Listed,
 	)
 	return i, err
 }
@@ -695,6 +804,25 @@ func (q *Queries) GetTechnologyQuad(ctx context.Context, quadrantID int32) ([]Te
 		return nil, err
 	}
 	return items, nil
+}
+
+const getTemplateBySlug = `-- name: GetTemplateBySlug :one
+SELECT id, slug, name, description, created_at
+FROM templates
+WHERE slug = $1
+`
+
+func (q *Queries) GetTemplateBySlug(ctx context.Context, slug string) (Template, error) {
+	row := q.db.QueryRow(ctx, getTemplateBySlug, slug)
+	var i Template
+	err := row.Scan(
+		&i.ID,
+		&i.Slug,
+		&i.Name,
+		&i.Description,
+		&i.CreatedAt,
+	)
+	return i, err
 }
 
 const getUserByUsername = `-- name: GetUserByUsername :one
@@ -868,6 +996,147 @@ func (q *Queries) GetUserTechnologyUserId(ctx context.Context, userID pgtype.UUI
 	return items, nil
 }
 
+const insertTemplateIfMissing = `-- name: InsertTemplateIfMissing :one
+INSERT INTO templates (slug, name, description)
+VALUES ($1, $2, $3)
+ON CONFLICT (slug) DO NOTHING
+RETURNING id
+`
+
+type InsertTemplateIfMissingParams struct {
+	Slug        string `json:"slug"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
+func (q *Queries) InsertTemplateIfMissing(ctx context.Context, arg InsertTemplateIfMissingParams) (int32, error) {
+	row := q.db.QueryRow(ctx, insertTemplateIfMissing, arg.Slug, arg.Name, arg.Description)
+	var id int32
+	err := row.Scan(&id)
+	return id, err
+}
+
+const listGalleryRadars = `-- name: ListGalleryRadars :many
+SELECT
+    sc.id AS code,
+    u.username,
+    COUNT(ut.id)::int AS blip_count,
+    MAX(ut.updated_at)::timestamptz AS updated_at
+FROM share_codes sc
+    JOIN users u ON u.id = sc.user_id
+    JOIN user_technologies ut ON ut.user_id = sc.user_id
+WHERE sc.visibility = 'public'
+  AND sc.listed
+  AND (
+    $1::int IS NULL
+    OR EXISTS (
+        SELECT 1
+        FROM user_technologies x
+            JOIN technology tx ON tx.id = x.technology_id
+        WHERE x.user_id = sc.user_id
+          AND tx.quadrant_id = $1::int
+    )
+  )
+  AND (
+    $2::text IS NULL
+    OR u.username ILIKE '%' || $2::text || '%' ESCAPE '\'
+    OR EXISTS (
+        SELECT 1
+        FROM user_technologies x
+            JOIN technology tx ON tx.id = x.technology_id
+        WHERE x.user_id = sc.user_id
+          AND tx.name ILIKE '%' || $2::text || '%' ESCAPE '\'
+    )
+  )
+GROUP BY sc.id, u.username
+ORDER BY MAX(ut.updated_at) DESC, sc.id
+LIMIT $4::int OFFSET $3::int
+`
+
+type ListGalleryRadarsParams struct {
+	Quadrant   pgtype.Int4 `json:"quadrant"`
+	Search     pgtype.Text `json:"search"`
+	PageOffset int32       `json:"page_offset"`
+	PageLimit  int32       `json:"page_limit"`
+}
+
+type ListGalleryRadarsRow struct {
+	Code      string             `json:"code"`
+	Username  string             `json:"username"`
+	BlipCount int32              `json:"blip_count"`
+	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
+}
+
+func (q *Queries) ListGalleryRadars(ctx context.Context, arg ListGalleryRadarsParams) ([]ListGalleryRadarsRow, error) {
+	rows, err := q.db.Query(ctx, listGalleryRadars,
+		arg.Quadrant,
+		arg.Search,
+		arg.PageOffset,
+		arg.PageLimit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListGalleryRadarsRow
+	for rows.Next() {
+		var i ListGalleryRadarsRow
+		if err := rows.Scan(
+			&i.Code,
+			&i.Username,
+			&i.BlipCount,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listGalleryTopTechnologies = `-- name: ListGalleryTopTechnologies :many
+SELECT
+    sc.id AS code,
+    t.name,
+    ut.ring_id
+FROM share_codes sc
+    JOIN user_technologies ut ON ut.user_id = sc.user_id
+    JOIN technology t ON t.id = ut.technology_id
+WHERE sc.id = ANY($1::text[])
+  AND sc.visibility = 'public'
+  AND sc.listed
+ORDER BY sc.id, ut.ring_id, t.name
+`
+
+type ListGalleryTopTechnologiesRow struct {
+	Code   string `json:"code"`
+	Name   string `json:"name"`
+	RingID int32  `json:"ring_id"`
+}
+
+func (q *Queries) ListGalleryTopTechnologies(ctx context.Context, codes []string) ([]ListGalleryTopTechnologiesRow, error) {
+	rows, err := q.db.Query(ctx, listGalleryTopTechnologies, codes)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListGalleryTopTechnologiesRow
+	for rows.Next() {
+		var i ListGalleryTopTechnologiesRow
+		if err := rows.Scan(&i.Code, &i.Name, &i.RingID); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listShareCodeViewers = `-- name: ListShareCodeViewers :many
 SELECT u.username
 FROM share_code_viewers v
@@ -896,6 +1165,112 @@ func (q *Queries) ListShareCodeViewers(ctx context.Context, shareCodeID string) 
 	return items, nil
 }
 
+const listTemplateItems = `-- name: ListTemplateItems :many
+SELECT
+    t.id AS technology_id,
+    t.name,
+    t.quadrant_id,
+    t.icon_url,
+    r.name AS ring_name,
+    q.name AS quadrant_name,
+    tt.ring_id,
+    b.context::text AS blip_context
+FROM template_technologies tt
+    JOIN technology t ON t.id = tt.technology_id
+    JOIN rings r ON r.id = tt.ring_id
+    JOIN quadrants q ON q.id = t.quadrant_id
+    JOIN blips b ON b.id = t.blip_id
+WHERE tt.template_id = $1
+ORDER BY tt.ring_id, t.name
+`
+
+type ListTemplateItemsRow struct {
+	TechnologyID pgtype.UUID `json:"technology_id"`
+	Name         string      `json:"name"`
+	QuadrantID   int32       `json:"quadrant_id"`
+	IconUrl      pgtype.Text `json:"icon_url"`
+	RingName     string      `json:"ring_name"`
+	QuadrantName string      `json:"quadrant_name"`
+	RingID       int32       `json:"ring_id"`
+	BlipContext  string      `json:"blip_context"`
+}
+
+func (q *Queries) ListTemplateItems(ctx context.Context, templateID int32) ([]ListTemplateItemsRow, error) {
+	rows, err := q.db.Query(ctx, listTemplateItems, templateID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListTemplateItemsRow
+	for rows.Next() {
+		var i ListTemplateItemsRow
+		if err := rows.Scan(
+			&i.TechnologyID,
+			&i.Name,
+			&i.QuadrantID,
+			&i.IconUrl,
+			&i.RingName,
+			&i.QuadrantName,
+			&i.RingID,
+			&i.BlipContext,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listTemplates = `-- name: ListTemplates :many
+SELECT
+    tp.id,
+    tp.slug,
+    tp.name,
+    tp.description,
+    COUNT(tt.technology_id)::int AS technology_count
+FROM templates tp
+    LEFT JOIN template_technologies tt ON tt.template_id = tp.id
+GROUP BY tp.id
+ORDER BY tp.name
+`
+
+type ListTemplatesRow struct {
+	ID              int32  `json:"id"`
+	Slug            string `json:"slug"`
+	Name            string `json:"name"`
+	Description     string `json:"description"`
+	TechnologyCount int32  `json:"technology_count"`
+}
+
+func (q *Queries) ListTemplates(ctx context.Context) ([]ListTemplatesRow, error) {
+	rows, err := q.db.Query(ctx, listTemplates)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListTemplatesRow
+	for rows.Next() {
+		var i ListTemplatesRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Slug,
+			&i.Name,
+			&i.Description,
+			&i.TechnologyCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const removeShareCodeViewer = `-- name: RemoveShareCodeViewer :exec
 DELETE FROM share_code_viewers
 WHERE share_code_id = $1
@@ -912,11 +1287,37 @@ func (q *Queries) RemoveShareCodeViewer(ctx context.Context, arg RemoveShareCode
 	return err
 }
 
+const setShareCodeListed = `-- name: SetShareCodeListed :one
+UPDATE share_codes
+SET listed = $2
+WHERE user_id = $1
+RETURNING id, user_id, created_at, visibility, listed
+`
+
+type SetShareCodeListedParams struct {
+	UserID pgtype.UUID `json:"user_id"`
+	Listed bool        `json:"listed"`
+}
+
+func (q *Queries) SetShareCodeListed(ctx context.Context, arg SetShareCodeListedParams) (ShareCode, error) {
+	row := q.db.QueryRow(ctx, setShareCodeListed, arg.UserID, arg.Listed)
+	var i ShareCode
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.CreatedAt,
+		&i.Visibility,
+		&i.Listed,
+	)
+	return i, err
+}
+
 const setShareCodeVisibility = `-- name: SetShareCodeVisibility :one
 UPDATE share_codes
-SET visibility = $2
+SET visibility = $2,
+    listed = (listed AND $2::text = 'public')
 WHERE user_id = $1
-RETURNING id, user_id, created_at, visibility
+RETURNING id, user_id, created_at, visibility, listed
 `
 
 type SetShareCodeVisibilityParams struct {
@@ -932,6 +1333,7 @@ func (q *Queries) SetShareCodeVisibility(ctx context.Context, arg SetShareCodeVi
 		&i.UserID,
 		&i.CreatedAt,
 		&i.Visibility,
+		&i.Listed,
 	)
 	return i, err
 }
@@ -1015,6 +1417,32 @@ func (q *Queries) UpdateTechnology(ctx context.Context, arg UpdateTechnologyPara
 		&i.IconUrl,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateTemplate = `-- name: UpdateTemplate :one
+UPDATE templates
+SET name = $2, description = $3
+WHERE slug = $1
+RETURNING id, slug, name, description, created_at
+`
+
+type UpdateTemplateParams struct {
+	Slug        string `json:"slug"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
+func (q *Queries) UpdateTemplate(ctx context.Context, arg UpdateTemplateParams) (Template, error) {
+	row := q.db.QueryRow(ctx, updateTemplate, arg.Slug, arg.Name, arg.Description)
+	var i Template
+	err := row.Scan(
+		&i.ID,
+		&i.Slug,
+		&i.Name,
+		&i.Description,
+		&i.CreatedAt,
 	)
 	return i, err
 }

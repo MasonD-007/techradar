@@ -312,14 +312,16 @@ VALUES ($1, $2)
 RETURNING id,
     user_id,
     created_at,
-    visibility;
+    visibility,
+    listed;
 
 -- name: GetShareCodeByCode :one
 SELECT
     id,
     user_id,
     created_at,
-    visibility
+    visibility,
+    listed
 FROM
     share_codes
 WHERE
@@ -330,7 +332,8 @@ SELECT
     id,
     user_id,
     created_at,
-    visibility
+    visibility,
+    listed
 FROM
     share_codes
 WHERE
@@ -344,6 +347,7 @@ WHERE
 -- name: GetRadarGraphByShareCode :many
 SELECT
     u.username,
+    t.id AS technology_id,
     t.name,
     t.quadrant_id,
     t.icon_url,
@@ -364,9 +368,10 @@ WHERE
 
 -- name: SetShareCodeVisibility :one
 UPDATE share_codes
-SET visibility = $2
+SET visibility = $2,
+    listed = (listed AND $2::text = 'public')
 WHERE user_id = $1
-RETURNING id, user_id, created_at, visibility;
+RETURNING id, user_id, created_at, visibility, listed;
 
 -- name: CanViewShareCode :one
 SELECT EXISTS (
@@ -418,3 +423,129 @@ FROM
     users
 WHERE
     username = $1;
+
+-- name: SetShareCodeListed :one
+UPDATE share_codes
+SET listed = $2
+WHERE user_id = $1
+RETURNING id, user_id, created_at, visibility, listed;
+
+-- name: ListGalleryRadars :many
+SELECT
+    sc.id AS code,
+    u.username,
+    COUNT(ut.id)::int AS blip_count,
+    MAX(ut.updated_at)::timestamptz AS updated_at
+FROM share_codes sc
+    JOIN users u ON u.id = sc.user_id
+    JOIN user_technologies ut ON ut.user_id = sc.user_id
+WHERE sc.visibility = 'public'
+  AND sc.listed
+  AND (
+    sqlc.narg(quadrant)::int IS NULL
+    OR EXISTS (
+        SELECT 1
+        FROM user_technologies x
+            JOIN technology tx ON tx.id = x.technology_id
+        WHERE x.user_id = sc.user_id
+          AND tx.quadrant_id = sqlc.narg(quadrant)::int
+    )
+  )
+  AND (
+    sqlc.narg(search)::text IS NULL
+    OR u.username ILIKE '%' || sqlc.narg(search)::text || '%' ESCAPE '\'
+    OR EXISTS (
+        SELECT 1
+        FROM user_technologies x
+            JOIN technology tx ON tx.id = x.technology_id
+        WHERE x.user_id = sc.user_id
+          AND tx.name ILIKE '%' || sqlc.narg(search)::text || '%' ESCAPE '\'
+    )
+  )
+GROUP BY sc.id, u.username
+ORDER BY MAX(ut.updated_at) DESC, sc.id
+LIMIT sqlc.arg(page_limit)::int OFFSET sqlc.arg(page_offset)::int;
+
+-- name: ListGalleryTopTechnologies :many
+SELECT
+    sc.id AS code,
+    t.name,
+    ut.ring_id
+FROM share_codes sc
+    JOIN user_technologies ut ON ut.user_id = sc.user_id
+    JOIN technology t ON t.id = ut.technology_id
+WHERE sc.id = ANY(sqlc.arg(codes)::text[])
+  AND sc.visibility = 'public'
+  AND sc.listed
+ORDER BY sc.id, ut.ring_id, t.name;
+
+-- name: ListTemplates :many
+SELECT
+    tp.id,
+    tp.slug,
+    tp.name,
+    tp.description,
+    COUNT(tt.technology_id)::int AS technology_count
+FROM templates tp
+    LEFT JOIN template_technologies tt ON tt.template_id = tp.id
+GROUP BY tp.id
+ORDER BY tp.name;
+
+-- name: GetTemplateBySlug :one
+SELECT id, slug, name, description, created_at
+FROM templates
+WHERE slug = $1;
+
+-- name: ListTemplateItems :many
+SELECT
+    t.id AS technology_id,
+    t.name,
+    t.quadrant_id,
+    t.icon_url,
+    r.name AS ring_name,
+    q.name AS quadrant_name,
+    tt.ring_id,
+    b.context::text AS blip_context
+FROM template_technologies tt
+    JOIN technology t ON t.id = tt.technology_id
+    JOIN rings r ON r.id = tt.ring_id
+    JOIN quadrants q ON q.id = t.quadrant_id
+    JOIN blips b ON b.id = t.blip_id
+WHERE tt.template_id = $1
+ORDER BY tt.ring_id, t.name;
+
+-- name: CreateTemplate :one
+INSERT INTO templates (slug, name, description)
+VALUES ($1, $2, $3)
+RETURNING id, slug, name, description, created_at;
+
+-- name: UpdateTemplate :one
+UPDATE templates
+SET name = $2, description = $3
+WHERE slug = $1
+RETURNING id, slug, name, description, created_at;
+
+-- name: DeleteTemplate :execrows
+DELETE FROM templates WHERE slug = $1;
+
+-- name: DeleteTemplateItems :exec
+DELETE FROM template_technologies WHERE template_id = $1;
+
+-- name: AddTemplateItem :exec
+INSERT INTO template_technologies (template_id, technology_id, ring_id)
+VALUES ($1, $2, $3)
+ON CONFLICT (template_id, technology_id) DO UPDATE SET ring_id = EXCLUDED.ring_id;
+
+-- name: InsertTemplateIfMissing :one
+INSERT INTO templates (slug, name, description)
+VALUES ($1, $2, $3)
+ON CONFLICT (slug) DO NOTHING
+RETURNING id;
+
+-- name: GetRingByName :one
+SELECT id, name FROM rings WHERE name = $1;
+
+-- name: AddUserTechnologyIfMissing :execrows
+INSERT INTO user_technologies (id, user_id, technology_id, ring_id)
+VALUES ($1, $2, $3, $4)
+ON CONFLICT (user_id, technology_id) DO NOTHING;

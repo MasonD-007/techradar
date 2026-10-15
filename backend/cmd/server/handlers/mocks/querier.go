@@ -217,3 +217,73 @@ func (m *MockQuerier) GetUserByUsername(ctx context.Context, username string) (d
 	u, _ := args.Get(0).(db.User)
 	return u, args.Error(1)
 }
+
+func (m *MockQuerier) SetShareCodeListed(ctx context.Context, params db.SetShareCodeListedParams) (db.ShareCode, error) {
+	args := m.Called(ctx, params)
+	sc, _ := args.Get(0).(db.ShareCode)
+	return sc, args.Error(1)
+}
+
+func (m *MockQuerier) ListGalleryRadars(ctx context.Context, params db.ListGalleryRadarsParams) ([]db.ListGalleryRadarsRow, error) {
+	args := m.Called(ctx, params)
+	list, _ := args.Get(0).([]db.ListGalleryRadarsRow)
+	return list, args.Error(1)
+}
+
+func (m *MockQuerier) ListGalleryTopTechnologies(ctx context.Context, codes []string) ([]db.ListGalleryTopTechnologiesRow, error) {
+	args := m.Called(ctx, codes)
+	list, _ := args.Get(0).([]db.ListGalleryTopTechnologiesRow)
+	return list, args.Error(1)
+}
+
+func (m *MockQuerier) ListTemplates(ctx context.Context) ([]db.ListTemplatesRow, error) {
+	args := m.Called(ctx)
+	list, _ := args.Get(0).([]db.ListTemplatesRow)
+	return list, args.Error(1)
+}
+
+func (m *MockQuerier) GetTemplateBySlug(ctx context.Context, slug string) (db.Template, error) {
+	args := m.Called(ctx, slug)
+	t, _ := args.Get(0).(db.Template)
+	return t, args.Error(1)
+}
+
+func (m *MockQuerier) ListTemplateItems(ctx context.Context, templateID int32) ([]db.ListTemplateItemsRow, error) {
+	args := m.Called(ctx, templateID)
+	list, _ := args.Get(0).([]db.ListTemplateItemsRow)
+	return list, args.Error(1)
+}
+
+func (m *MockQuerier) CreateTemplate(ctx context.Context, params db.CreateTemplateParams) (db.Template, error) {
+	args := m.Called(ctx, params)
+	t, _ := args.Get(0).(db.Template)
+	return t, args.Error(1)
+}
+
+func (m *MockQuerier) UpdateTemplate(ctx context.Context, params db.UpdateTemplateParams) (db.Template, error) {
+	args := m.Called(ctx, params)
+	t, _ := args.Get(0).(db.Template)
+	return t, args.Error(1)
+}
+
+func (m *MockQuerier) DeleteTemplate(ctx context.Context, slug string) (int64, error) {
+	args := m.Called(ctx, slug)
+	n, _ := args.Get(0).(int64)
+	return n, args.Error(1)
+}
+
+func (m *MockQuerier) DeleteTemplateItems(ctx context.Context, templateID int32) error {
+	args := m.Called(ctx, templateID)
+	return args.Error(0)
+}
+
+func (m *MockQuerier) AddTemplateItem(ctx context.Context, params db.AddTemplateItemParams) error {
+	args := m.Called(ctx, params)
+	return args.Error(0)
+}
+
+func (m *MockQuerier) AddUserTechnologyIfMissing(ctx context.Context, params db.AddUserTechnologyIfMissingParams) (int64, error) {
+	args := m.Called(ctx, params)
+	n, _ := args.Get(0).(int64)
+	return n, args.Error(1)
+}

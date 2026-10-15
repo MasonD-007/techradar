@@ -8,6 +8,7 @@ import (
 
 	"github.com/MasonD-007/techradar/backend/cmd/server/handlers/dto"
 	"github.com/MasonD-007/techradar/backend/internal/db"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
@@ -16,6 +17,39 @@ func toShareCodeResponse(sc db.ShareCode) dto.ShareCodeResponse {
 		Code:       sc.ID,
 		CreatedAt:  sc.CreatedAt.Time.Format("2006-01-02T15:04:05Z"),
 		Visibility: sc.Visibility,
+		Listed:     sc.Listed,
+	}
+}
+
+// graphItem builds a radar item from the columns shared by the share-code and
+// template graph queries.
+func graphItem(technologyID pgtype.UUID, name string, quadrantID int32, quadrantName string, ringID int32, ringName string, iconURL pgtype.Text, blipContext string) dto.RadarGraphItem {
+	desc := ""
+	if blipContext != "" {
+		var ctx map[string]interface{}
+		if err := json.Unmarshal([]byte(blipContext), &ctx); err == nil {
+			if d, ok := ctx["description"].(string); ok {
+				desc = d
+			}
+		}
+	}
+	icon := ""
+	if iconURL.Valid {
+		icon = iconURL.String
+	}
+	id := ""
+	if technologyID.Valid {
+		id = uuid.UUID(technologyID.Bytes).String()
+	}
+	return dto.RadarGraphItem{
+		TechnologyID: id,
+		Name:         name,
+		QuadrantID:   quadrantID,
+		QuadrantName: quadrantName,
+		RingID:       ringID,
+		RingName:     ringName,
+		IconURL:      icon,
+		Description:  desc,
 	}
 }
 
@@ -223,29 +257,7 @@ func GetShareCodeByCode(q Querier) http.HandlerFunc {
 		username = items[0].Username
 		radar := make([]dto.RadarGraphItem, len(items))
 		for i, item := range items {
-			desc := ""
-			if item.BlipContext != "" {
-				var ctx map[string]interface{}
-				if err := json.Unmarshal([]byte(item.BlipContext), &ctx); err == nil {
-					if d, ok := ctx["description"].(string); ok {
-						desc = d
-					}
-				}
-			}
-			iconURL := ""
-			if item.IconUrl.Valid {
-				iconURL = item.IconUrl.String
-			}
-
-			radar[i] = dto.RadarGraphItem{
-				Name:         item.Name,
-				QuadrantID:   item.QuadrantID,
-				QuadrantName: item.QuadrantName,
-				RingID:       item.RingID,
-				RingName:     item.RingName,
-				IconURL:      iconURL,
-				Description:  desc,
-			}
+			radar[i] = graphItem(item.TechnologyID, item.Name, item.QuadrantID, item.QuadrantName, item.RingID, item.RingName, item.IconUrl, item.BlipContext)
 		}
 
 		w.Header().Set("Content-Type", "application/json")
