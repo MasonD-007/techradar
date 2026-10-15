@@ -114,9 +114,24 @@ func main() {
 		}
 	}
 
-	templateCount, err := seedTemplates(context.Background(), q)
-	if err != nil {
-		log.Fatalf("Failed to seed templates: %v", err)
+	skipTemplates := false
+	if os.Getenv("SEED_ONLY_IF_EMPTY") == "true" {
+		var existingTemplates int
+		if err := tx.QueryRow(context.Background(), "SELECT count(*) FROM templates").Scan(&existingTemplates); err != nil {
+			log.Fatalf("Failed to count existing templates: %v", err)
+		}
+		if existingTemplates > 0 {
+			log.Printf("SEED_ONLY_IF_EMPTY=true and %d templates exist, skipping template seed", existingTemplates)
+			skipTemplates = true
+		}
+	}
+
+	templateCount := 0
+	if !skipTemplates {
+		templateCount, err = seedTemplates(context.Background(), q)
+		if err != nil {
+			log.Fatalf("Failed to seed templates: %v", err)
+		}
 	}
 
 	if err := tx.Commit(context.Background()); err != nil {

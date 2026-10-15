@@ -252,7 +252,7 @@ Public radars can be browsed, copied, and bootstrapped from starter templates.
 ]
 ```
 
-Technology `name`s must match exactly those in `backend/cmd/seed/data/*.json`. The seed never overwrites an existing slug, so edits made in the admin Templates tab survive re-seeding.
+Technology `name`s must match exactly those in `backend/cmd/seed/data/*.json`. The seed never overwrites an existing slug, so edits made in the admin Templates tab survive re-seeding. A template technology missing from the database is skipped with a warning. With `SEED_ONLY_IF_EMPTY=true` (the k3s seed job), technologies and templates are only seeded when their tables are empty, so deleted templates stay deleted.
 
 ### Link previews
 
