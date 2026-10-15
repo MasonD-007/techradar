@@ -94,28 +94,37 @@ func main() {
 		log.Fatalf("Failed to seed admin user: %v", err)
 	}
 
+	skipTechnologies := false
 	if os.Getenv("SEED_ONLY_IF_EMPTY") == "true" {
 		var existing int
 		if err := tx.QueryRow(context.Background(), "SELECT count(*) FROM technology").Scan(&existing); err != nil {
 			log.Fatalf("Failed to count existing technologies: %v", err)
 		}
 		if existing > 0 {
-			log.Printf("SEED_ONLY_IF_EMPTY=true and %d technologies exist, nothing to seed", existing)
-			return
+			log.Printf("SEED_ONLY_IF_EMPTY=true and %d technologies exist, skipping technology seed", existing)
+			skipTechnologies = true
 		}
 	}
 
-	seededCount, err := seedTechnologies(context.Background(), tx, q)
+	seededCount := 0
+	if !skipTechnologies {
+		seededCount, err = seedTechnologies(context.Background(), tx, q)
+		if err != nil {
+			log.Fatalf("Failed to seed technologies: %v", err)
+		}
+	}
+
+	templateCount, err := seedTemplates(context.Background(), q)
 	if err != nil {
-		log.Fatalf("Failed to seed technologies: %v", err)
+		log.Fatalf("Failed to seed templates: %v", err)
 	}
 
 	if err := tx.Commit(context.Background()); err != nil {
 		log.Fatalf("Failed to commit seed transaction: %v", err)
 	}
 
-	log.Printf("Seed completed successfully: %d technologies processed", seededCount)
-	if seededCount == 0 {
+	log.Printf("Seed completed successfully: %d technologies processed, %d templates created", seededCount, templateCount)
+	if seededCount == 0 && !skipTechnologies {
 		log.Printf("All technologies from the dataset were already present")
 	}
 }
