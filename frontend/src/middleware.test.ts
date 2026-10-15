@@ -34,6 +34,16 @@ describe("middleware (logged out)", () => {
 		const res = await middleware(req("/admin"));
 		expect(res.headers.get("location")).toContain("/login");
 	});
+
+	it("lets /explore through so the gallery is public", async () => {
+		const res = await middleware(req("/explore"));
+		expect(res.headers.get("location")).toBeNull();
+	});
+
+	it("lets the preview image route through for crawlers", async () => {
+		const res = await middleware(req("/og/radar?share=abc123"));
+		expect(res.headers.get("location")).toBeNull();
+	});
 });
 
 const jwtWith = (payload: object) =>

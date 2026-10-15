@@ -2,6 +2,7 @@
 
 import { parseAsString, useQueryState } from "nuqs";
 import { useState } from "react";
+import Gallery from "@/components/explore-page/gallery";
 import Radar from "@/components/radar-page/radar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -37,8 +38,7 @@ export default function ExplorePage() {
 						Explore Radars
 					</h1>
 					<p className="text-muted-foreground text-sm">
-						Enter a share code to load and explore someone else&apos;s tech
-						radar.
+						Browse shared radars, or paste a share code to open one.
 					</p>
 				</div>
 
@@ -76,11 +76,7 @@ export default function ExplorePage() {
 				{shareCode ? (
 					<Radar shareCode={shareCode} isOwnRadar={false} />
 				) : (
-					<div className="flex min-h-[400px] items-center justify-center rounded-2xl border border-dashed border-border p-6 text-center">
-						<p className="text-muted-foreground text-sm">
-							Enter a share code above to explore someone&apos;s tech radar.
-						</p>
-					</div>
+					<Gallery />
 				)}
 			</CardContent>
 		</Card>
