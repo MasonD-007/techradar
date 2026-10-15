@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"unicode/utf8"
 
 	"github.com/MasonD-007/techradar/backend/cmd/server/handlers"
 	"github.com/MasonD-007/techradar/backend/cmd/server/handlers/dto"
@@ -121,6 +122,37 @@ func TestGetGallery(t *testing.T) {
 		}).Return(galleryRows(1), nil).Once()
 		rr := serveGallery(m, "/gallery?q=100%25_x")
 		assert.Equal(t, http.StatusOK, rr.Code)
+		m.AssertExpectations(t)
+	})
+
+	t.Run("search sanitising", func(t *testing.T) {
+		long := strings.Repeat("é", 100)
+		cases := []struct{ name, target, want string }{
+			{"backslash escaped", "/gallery?q=a%5Cb", `a\\b`},
+			{"multibyte truncated by runes", "/gallery?q=" + long, strings.Repeat("é", 64)},
+			{"invalid utf8 dropped", "/gallery?q=ab%FFcd", "abcd"},
+			{"nul stripped", "/gallery?q=ab%00cd", "abcd"},
+		}
+		for _, c := range cases {
+			m := mocks.NewMockQuerier()
+			anyTechs(m)
+			m.On("ListGalleryRadars", mock.Anything, mock.MatchedBy(func(p db.ListGalleryRadarsParams) bool {
+				return p.Search.Valid && p.Search.String == c.want && utf8.ValidString(p.Search.String) &&
+					utf8.RuneCountInString(p.Search.String) <= 64 && !strings.ContainsRune(p.Search.String, 0)
+			})).Return(galleryRows(1), nil).Once()
+			rr := serveGallery(m, c.target)
+			assert.Equal(t, http.StatusOK, rr.Code, c.name)
+			m.AssertExpectations(t)
+		}
+	})
+
+	t.Run("huge page is clamped", func(t *testing.T) {
+		m := mocks.NewMockQuerier()
+		anyTechs(m)
+		m.On("ListGalleryRadars", mock.Anything, db.ListGalleryRadarsParams{PageLimit: 13, PageOffset: 119988}).Return(galleryRows(1), nil).Once()
+		rr := serveGallery(m, "/gallery?page=200000000")
+		assert.Equal(t, http.StatusOK, rr.Code)
+		assert.Equal(t, 10000, decodeGallery(t, rr).Page)
 		m.AssertExpectations(t)
 	})
 

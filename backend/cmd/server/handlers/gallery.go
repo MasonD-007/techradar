@@ -15,6 +15,7 @@ const (
 	galleryTopTechs    = 5
 	gallerySearchMax   = 64
 	galleryMaxQuadrant = 4
+	galleryMaxPage     = 10000
 )
 
 // escapeLike makes s match literally inside an ILIKE pattern that uses
@@ -44,6 +45,9 @@ func GetGallery(q Querier) http.HandlerFunc {
 		if p, err := strconv.Atoi(query.Get("page")); err == nil && p >= 1 {
 			page = p
 		}
+		if page > galleryMaxPage {
+			page = galleryMaxPage
+		}
 
 		params := db.ListGalleryRadarsParams{
 			PageLimit:  galleryPageSize + 1,
@@ -59,10 +63,12 @@ func GetGallery(q Querier) http.HandlerFunc {
 			params.Quadrant = pgtype.Int4{Int32: int32(n), Valid: true}
 		}
 
-		if term := strings.TrimSpace(query.Get("q")); term != "" {
-			if len(term) > gallerySearchMax {
-				term = term[:gallerySearchMax]
-			}
+		term := strings.ToValidUTF8(query.Get("q"), "")
+		term = strings.ReplaceAll(term, "\x00", "")
+		if runes := []rune(term); len(runes) > gallerySearchMax {
+			term = string(runes[:gallerySearchMax])
+		}
+		if term = strings.TrimSpace(term); term != "" {
 			params.Search = pgtype.Text{String: escapeLike(term), Valid: true}
 		}
 
@@ -86,7 +92,7 @@ func GetGallery(q Querier) http.HandlerFunc {
 				Username:        row.Username,
 				BlipCount:       int(row.BlipCount),
 				TopTechnologies: []string{},
-				UpdatedAt:       row.UpdatedAt.Time.Format("2006-01-02T15:04:05Z"),
+				UpdatedAt:       row.UpdatedAt.Time.UTC().Format("2006-01-02T15:04:05Z"),
 			}
 			codes[i] = row.Code
 			index[row.Code] = i
