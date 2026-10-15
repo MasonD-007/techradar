@@ -50,7 +50,7 @@ func writeShareJSON(w http.ResponseWriter, status int, v any) {
 
 // SetShareVisibility godoc
 // @Summary Set share code visibility
-// @Description Set the authenticated user's radar to public (anyone with the link) or private (only listed viewers)
+// @Description Set the authenticated user's radar to public (anyone with the link) or private (only listed viewers), and optionally list a public radar in the gallery via listed
 // @Tags share-codes
 // @Accept json
 // @Produce json
@@ -74,7 +74,11 @@ func SetShareVisibility(rls RLSExecutor) http.HandlerFunc {
 			http.Error(w, "Invalid request body", http.StatusBadRequest)
 			return
 		}
-		if req.Visibility != "public" && req.Visibility != "private" {
+		if req.Visibility == "" && req.Listed == nil {
+			http.Error(w, "Provide visibility and/or listed", http.StatusBadRequest)
+			return
+		}
+		if req.Visibility != "" && req.Visibility != "public" && req.Visibility != "private" {
 			http.Error(w, "Visibility must be 'public' or 'private'", http.StatusBadRequest)
 			return
 		}
@@ -85,13 +89,33 @@ func SetShareVisibility(rls RLSExecutor) http.HandlerFunc {
 			return
 		}
 
-		var updated db.ShareCode
+		effective := sc.Visibility
+		if req.Visibility != "" {
+			effective = req.Visibility
+		}
+		if req.Listed != nil && *req.Listed && effective != "public" {
+			http.Error(w, "Only public radars can be listed in the gallery", http.StatusBadRequest)
+			return
+		}
+
+		updated := sc
 		err = rls.Execute(r.Context(), userID.String(), role, func(q Querier) error {
 			var err error
-			updated, err = q.SetShareCodeVisibility(r.Context(), db.SetShareCodeVisibilityParams{
-				UserID:     sc.UserID,
-				Visibility: req.Visibility,
-			})
+			if req.Visibility != "" {
+				updated, err = q.SetShareCodeVisibility(r.Context(), db.SetShareCodeVisibilityParams{
+					UserID:     sc.UserID,
+					Visibility: req.Visibility,
+				})
+				if err != nil {
+					return err
+				}
+			}
+			if req.Listed != nil {
+				updated, err = q.SetShareCodeListed(r.Context(), db.SetShareCodeListedParams{
+					UserID: sc.UserID,
+					Listed: *req.Listed,
+				})
+			}
 			return err
 		})
 		if err != nil {
