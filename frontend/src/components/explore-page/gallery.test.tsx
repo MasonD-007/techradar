@@ -145,4 +145,44 @@ describe("Gallery", () => {
 		expect(screen.queryByText("older")).toBeNull();
 		expect(screen.getByText("newer")).toBeInTheDocument();
 	});
+
+	it("does not refetch or stick on loading when the query is unchanged", async () => {
+		actions.getGallery.mockResolvedValue(ok([entry("abc", "alice")]));
+		render(<Gallery />);
+		await screen.findByText("alice");
+		await userEvent.type(screen.getByRole("searchbox"), "{Enter}");
+		expect(screen.getByText("alice")).toBeInTheDocument();
+		expect(actions.getGallery).toHaveBeenCalledTimes(1);
+		await userEvent.type(screen.getByRole("searchbox"), "go{Enter}");
+		await screen.findByText("alice");
+		await userEvent.type(screen.getByRole("searchbox"), "{Enter}");
+		expect(screen.getByText("alice")).toBeInTheDocument();
+		expect(actions.getGallery).toHaveBeenCalledTimes(2);
+	});
+
+	it("does not refetch when the same quadrant is selected again", async () => {
+		actions.getGallery.mockResolvedValue(ok([entry("abc", "alice")]));
+		render(<Gallery />);
+		await screen.findByText("alice");
+		await userEvent.selectOptions(screen.getByLabelText("Quadrant"), "2");
+		await screen.findByText("alice");
+		await userEvent.selectOptions(screen.getByLabelText("Quadrant"), "2");
+		expect(screen.getByText("alice")).toBeInTheDocument();
+		expect(actions.getGallery).toHaveBeenCalledTimes(2);
+	});
+
+	it("clears the quadrant when All is selected", async () => {
+		actions.getGallery.mockResolvedValue(ok([entry("abc", "alice")]));
+		render(<Gallery />);
+		await screen.findByText("alice");
+		await userEvent.selectOptions(screen.getByLabelText("Quadrant"), "2");
+		await userEvent.selectOptions(screen.getByLabelText("Quadrant"), "all");
+		await waitFor(() =>
+			expect(actions.getGallery).toHaveBeenLastCalledWith({
+				q: undefined,
+				quadrant: undefined,
+				page: 1,
+			}),
+		);
+	});
 });

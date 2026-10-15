@@ -85,8 +85,10 @@ export default function Gallery() {
 					className="flex flex-1 gap-2"
 					onSubmit={(e) => {
 						e.preventDefault();
+						const next = query.trim();
+						if (next === appliedQuery) return;
 						setStatus("loading");
-						setAppliedQuery(query.trim());
+						setAppliedQuery(next);
 					}}
 				>
 					<Input
@@ -100,8 +102,10 @@ export default function Gallery() {
 				<Select
 					value={quadrant === null ? "all" : String(quadrant)}
 					onValueChange={(v) => {
+						const next = v === "all" ? null : Number(v);
+						if (next === quadrant) return;
 						setStatus("loading");
-						setQuadrant(v === "all" ? null : Number(v));
+						setQuadrant(next);
 					}}
 				>
 					<SelectTrigger aria-label="Quadrant">
@@ -139,7 +143,7 @@ export default function Gallery() {
 			{status === "ready" && radars.length > 0 && (
 				<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 					{radars.map((entry) => (
-						<a key={entry.code} href={`/radar?share=${entry.code}`}>
+						<a key={entry.code} href={`/radar?share=${encodeURIComponent(entry.code)}`}>
 							<Card className="h-full transition-colors hover:bg-accent/30">
 								<CardContent className="flex flex-col gap-2">
 									{/* biome-ignore lint/performance/noImgElement: dynamic, pre-sized route */}
