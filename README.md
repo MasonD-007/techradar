@@ -244,10 +244,10 @@ Public radars can be browsed, copied, and bootstrapped from starter templates.
 ```json
 [
   {
-    "slug": "web-fullstack",
-    "name": "Web Full-Stack",
-    "description": "A starting point for web teams",
-    "technologies": [{ "name": "TypeScript", "ring": "adopt" }]
+    "slug": "frontend-starter",
+    "name": "Frontend developer",
+    "description": "A modern web frontend toolbox",
+    "technologies": [{ "name": "JavaScript", "ring": "Adopt" }]
   }
 ]
 ```
