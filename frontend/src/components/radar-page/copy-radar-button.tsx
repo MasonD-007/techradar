@@ -1,6 +1,8 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { loginUrlForShare } from "@/lib/share-access";
 import ImportDialog from "./import-dialog";
@@ -17,6 +19,7 @@ export default function CopyRadarButton({
 	isOwnRadar = false,
 }: Props) {
 	const [open, setOpen] = useState(false);
+	const router = useRouter();
 
 	if (!shareCode || isOwnRadar) return null;
 
@@ -37,7 +40,11 @@ export default function CopyRadarButton({
 				open={open}
 				onOpenChange={setOpen}
 				source={{ shareCode }}
-				onImported={() => window.location.assign("/radar")}
+				onImported={({ added, skipped }) => {
+					toast.success(`Added ${added}, skipped ${skipped}`);
+					router.push("/radar");
+					router.refresh();
+				}}
 			/>
 		</>
 	);

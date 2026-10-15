@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -79,7 +80,10 @@ export default function TemplatePicker({ onDone }: Props) {
 						if (!next) setSlug(null);
 					}}
 					source={{ templateSlug: slug }}
-					onImported={onDone}
+					onImported={({ added, skipped }) => {
+						toast.success(`Added ${added}, skipped ${skipped}`);
+						onDone();
+					}}
 				/>
 			)}
 		</div>

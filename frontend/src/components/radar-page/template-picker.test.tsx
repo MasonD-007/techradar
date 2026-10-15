@@ -11,12 +11,15 @@ const discovery = vi.hoisted(() => ({
 	getTemplate: vi.fn(),
 	importRadar: vi.fn(),
 }));
+const toastMock = vi.hoisted(() => ({ success: vi.fn() }));
+vi.mock("sonner", () => ({ toast: toastMock }));
 vi.mock("@/lib/actions", () => actions);
 vi.mock("@/lib/discovery-actions", () => discovery);
 
 import TemplatePicker from "./template-picker";
 
 beforeEach(() => {
+	toastMock.success.mockReset();
 	for (const fn of [...Object.values(actions), ...Object.values(discovery)])
 		fn.mockReset();
 	actions.getMyRadarGraph.mockResolvedValue({ success: true, data: { radar: [] } });
@@ -39,7 +42,7 @@ describe("TemplatePicker", () => {
 				],
 			},
 		});
-		discovery.importRadar.mockResolvedValue({ success: true, data: { added: 1, skipped: 0 } });
+		discovery.importRadar.mockResolvedValue({ success: true, data: { added: 1, skipped: 3 } });
 		const onDone = vi.fn();
 		render(<TemplatePicker onDone={onDone} />);
 		expect(await screen.findByText("Web stack")).toBeTruthy();
@@ -48,6 +51,7 @@ describe("TemplatePicker", () => {
 		await userEvent.click(await screen.findByRole("button", { name: /^Copy 1/ }));
 		expect(discovery.importRadar).toHaveBeenCalledWith({ templateSlug: "web" }, ["t1"]);
 		await vi.waitFor(() => expect(onDone).toHaveBeenCalled());
+		expect(toastMock.success).toHaveBeenCalledWith("Added 1, skipped 3");
 	});
 
 	it("renders nothing when there are no templates", async () => {

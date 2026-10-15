@@ -668,7 +668,7 @@ function Radar({
 				isOwnRadar &&
 				currentUserId &&
 				positionedTechnologies.length === 0 && (
-					<TemplatePicker onDone={() => window.location.reload()} />
+					<TemplatePicker onDone={handleTechnologyChange} />
 				)}
 		</Card>
 	);
