@@ -256,7 +256,7 @@ Technology `name`s must match exactly those in `backend/cmd/seed/data/*.json`. T
 
 ### Link previews
 
-Set `NEXT_PUBLIC_SITE_URL` (e.g. `https://radar.example.com`) so shared radar links get absolute preview image URLs. It defaults to `http://localhost:3000`.
+Set `SITE_URL` (e.g. `https://radar.example.com`) so shared radar links get absolute preview image URLs. It is a runtime variable read per request (no rebuild needed); `NEXT_PUBLIC_SITE_URL` is accepted as a fallback. It defaults to `http://localhost:3000`.
 
 ## Updating the API
 

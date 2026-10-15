@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 
 const API_BASE = process.env.API_URL || "http://localhost:8080";
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+
+// Read per call: SITE_URL is a runtime variable (NEXT_PUBLIC_* is inlined at build time).
+function siteUrl(): string {
+	return process.env.SITE_URL ?? process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+}
 
 export const MAX_SHARE_CODE_LENGTH = 64;
 
@@ -45,7 +49,7 @@ export function buildShareMetadata(
 ): Metadata {
 	if (!code) return { title: "TechRadar" };
 	if (!isPlausibleShareCode(code) || !summary) {
-		const genericImage = `${SITE_URL}/og/radar`;
+		const genericImage = `${siteUrl()}/og/radar`;
 		return {
 			title: "Private radar | TechRadar",
 			description: "This radar is private or no longer available.",
@@ -56,7 +60,7 @@ export function buildShareMetadata(
 			twitter: { card: "summary_large_image" },
 		};
 	}
-	const image = `${SITE_URL}/og/radar?share=${encodeURIComponent(code)}`;
+	const image = `${siteUrl()}/og/radar?share=${encodeURIComponent(code)}`;
 	const title = `${summary.username}'s tech radar | TechRadar`;
 	const description =
 		summary.count === 0

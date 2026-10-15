@@ -102,4 +102,29 @@ describe("buildShareMetadata", () => {
 		expect(m.title).toBe("TechRadar");
 		expect(m.openGraph?.images).toBeUndefined();
 	});
+
+	describe("site URL", () => {
+		const url = (m: ReturnType<typeof buildShareMetadata>) =>
+			(m.openGraph?.images as { url: string }[])[0].url;
+		afterEach(() => vi.unstubAllEnvs());
+
+		it("prefers SITE_URL over NEXT_PUBLIC_SITE_URL", () => {
+			vi.stubEnv("SITE_URL", "https://a.example");
+			vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://b.example");
+			expect(url(buildShareMetadata("abc", summary))).toBe("https://a.example/og/radar?share=abc");
+		});
+
+		it("falls back to NEXT_PUBLIC_SITE_URL", () => {
+			vi.stubEnv("SITE_URL", undefined as unknown as string);
+			vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://b.example");
+			expect(url(buildShareMetadata("abc", summary))).toBe("https://b.example/og/radar?share=abc");
+		});
+
+		it("reads the env on every call", () => {
+			vi.stubEnv("SITE_URL", "https://one.example");
+			expect(url(buildShareMetadata("abc", summary))).toContain("https://one.example");
+			vi.stubEnv("SITE_URL", "https://two.example");
+			expect(url(buildShareMetadata("abc", null))).toBe("https://two.example/og/radar");
+		});
+	});
 });
