@@ -222,6 +222,42 @@ await api.put('/posts', {
 await api.delete('/posts', { params: { query: { id: 1 } } });
 ```
 
+## Discovery
+
+Public radars can be browsed, copied, and bootstrapped from starter templates.
+
+| Endpoint | Description |
+|----------|-------------|
+| `GET /gallery` | Browse listed radars (search, quadrant filter, pagination) |
+| `GET /templates` | List starter templates |
+| `GET /templates/{slug}` | Get one template with its technologies |
+| `POST/PUT/DELETE /templates` | Manage templates (admin only) |
+| `POST /radar/import` | Copy technologies from a radar or template into your radar |
+| `PATCH /share-codes/my` | Accepts `listed` to add/remove your radar from the gallery |
+
+**Listing is opt-in.** A radar appears in the gallery only when it is Public *and* "List in gallery" is ticked. Switching to Private un-lists it.
+
+### Template seed format
+
+`make backend-seed` loads starter templates from `backend/cmd/seed/templates/templates.json`:
+
+```json
+[
+  {
+    "slug": "web-fullstack",
+    "name": "Web Full-Stack",
+    "description": "A starting point for web teams",
+    "technologies": [{ "name": "TypeScript", "ring": "adopt" }]
+  }
+]
+```
+
+Technology `name`s must match exactly those in `backend/cmd/seed/data/*.json`. The seed never overwrites an existing slug, so edits made in the admin Templates tab survive re-seeding.
+
+### Link previews
+
+Set `NEXT_PUBLIC_SITE_URL` (e.g. `https://radar.example.com`) so shared radar links get absolute preview image URLs. It defaults to `http://localhost:3000`.
+
 ## Updating the API
 
 1. Modify handlers in `backend/cmd/server/handlers/`
