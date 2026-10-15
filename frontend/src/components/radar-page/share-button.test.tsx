@@ -314,6 +314,19 @@ describe("ShareButton", () => {
 				"List in gallery",
 			)) as HTMLInputElement;
 			expect(box.checked).toBe(false);
+			expect(actions.setShareVisibility).toHaveBeenNthCalledWith(1, "private");
+			expect(actions.setShareVisibility).toHaveBeenNthCalledWith(2, "public");
+		});
+
+		it("keeps the checkbox checked when clicking the already-active Public", async () => {
+			await openOwner("public", true);
+			actions.setShareVisibility.mockResolvedValue({ success: true });
+			await userEvent.click(screen.getByRole("button", { name: "Public" }));
+			expect(actions.setShareVisibility).toHaveBeenCalledWith("public");
+			await act(async () => {});
+			expect(
+				(screen.getByLabelText("List in gallery") as HTMLInputElement).checked,
+			).toBe(true);
 		});
 
 		it("disables the checkbox while a request is pending", async () => {

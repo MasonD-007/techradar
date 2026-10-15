@@ -97,8 +97,8 @@ export default function ShareButton({ shareCode }: ShareButtonProps) {
 			const result = await setShareVisibility(next);
 			if (result.success) {
 				setVisibility(next);
-				// The server clears the listing when going private; public starts unlisted.
-				setListed(false);
+				// The server clears the listing when going private; public->public keeps it.
+				if (next === "private") setListed(false);
 			} else setError(result.error ?? "Failed to update visibility");
 		} finally {
 			setPending(false);
