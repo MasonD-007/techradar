@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const actions = vi.hoisted(() => ({
 	getMyShareCode: vi.fn(),
 	setShareVisibility: vi.fn(),
+	setShareListed: vi.fn(),
 	getShareViewers: vi.fn(),
 	addShareViewer: vi.fn(),
 	removeShareViewer: vi.fn(),
@@ -233,5 +234,104 @@ describe("ShareButton", () => {
 		);
 		await userEvent.click(screen.getByRole("button", { name: "Add" }));
 		expect(await screen.findByText("Viewer list unavailable")).toBeTruthy();
+	});
+
+	describe("List in gallery", () => {
+		async function openOwner(visibility: string, listed: boolean) {
+			actions.getMyShareCode.mockResolvedValue({
+				success: true,
+				data: { code: "abc123", visibility, listed },
+			});
+			actions.getShareViewers.mockResolvedValue({ success: true, data: [] });
+			render(<ShareButton shareCode="abc123" />);
+			await openDialog();
+			await settleOwnerCheck();
+		}
+
+		it("shows an unchecked checkbox for a public unlisted radar", async () => {
+			await openOwner("public", false);
+			const box = screen.getByLabelText("List in gallery") as HTMLInputElement;
+			expect(box.checked).toBe(false);
+		});
+
+		it("shows a checked checkbox for a public listed radar", async () => {
+			await openOwner("public", true);
+			const box = screen.getByLabelText("List in gallery") as HTMLInputElement;
+			expect(box.checked).toBe(true);
+		});
+
+		it("does not render the checkbox for a private radar", async () => {
+			await openOwner("private", false);
+			expect(screen.queryByLabelText("List in gallery")).toBeNull();
+		});
+
+		it("does not render the checkbox for a non-owner", async () => {
+			actions.getMyShareCode.mockResolvedValue({
+				success: true,
+				data: { code: "mine", visibility: "public", listed: true },
+			});
+			render(<ShareButton shareCode="theirs" />);
+			await openDialog();
+			await settleOwnerCheck();
+			expect(screen.queryByLabelText("List in gallery")).toBeNull();
+		});
+
+		it("lists the radar when ticked", async () => {
+			await openOwner("public", false);
+			actions.setShareListed.mockResolvedValue({ success: true });
+			await userEvent.click(screen.getByLabelText("List in gallery"));
+			expect(actions.setShareListed).toHaveBeenCalledWith(true);
+			await waitFor(() =>
+				expect(
+					(screen.getByLabelText("List in gallery") as HTMLInputElement)
+						.checked,
+				).toBe(true),
+			);
+		});
+
+		it("leaves the checkbox unchanged and shows the error on failure", async () => {
+			await openOwner("public", false);
+			actions.setShareListed.mockResolvedValue({
+				success: false,
+				error: "boom",
+			});
+			await userEvent.click(screen.getByLabelText("List in gallery"));
+			expect(await screen.findByText("boom")).toBeTruthy();
+			expect(
+				(screen.getByLabelText("List in gallery") as HTMLInputElement).checked,
+			).toBe(false);
+		});
+
+		it("resets when switching to private and back to public", async () => {
+			await openOwner("public", true);
+			actions.setShareVisibility.mockResolvedValue({ success: true });
+			await userEvent.click(screen.getByRole("button", { name: "Private" }));
+			await waitFor(() =>
+				expect(screen.queryByLabelText("List in gallery")).toBeNull(),
+			);
+			await userEvent.click(screen.getByRole("button", { name: "Public" }));
+			const box = (await screen.findByLabelText(
+				"List in gallery",
+			)) as HTMLInputElement;
+			expect(box.checked).toBe(false);
+		});
+
+		it("disables the checkbox while a request is pending", async () => {
+			await openOwner("public", false);
+			let resolve: (v: unknown) => void = () => {};
+			actions.setShareListed.mockImplementation(
+				() => new Promise((r) => { resolve = r; }),
+			);
+			await userEvent.click(screen.getByLabelText("List in gallery"));
+			expect(
+				(screen.getByLabelText("List in gallery") as HTMLInputElement).disabled,
+			).toBe(true);
+			await act(async () => {
+				resolve({ success: true });
+			});
+			expect(
+				(screen.getByLabelText("List in gallery") as HTMLInputElement).disabled,
+			).toBe(false);
+		});
 	});
 });
