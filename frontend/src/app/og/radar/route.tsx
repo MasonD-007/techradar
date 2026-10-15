@@ -12,7 +12,7 @@ async function loadItems(code: string) {
 	try {
 		const response = await fetch(
 			`${API_BASE}/share-codes/${encodeURIComponent(code)}`,
-			{ cache: "no-store" },
+			{ cache: "no-store", signal: AbortSignal.timeout(3000) },
 		);
 		if (response.status !== 200) return null;
 		const body = (await response.json()) as {
@@ -77,7 +77,7 @@ export async function GET(request: Request) {
 		{
 			width: 1200,
 			height: 630,
-			headers: { "Cache-Control": "public, max-age=300, s-maxage=300, stale-while-revalidate=600" },
+			headers: { "Cache-Control": "public, max-age=300, s-maxage=300" },
 		},
 	);
 }

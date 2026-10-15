@@ -32,6 +32,7 @@ import {
 	outerRadius,
 	polarToCartesian,
 	type QuadrantKey,
+	quadrantIdToKey,
 	quadrantLabels,
 	RADAR_SIZE,
 	type RingKey,
@@ -105,18 +106,7 @@ const ringLabelByKey = ringPaths.reduce(
 );
 
 function mapQuadrantIdToKey(quadrantId: number): QuadrantKey | null {
-	switch (quadrantId) {
-		case 1:
-			return "techniques";
-		case 2:
-			return "tools";
-		case 3:
-			return "platforms";
-		case 4:
-			return "languages";
-		default:
-			return null;
-	}
+	return quadrantIdToKey(quadrantId);
 }
 
 function mapRingIdToKey(ringId: number): RingKey | null {

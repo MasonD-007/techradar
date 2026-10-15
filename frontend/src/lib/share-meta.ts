@@ -21,7 +21,7 @@ export async function fetchPublicShareSummary(code: string): Promise<ShareSummar
 	try {
 		const response = await fetch(
 			`${API_BASE}/share-codes/${encodeURIComponent(code)}`,
-			{ cache: "no-store" },
+			{ cache: "no-store", signal: AbortSignal.timeout(3000) },
 		);
 		if (response.status !== 200) return null;
 		const body = (await response.json()) as {
@@ -58,7 +58,10 @@ export function buildShareMetadata(
 	}
 	const image = `${SITE_URL}/og/radar?share=${encodeURIComponent(code)}`;
 	const title = `${summary.username}'s tech radar | TechRadar`;
-	const description = `${summary.count} technologies${summary.top.length ? `, including ${summary.top.join(", ")}` : ""}.`;
+	const description =
+		summary.count === 0
+			? "No technologies yet."
+			: `${summary.count} ${summary.count === 1 ? "technology" : "technologies"}${summary.top.length ? `, including ${summary.top.join(", ")}` : ""}.`;
 	return {
 		title,
 		description,

@@ -1,3 +1,5 @@
+import { quadrantIdToKey, quadrantOrder } from "@/components/radar-page/radar-data";
+
 export type Dot = { x: number; y: number; quadrant: number; ring: number };
 
 type Item = { name: string; quadrant_id: number; ring_id: number };
@@ -14,11 +16,16 @@ function hash(input: string): number {
 	return h >>> 0;
 }
 
-// Matches the real radar (radar-data.ts): quadrant ids follow quadrantOrder
-// (tools, techniques, platforms, languages), laid out clockwise from the top,
-// so 1 = top-right, 2 = bottom-right, 3 = bottom-left, 4 = top-left.
-// Angles here are SVG screen angles (from +x, y grows downward).
-const QUADRANT_START = [1.5 * Math.PI, 0, 0.5 * Math.PI, Math.PI];
+// Matches the real radar (radar-data.ts): quadrant_id maps to a key via
+// quadrantIdToKey (1=techniques, 2=tools, 3=platforms, 4=languages), the key's
+// index in quadrantOrder gives the clockwise slot from the top, so on screen:
+// 1 = bottom-right, 2 = top-right, 3 = bottom-left, 4 = top-left.
+// Returns the SVG screen angle (from +x, y down) where the quadrant starts.
+function quadrantStart(quadrantId: number): number {
+	const key = quadrantIdToKey(quadrantId);
+	if (!key) return NaN;
+	return quadrantOrder.indexOf(key) * (Math.PI / 2) - Math.PI / 2;
+}
 
 // Same outer ring ratios as the real radar (radar-data.ts ringRatios).
 const RING_RATIOS = [0.24, 0.48, 0.74, 1];
@@ -34,7 +41,7 @@ export function layoutDots(items: Item[], size: number): Dot[] {
 		const angleFraction = ((h & 0xffff) / 0xffff) * 0.8 + 0.1;
 		const radiusFraction = (((h >>> 16) & 0xffff) / 0xffff) * 0.7 + 0.15;
 		const angle =
-			QUADRANT_START[item.quadrant_id - 1] + angleFraction * (Math.PI / 2);
+			quadrantStart(item.quadrant_id) + angleFraction * (Math.PI / 2);
 		const inner = item.ring_id === 1 ? 0 : RING_RATIOS[item.ring_id - 2];
 		const outer = RING_RATIOS[item.ring_id - 1];
 		const radius = (inner + radiusFraction * (outer - inner)) * centre * 0.92;

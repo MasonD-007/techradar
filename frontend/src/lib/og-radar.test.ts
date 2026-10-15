@@ -34,10 +34,10 @@ describe("layoutDots", () => {
 		expect(mean(1)).toBeLessThan(mean(4));
 	});
 
-	it("keeps dots in their quadrant, matching the real radar (1=top-right, 2=bottom-right, 3=bottom-left, 4=top-left)", () => {
+	it("keeps dots in their quadrant, matching the real radar (1=bottom-right techniques, 2=top-right tools, 3=bottom-left, 4=top-left)", () => {
 		const signs: Record<number, [number, number]> = {
-			1: [1, -1],
-			2: [1, 1],
+			1: [1, 1],
+			2: [1, -1],
 			3: [-1, 1],
 			4: [-1, -1],
 		};

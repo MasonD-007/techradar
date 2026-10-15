@@ -32,6 +32,21 @@ export const quadrantOrder: QuadrantKey[] = [
 	"platforms",
 	"languages",
 ];
+// Backend quadrant_id (1-4) -> quadrant key. Shared so other renderers cannot drift.
+export function quadrantIdToKey(quadrantId: number): QuadrantKey | null {
+	switch (quadrantId) {
+		case 1:
+			return "techniques";
+		case 2:
+			return "tools";
+		case 3:
+			return "platforms";
+		case 4:
+			return "languages";
+		default:
+			return null;
+	}
+}
 export const ringOrder: RingKey[] = ["adopt", "trial", "assess", "hold"];
 export const outerRadius = 420;
 export const ringRatios = [0.24, 0.48, 0.74, 1];

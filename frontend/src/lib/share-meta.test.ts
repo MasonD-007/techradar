@@ -36,6 +36,24 @@ describe("fetchPublicShareSummary", () => {
 		expect(await fetchPublicShareSummary("abc")).toBeNull();
 	});
 
+	it("returns null on a timeout/abort", async () => {
+		vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new DOMException("timed out", "TimeoutError")));
+		const m = buildShareMetadata("abc", await fetchPublicShareSummary("abc"));
+		expect(m.title).toBe("Private radar | TechRadar");
+	});
+
+	it("sends an anonymous request with a timeout signal", async () => {
+		const f = vi.fn().mockResolvedValue({ ok: false, status: 404, json: async () => ({}) });
+		vi.stubGlobal("fetch", f);
+		await fetchPublicShareSummary("abc");
+		const init = f.mock.calls[0][1] as RequestInit;
+		expect(init.signal).toBeDefined();
+		expect(init.credentials).toBeUndefined();
+		const headers = JSON.stringify(init.headers ?? {}).toLowerCase();
+		expect(headers).not.toContain("cookie");
+		expect(headers).not.toContain("authorization");
+	});
+
 	it("returns null for oversized codes without fetching", async () => {
 		const f = vi.fn();
 		vi.stubGlobal("fetch", f);
@@ -51,6 +69,12 @@ describe("buildShareMetadata", () => {
 		expect(m.description).toContain("4");
 		const images = m.openGraph?.images as { url: string }[];
 		expect(images[0].url.endsWith("/og/radar?share=abc123")).toBe(true);
+	});
+
+	it("pluralises the description", () => {
+		expect(buildShareMetadata("a", { username: "u", count: 1, top: ["X"] }).description).toBe("1 technology, including X.");
+		expect(buildShareMetadata("a", { username: "u", count: 0, top: [] }).description).toBe("No technologies yet.");
+		expect(buildShareMetadata("a", { username: "u", count: 2, top: ["X", "Y"] }).description).toBe("2 technologies, including X, Y.");
 	});
 
 	it("encodes the share code in the image URL", () => {
