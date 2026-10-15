@@ -40,6 +40,7 @@ import {
 } from "./radar-data";
 import RadarSVG, { quadrantStroke } from "./radar-svg";
 import SearchTechnologiesDialog from "./search-technologies/search-technologies-dialog";
+import TemplatePicker from "./template-picker";
 
 export type RadarTechnology = {
 	id: string;
@@ -672,6 +673,13 @@ function Radar({
 					</div>
 				)}
 			</CardContent>
+			{!isLoading &&
+				!error &&
+				isOwnRadar &&
+				currentUserId &&
+				positionedTechnologies.length === 0 && (
+					<TemplatePicker onDone={() => window.location.reload()} />
+				)}
 		</Card>
 	);
 }

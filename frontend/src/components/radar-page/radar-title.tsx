@@ -11,10 +11,12 @@ import {
 } from "@/components/ui/card";
 import {
 	getCurrentUserId,
+	getMyShareCode,
 	getRadarGraphByCode,
 	getTechnologiesByUser,
 	getUser,
 } from "@/lib/actions";
+import CopyRadarButton from "./copy-radar-button";
 import ShareButton from "./share-button";
 
 type RadarTitleProps = {
@@ -26,6 +28,28 @@ export default function RadarTitle({ userId, shareCode }: RadarTitleProps) {
 	const [blipCount, setBlipCount] = useState(0);
 	const [isLoading, setIsLoading] = useState(true);
 	const [userName, setUserName] = useState<string | null>(null);
+	const [viewerSignedIn, setViewerSignedIn] = useState(false);
+	const [viewerShareCode, setViewerShareCode] = useState<string | null>(null);
+
+	useEffect(() => {
+		let cancelled = false;
+		const loadViewer = async () => {
+			const viewerId = await getCurrentUserId();
+			if (cancelled) return;
+			setViewerSignedIn(Boolean(viewerId));
+			if (!viewerId) {
+				setViewerShareCode(null);
+				return;
+			}
+			const mine = await getMyShareCode();
+			if (cancelled) return;
+			setViewerShareCode(mine.success ? (mine.data?.code ?? null) : null);
+		};
+		void loadViewer();
+		return () => {
+			cancelled = true;
+		};
+	}, []);
 
 	useEffect(() => {
 		let cancelled = false;
@@ -102,6 +126,13 @@ export default function RadarTitle({ userId, shareCode }: RadarTitleProps) {
 							: "Tech radar"}
 					</span>
 					{shareCode && <ShareButton shareCode={shareCode} />}
+					{shareCode && (
+						<CopyRadarButton
+							shareCode={shareCode}
+							signedIn={viewerSignedIn}
+							isOwnRadar={viewerSignedIn && viewerShareCode === shareCode}
+						/>
+					)}
 				</CardTitle>
 				<CardDescription className="max-w-2xl text-muted-foreground text-sm">
 					A curated snapshot of the stack, delivery practices, and supporting
