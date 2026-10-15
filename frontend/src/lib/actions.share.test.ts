@@ -12,6 +12,7 @@ import {
 	getRadarGraphByCode,
 	getShareViewers,
 	removeShareViewer,
+	setShareListed,
 	setShareVisibility,
 } from "./actions";
 
@@ -59,6 +60,16 @@ describe("viewer actions", () => {
 		expect(String(url)).toContain("/share-codes/my");
 		expect(init.method).toBe("PATCH");
 		expect(init.body).toBe(JSON.stringify({ visibility: "public" }));
+	});
+
+	it("setShareListed PATCHes the listed flag", async () => {
+		fetchMock.mockResolvedValue(res(200, JSON.stringify({ code: "abc123", listed: true })));
+		const out = await setShareListed(true);
+		expect(out.success).toBe(true);
+		const [url, init] = fetchMock.mock.calls[0];
+		expect(String(url)).toContain("/share-codes/my");
+		expect(init.method).toBe("PATCH");
+		expect(init.body).toBe('{"listed":true}');
 	});
 
 	it("getShareViewers returns usernames", async () => {

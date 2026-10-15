@@ -1118,6 +1118,24 @@ export async function setShareVisibility(
 	}
 }
 
+export async function setShareListed(
+	listed: boolean,
+): Promise<ActionResult<ShareCodeResponse>> {
+	try {
+		const response = await shareFetch("/share-codes/my", {
+			method: "PATCH",
+			body: JSON.stringify({ listed }),
+		});
+		if (!response.ok) {
+			return { success: false, status: response.status, error: await responseMessage(response, "Failed to update listing") };
+		}
+		return { success: true, data: (await response.json()) as ShareCodeResponse };
+	} catch (error) {
+		logError("setShareListed", "ERROR", getErrorMessage(error), { listed });
+		return { success: false, error: "Failed to update listing" };
+	}
+}
+
 export async function getShareViewers(): Promise<ActionResult<string[]>> {
 	try {
 		const response = await shareFetch("/share-codes/my/viewers");
