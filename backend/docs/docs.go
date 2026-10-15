@@ -384,6 +384,116 @@ const docTemplate = `{
                 }
             }
         },
+        "/gallery": {
+            "get": {
+                "description": "List public radars whose owners opted into the gallery. No authentication required.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "gallery"
+                ],
+                "summary": "List gallery radars",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Search username or technology name",
+                        "name": "q",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Quadrant id (1-4)",
+                        "name": "quadrant",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page number, starting at 1",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.GalleryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/radar/import": {
+            "post": {
+                "description": "Merge technologies from a viewable radar or a template into the caller's radar. Technologies already on the radar are skipped and keep their ring.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "radar"
+                ],
+                "summary": "Copy technologies into my radar",
+                "parameters": [
+                    {
+                        "description": "Source and optional technology ids",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ImportRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.ImportResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/share-codes": {
             "post": {
                 "description": "Create a new 6-character share code for the authenticated user, or return existing one",
@@ -436,7 +546,7 @@ const docTemplate = `{
                 }
             },
             "patch": {
-                "description": "Set the authenticated user's radar to public (anyone with the link) or private (only listed viewers)",
+                "description": "Set the authenticated user's radar to public (anyone with the link) or private (only listed viewers), and optionally list a public radar in the gallery via listed",
                 "consumes": [
                     "application/json"
                 ],
@@ -991,6 +1101,244 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/templates": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "templates"
+                ],
+                "summary": "List starter templates",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handlers.TemplateSummary"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "templates"
+                ],
+                "summary": "Create a starter template (admin)",
+                "parameters": [
+                    {
+                        "description": "Template",
+                        "name": "template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.TemplateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.TemplateSummary"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/templates/{slug}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "templates"
+                ],
+                "summary": "Get a starter template",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Template slug",
+                        "name": "slug",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.TemplateDetail"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "templates"
+                ],
+                "summary": "Replace a starter template (admin)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Template slug",
+                        "name": "slug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Template",
+                        "name": "template",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.TemplateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.TemplateSummary"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "tags": [
+                    "templates"
+                ],
+                "summary": "Delete a starter template (admin)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Template slug",
+                        "name": "slug",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/handlers.Error"
                         }
@@ -1600,6 +1948,40 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.GalleryEntry": {
+            "type": "object",
+            "properties": {
+                "blip_count": {
+                    "type": "integer"
+                },
+                "code": {
+                    "type": "string"
+                },
+                "top_technologies": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ImportSource": {
+            "type": "object",
+            "properties": {
+                "shareCode": {
+                    "type": "string"
+                },
+                "templateSlug": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.LoginRequest": {
             "type": "object",
             "properties": {
@@ -1634,6 +2016,9 @@ const docTemplate = `{
                 },
                 "ring_name": {
                     "type": "string"
+                },
+                "technology_id": {
+                    "type": "string"
                 }
             }
         },
@@ -1650,6 +2035,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.TemplateItemRequest": {
+            "type": "object",
+            "properties": {
+                "ring_id": {
+                    "type": "integer"
+                },
+                "technology_id": {
                     "type": "string"
                 }
             }
@@ -1774,6 +2170,48 @@ const docTemplate = `{
                 }
             }
         },
+        "handlers.GalleryResponse": {
+            "type": "object",
+            "properties": {
+                "has_more": {
+                    "type": "boolean"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "radars": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.GalleryEntry"
+                    }
+                }
+            }
+        },
+        "handlers.ImportRequest": {
+            "type": "object",
+            "properties": {
+                "source": {
+                    "$ref": "#/definitions/dto.ImportSource"
+                },
+                "technologyIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "handlers.ImportResponse": {
+            "type": "object",
+            "properties": {
+                "added": {
+                    "type": "integer"
+                },
+                "skipped": {
+                    "type": "integer"
+                }
+            }
+        },
         "handlers.RadarGraphResponse": {
             "type": "object",
             "properties": {
@@ -1791,6 +2229,9 @@ const docTemplate = `{
         "handlers.SetVisibilityRequest": {
             "type": "object",
             "properties": {
+                "listed": {
+                    "type": "boolean"
+                },
                 "visibility": {
                     "type": "string"
                 }
@@ -1804,6 +2245,9 @@ const docTemplate = `{
                 },
                 "created_at": {
                     "type": "string"
+                },
+                "listed": {
+                    "type": "boolean"
                 },
                 "visibility": {
                     "type": "string"
@@ -1851,6 +2295,63 @@ const docTemplate = `{
                 "updated_at": {
                     "type": "string",
                     "example": "2026-04-05T12:00:00Z"
+                }
+            }
+        },
+        "handlers.TemplateDetail": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "radar": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.RadarGraphItem"
+                    }
+                },
+                "slug": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.TemplateRequest": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.TemplateItemRequest"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "slug": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.TemplateSummary": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "slug": {
+                    "type": "string"
+                },
+                "technology_count": {
+                    "type": "integer"
                 }
             }
         },

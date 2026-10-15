@@ -482,6 +482,150 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/gallery": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List gallery radars
+         * @description List public radars whose owners opted into the gallery. No authentication required.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Search username or technology name */
+                    q?: string;
+                    /** @description Quadrant id (1-4) */
+                    quadrant?: number;
+                    /** @description Page number, starting at 1 */
+                    page?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.GalleryResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.Error"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/radar/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Copy technologies into my radar
+         * @description Merge technologies from a viewable radar or a template into the caller's radar. Technologies already on the radar are skipped and keep their ring.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Source and optional technology ids */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["handlers.ImportRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.ImportResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.Error"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.Error"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/share-codes": {
         parameters: {
             query?: never;
@@ -586,7 +730,7 @@ export interface paths {
         head?: never;
         /**
          * Set share code visibility
-         * @description Set the authenticated user's radar to public (anyone with the link) or private (only listed viewers)
+         * @description Set the authenticated user's radar to public (anyone with the link) or private (only listed viewers), and optionally list a public radar in the gallery via listed
          */
         patch: {
             parameters: {
@@ -1319,6 +1463,281 @@ export interface paths {
                     };
                     content: {
                         "application/json": components["schemas"]["handlers.Error"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/templates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List starter templates */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.TemplateSummary"][];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.Error"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** Create a starter template (admin) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Template */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["handlers.TemplateRequest"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.TemplateSummary"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.Error"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.Error"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.Error"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/templates/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get a starter template */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Template slug */
+                    slug: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.TemplateDetail"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.Error"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.Error"];
+                    };
+                };
+            };
+        };
+        /** Replace a starter template (admin) */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Template slug */
+                    slug: string;
+                };
+                cookie?: never;
+            };
+            /** @description Template */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["handlers.TemplateRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.TemplateSummary"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.Error"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.Error"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.Error"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["handlers.Error"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /** Delete a starter template (admin) */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Template slug */
+                    slug: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["handlers.Error"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["handlers.Error"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "*/*": components["schemas"]["handlers.Error"];
                     };
                 };
             };
@@ -2067,6 +2486,17 @@ export interface components {
             token?: string;
             user?: components["schemas"]["dto.UserDTO"];
         };
+        "dto.GalleryEntry": {
+            blip_count?: number;
+            code?: string;
+            top_technologies?: string[];
+            updated_at?: string;
+            username?: string;
+        };
+        "dto.ImportSource": {
+            shareCode?: string;
+            templateSlug?: string;
+        };
         "dto.LoginRequest": {
             email?: string;
             password?: string;
@@ -2079,12 +2509,17 @@ export interface components {
             quadrant_name?: string;
             ring_id?: number;
             ring_name?: string;
+            technology_id?: string;
         };
         "dto.RegisterRequest": {
             email?: string;
             name?: string;
             password?: string;
             username?: string;
+        };
+        "dto.TemplateItemRequest": {
+            ring_id?: number;
+            technology_id?: string;
         };
         "dto.UserDTO": {
             email?: string;
@@ -2131,16 +2566,31 @@ export interface components {
         "handlers.Error": {
             message?: string;
         };
+        "handlers.GalleryResponse": {
+            has_more?: boolean;
+            page?: number;
+            radars?: components["schemas"]["dto.GalleryEntry"][];
+        };
+        "handlers.ImportRequest": {
+            source?: components["schemas"]["dto.ImportSource"];
+            technologyIds?: string[];
+        };
+        "handlers.ImportResponse": {
+            added?: number;
+            skipped?: number;
+        };
         "handlers.RadarGraphResponse": {
             radar?: components["schemas"]["dto.RadarGraphItem"][];
             username?: string;
         };
         "handlers.SetVisibilityRequest": {
+            listed?: boolean;
             visibility?: string;
         };
         "handlers.ShareCodeResponse": {
             code?: string;
             created_at?: string;
+            listed?: boolean;
             visibility?: string;
         };
         "handlers.ShareViewersResponse": {
@@ -2161,6 +2611,24 @@ export interface components {
             quadrant_id?: number;
             /** @example 2026-04-05T12:00:00Z */
             updated_at?: string;
+        };
+        "handlers.TemplateDetail": {
+            description?: string;
+            name?: string;
+            radar?: components["schemas"]["dto.RadarGraphItem"][];
+            slug?: string;
+        };
+        "handlers.TemplateRequest": {
+            description?: string;
+            items?: components["schemas"]["dto.TemplateItemRequest"][];
+            name?: string;
+            slug?: string;
+        };
+        "handlers.TemplateSummary": {
+            description?: string;
+            name?: string;
+            slug?: string;
+            technology_count?: number;
         };
         "handlers.UpdateBlipRequest": {
             context?: {
