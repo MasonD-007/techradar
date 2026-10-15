@@ -64,6 +64,10 @@ func seedTemplates(ctx context.Context, q *db.Queries) (int, error) {
 
 		for _, item := range seed.Technologies {
 			tech, err := q.GetTechnologyName(ctx, item.Name)
+			if errors.Is(err, pgx.ErrNoRows) {
+				log.Printf("WARNING: template %q: technology %q not found, skipping", seed.Slug, item.Name)
+				continue
+			}
 			if err != nil {
 				return created, fmt.Errorf("template %q: technology %q: %w", seed.Slug, item.Name, err)
 			}
