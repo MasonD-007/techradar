@@ -211,6 +211,17 @@ func TestCreateTemplate(t *testing.T) {
 		m.AssertNotCalled(t, "AddTemplateItem", mock.Anything, mock.Anything)
 	})
 
+	t.Run("unknown technology or ring 400", func(t *testing.T) {
+		m, rls := newTplMocks()
+		rls.On("Execute", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil).Once()
+		m.On("CreateTemplate", mock.Anything, mock.Anything).Return(db.Template{ID: 1, Slug: "web"}, nil).Once()
+		m.On("AddTemplateItem", mock.Anything, mock.Anything).Return(&pgconn.PgError{Code: "23503"}).Once()
+		rr := httptest.NewRecorder()
+		handlers.CreateTemplate(rls)(rr, adminReq(http.MethodPost, "/templates", tplBody("web", "Web", "", tplItems()...)))
+		assert.Equal(t, http.StatusBadRequest, rr.Code)
+		assert.Contains(t, rr.Body.String(), "Unknown technology or ring")
+	})
+
 	t.Run("db error 500", func(t *testing.T) {
 		m, rls := newTplMocks()
 		rls.On("Execute", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil).Once()
@@ -269,6 +280,18 @@ func TestUpdateTemplate(t *testing.T) {
 		rr := httptest.NewRecorder()
 		handlers.UpdateTemplate(rls)(rr, updateReq(tplBody("", "a\x00", "")))
 		assert.Equal(t, http.StatusBadRequest, rr.Code)
+	})
+
+	t.Run("unknown technology or ring 400", func(t *testing.T) {
+		m, rls := newTplMocks()
+		rls.On("Execute", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil).Once()
+		m.On("UpdateTemplate", mock.Anything, mock.Anything).Return(db.Template{ID: 9, Slug: "web"}, nil).Once()
+		m.On("DeleteTemplateItems", mock.Anything, int32(9)).Return(nil).Once()
+		m.On("AddTemplateItem", mock.Anything, mock.Anything).Return(&pgconn.PgError{Code: "23503"}).Once()
+		rr := httptest.NewRecorder()
+		handlers.UpdateTemplate(rls)(rr, updateReq(tplBody("", "Web", "", tplItems()...)))
+		assert.Equal(t, http.StatusBadRequest, rr.Code)
+		assert.Contains(t, rr.Body.String(), "Unknown technology or ring")
 	})
 
 	t.Run("db error 500", func(t *testing.T) {

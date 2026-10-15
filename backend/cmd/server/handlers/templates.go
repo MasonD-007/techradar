@@ -80,6 +80,12 @@ func isUniqueViolation(err error) bool {
 	return errors.As(err, &pgErr) && pgErr.Code == "23505"
 }
 
+// isForeignKeyViolation reports a nonexistent (or deleted) technology or ring.
+func isForeignKeyViolation(err error) bool {
+	var pgErr *pgconn.PgError
+	return errors.As(err, &pgErr) && pgErr.Code == "23503"
+}
+
 // ListTemplates godoc
 // @Summary List starter templates
 // @Tags templates
@@ -214,6 +220,10 @@ func CreateTemplate(rls RLSExecutor) http.HandlerFunc {
 			http.Error(w, "A template with that slug already exists", http.StatusConflict)
 			return
 		}
+		if isForeignKeyViolation(err) {
+			http.Error(w, "Unknown technology or ring", http.StatusBadRequest)
+			return
+		}
 		if err != nil {
 			http.Error(w, "Failed to create template", http.StatusInternalServerError)
 			return
@@ -281,6 +291,10 @@ func UpdateTemplate(rls RLSExecutor) http.HandlerFunc {
 		})
 		if errors.Is(err, pgx.ErrNoRows) {
 			http.Error(w, "Template not found", http.StatusNotFound)
+			return
+		}
+		if isForeignKeyViolation(err) {
+			http.Error(w, "Unknown technology or ring", http.StatusBadRequest)
 			return
 		}
 		if err != nil {
